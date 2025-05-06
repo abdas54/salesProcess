@@ -1,0 +1,82 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:ndc="sap.ndc">
+	<Dialog title="Stock Availability" contentHeight="400px" contentWidth="1000px">
+		<content>
+		<!--change="getStockDetailManually"-->
+        <Input class="sapUiSmallMarginBegin sapUiSmallMarginTop" placeholder="Enter or Scan Material" value="{StockModel>/inpMatCode}"  width="75%"
+		showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}" change="getStockDetailManually"
+							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionStockSelected"
+							showTableSuggestionValueHelp="false">
+			<suggestionColumns>
+								<Column>
+									<Label text="Item Code"/>
+								</Column>
+								<Column >
+									<Label text="Description"/>
+								</Column>
+								<Column >
+									<Label text="Available Stock"/>
+								</Column>
+								<Column >
+									<Label text="Price"/>
+								</Column>
+								<Column >
+									<Label text="Barcode"/>
+								</Column>
+							</suggestionColumns>
+							<suggestionRows>
+								<ColumnListItem>
+									<Label text="{suggestionModel>Itemcode}"/>
+									<Label text="{suggestionModel>Description}"/>
+									<Label text="{suggestionModel>Balancestock}"/>
+									<ObjectNumber number="{suggestionModel>UnitPrice}" unit="{suggestionModel>Currency}"/>
+									<Label text="{suggestionModel>Barcode}"/>
+								</ColumnListItem>
+							</suggestionRows>
+							<layoutData>
+								<FlexItemData growFactor="1"/>
+							</layoutData>
+						</Input>
+						<Button class="sapUiSmallMarginTop" type="Transparent"  icon="sap-icon://qr-code" press="onScanStockAvailability" />
+				<VBox class="sapUiSmallMarginTop">
+				
+				<Table id="materialTable"  items="{StockModel>/Product}" >
+					<columns>
+						<Column><Text text="Material ID"/></Column>
+						<Column><Text text="Plant"/></Column>
+						<Column><Text text="Location"/></Column>
+						<Column><Text text="Price"/></Column>
+						<Column><Text text="Discount"/></Column>
+						<Column><Text text="Net Price"/></Column>
+                        <Column><Text text="Reserved Stock"/></Column>
+						<Column><Text text="Balance Stock"/></Column>
+						<Column><Text text="On Hand Stock" wrapping="true" tooltip="On Hand Stock"/></Column>
+						<Column><Text text="Consignment Stock" wrapping="true" tooltip="Consignment Stock"/></Column>
+					</columns>
+					<items>
+						<ColumnListItem>
+							<cells>
+								
+								<ObjectIdentifier title="{StockModel>Itemcode}" text="{StockModel>Description}"/>
+								<Text text="{StockModel>Plant}"/>
+								<ObjectIdentifier title="{StockModel>Location}" text="{StockModel>LocationName}"/>
+								<ObjectNumber number="{StockModel>UnitPrice}" unit="{StockModel>Currency}" />
+								<ObjectNumber number="{StockModel>Discount}" unit="{StockModel>Currency}" />
+								<ObjectNumber number="{StockModel>NetPrice}" unit="{StockModel>Currency}" />
+								<Text text="{StockModel>Reservedstock}"/>
+                                <Text text="{StockModel>Balancestock}" />
+								<ObjectNumber number="{StockModel>Onhandstock}" unit="{StockModel>Currency}" />
+								<ObjectNumber number="{StockModel>Consignmentstock}" unit="{StockModel>Currency}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button text="OK" press="onPressOkButton" class="cstmBtn"/>
+		</beginButton>
+		<endButton>
+			<Button text="Cancel" press="onPressOkButton" class="cstmBtn"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

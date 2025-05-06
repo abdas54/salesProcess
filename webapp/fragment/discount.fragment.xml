@@ -1,0 +1,108 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
+<Dialog title="Manual Discount" contentHeight="400px" contentWidth="1000px">
+		<content >
+  <!-- <VBox class="sapUiSmallMargin"> -->
+
+ <l:Grid defaultSpan="XL3 L3 M12 S12" class="sapUiSmallMarginTop">
+    <HBox>
+      <VBox >
+        <Label text="Item" />
+         <ComboBox  items="{ path: 'ProductModel>/Product'}" selectedKey="{discountModel>/ItemCode}" selectionChange="onSelectItemCode">
+      <items>
+        <core:Item key="{ProductModel>Itemcode}" text="{ProductModel>Description}" />
+      </items>
+      <layoutData>
+		<FlexItemData growFactor="1"/>
+		</layoutData>
+    </ComboBox>
+  
+        <Text class="sapUiSmallMarginBottom" text="{discountModel>/ItemDescription}" />
+      </VBox>
+    </HBox>
+
+  
+      <VBox >
+    <Label text="Discount Condition" />
+    <ComboBox  items="{ path: '/ManualDiscountsSet'}" selectedKey="{discountModel>/ConditionType}"  selectionChange="onSelectConditionType">
+      <items>
+        <core:Item key="{ConditionType}" text="{ConditionName}" />
+      </items>
+      
+    </ComboBox>
+  </VBox>
+  
+    
+      <VBox >
+    <Label text="Reason Type" />
+    <ComboBox items="{ path: '/DiscountReasonsSet'}" selectedKey="{discountModel>/Reason}">
+      <items>
+        <core:Item key="{Reason}" text="{Reason}" />
+      </items>
+    </ComboBox>
+ </VBox>
+   
+   
+      <VBox >
+    <Label text="Authority" />
+    <ComboBox items="{ path: '/ApprovalAuthoritySet'}" selectedKey="{discountModel>/Authority}">
+      <items>
+        <core:Item key="{Authority}" text="{Authority}" />
+      </items>
+    </ComboBox>
+    </VBox>
+   
+    </l:Grid>
+    <l:Grid defaultSpan="XL3 L3 M12 S12">
+   
+      <VBox >
+   
+    <Label text="Amount" />
+    <Input  id="amount" type="Number" value= "{discountModel>/Amount}" />
+ </VBox>
+   
+   <VBox>
+   <Label />
+   <Button text="Add" class="" press="onAddManualDiscount"  />
+   </VBox>
+   
+  </l:Grid>
+
+    
+    
+
+    
+    <Table mode="Delete"  delete="onDeleteManualDiscount"
+           items="{discountModelTbl>/entries}"
+           class="">
+      <columns>
+        <Column width="15rem"><Text text="Material" /></Column>
+        <Column width="10rem"><Text text="Condition" /></Column>
+        <Column width="10rem"><Text text="Reason" /></Column>
+        <Column width="5rem"><Text text="Amount" /></Column>
+        <Column width="5rem"><Text text="Authority" /></Column>
+      </columns>
+      <items>
+        <ColumnListItem>
+          <cells>
+            <ObjectIdentifier title="{discountModelTbl>ItemCode}" text="{discountModelTbl>ItemDescription}"/>
+            <!-- <Text text="{discountModelTbl>ItemCode} - {discountModelTbl>ItemDescription}" /> -->
+            <ObjectIdentifier title="{discountModelTbl>Type}" text="{discountModelTbl>ConditionName}"/>
+            <!-- <Text text="{discountModelTbl>Type} - {discountModelTbl>ConditionName}" /> -->
+            <Text text="{discountModelTbl>Reason}" />
+            <Text text="{discountModelTbl>Amount}" />
+            <Text text="{discountModelTbl>Authority}" />
+          </cells>
+        </ColumnListItem>
+      </items>
+    </Table>
+
+  <!-- </VBox> -->
+  </content>
+  <beginButton>
+			<Button text="Apply" press="onApplyManualDiscount" class="cstmBtn"/>
+		</beginButton>
+		<endButton>
+			<Button text="Close" press="onCloseManualDiscount" class="cstmBtn"/>
+		</endButton>
+  </Dialog>
+</core:FragmentDefinition>

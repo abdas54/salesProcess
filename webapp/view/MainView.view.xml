@@ -1,0 +1,199 @@
+<mvc:View controllerName="com.eros.salesprocess.controller.MainView" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
+	xmlns:l="sap.ui.layout" xmlns:ndc="sap.ndc" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:g="sap.f"> 
+	<Page id="page" title="{i18n>title}" enableScrolling="false" showHeader="false"  class="noPaddingPage">
+		<content>
+			<HBox alignItems="Stretch" width="100%" class="cstmHBox">
+				<IconTabBar class="cstmHBox" expandable="false">
+					<items>
+						<IconTabFilter id="tranNumber" class="sapUiSmallMarginEnd" design="Horizontal" icon="sap-icon://documents" iconColor="Positive" count=""
+							text="Transaction Number" key="Ok"/>
+						<IconTabSeparator/>
+						<IconTabFilter id="cashier" design="Horizontal" icon="sap-icon://employee-lookup" iconColor="Critical" count="" text="Cashier" key="Heavy"/>
+						<IconTabSeparator/>
+						<IconTabFilter id="customer" design="Horizontal" icon="sap-icon://customer" iconColor="Critical" count="" text="Customer" key="Overweight"/>
+						<IconTabSeparator/>
+						<IconTabFilter id="qty" design="Horizontal" icon="sap-icon://collections-management" iconColor="Critical" count="" text="Quantity" key="qty"/>
+						<IconTabSeparator icon="sap-icon://open-command-field"/>
+						<IconTabFilter id="gross" design="Horizontal" icon="sap-icon://money-bills" iconColor="Critical" count="" text="Gross" key="gross"/>
+						<IconTabSeparator icon="sap-icon://open-command-field"/>
+						<IconTabFilter id="discount" design="Horizontal" icon="sap-icon://activate" iconColor="Critical" count="" text="Discount" key="discount"/>
+						<IconTabSeparator icon="sap-icon://open-command-field"/>
+						<IconTabFilter id="vat" design="Horizontal" icon="sap-icon://add-activity" iconColor="Critical" count="" text="VAT" key="vat"/>
+						<IconTabSeparator icon="sap-icon://open-command-field"/>
+						<IconTabFilter id="saleAmount" showAll="true" count="" text="AED" key="All"/>
+						<IconTabSeparator/>
+						<IconTabFilter design="Horizontal" icon="sap-icon://print" iconColor="Critical" key="print"/>
+					</items>
+				</IconTabBar>
+			</HBox>
+			<HBox width="100%">
+				<VBox alignItems="Stretch" width="100%">
+					<HBox >
+						<Input class=" inputStyle sapUiSmallMarginBottom" value="{ProductModel>/MaterialCode}" change="onSuggest"
+							placeholder="Enter Model Number / Barcode /Old Material Code:" showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}"
+							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionSelected"
+							showTableSuggestionValueHelp="false" >
+							<suggestionColumns>
+								<Column>
+									<Label text="Item Code"/>
+								</Column>
+								<Column >
+									<Label text="Description"/>
+								</Column>
+								<Column >
+									<Label text="Available Stock"/>
+								</Column>
+								<Column >
+									<Label text="Price"/>
+								</Column>
+								<Column >
+									<Label text="Barcode"/>
+								</Column>
+							</suggestionColumns>
+							<suggestionRows>
+								<ColumnListItem>
+									<Label text="{suggestionModel>Itemcode}"/>
+									<Label text="{suggestionModel>Description}"/>
+									<Label text="{suggestionModel>Balancestock}"/>
+									<ObjectNumber number="{suggestionModel>UnitPrice}" unit="{suggestionModel>Currency}"/>
+									<Label text="{suggestionModel>Barcode}"/>
+								</ColumnListItem>
+							</suggestionRows>
+							<layoutData>
+								<FlexItemData growFactor="1"/>
+							</layoutData>
+						</Input>
+					
+						<Button class="sapUiSmallMarginTop" type="Transparent"  icon="sap-icon://qr-code" press="onScan" />
+					</HBox>
+					<ScrollContainer class="sapUiSmallMarginTop" horizontal="false" vertical="true">
+						<Table id="idProductsTable" items="{ProductModel>/Product}" mode="Delete" delete="onDelete" sticky="ColumnHeaders"
+							itemPress="onProductRowPress">
+							<columns>
+								<Column width="3em">
+									<Text text=""/>
+								</Column>
+								<Column width="6em">
+									<Text text="Model No."/>
+								</Column>
+								<Column width="6em">
+									<Text text="Home Delivery" wrapping="true"/>
+								</Column>
+								<Column width="6em" visible="false">
+									<Text text="Location" wrapping="true"/>
+								</Column>
+								<Column width="6em" hAlign="Center">
+									<Text text="Quantity"/>
+								</Column>
+								<Column width="5em" hAlign="Center">
+									<Text text="Unit Price"/>
+								</Column>
+								<Column width="5em" hAlign="Center" visible="false">
+									<Text text="Unit Discount"/>
+								</Column>
+								<Column visible="false" width="5em" hAlign="Center">
+									<Text text="Gross"/>
+								</Column>
+								<Column width="5em" hAlign="Center" minScreenWidth="Tablet" demandPopin="true">
+									<Text text="Gross"/>
+								</Column>
+								<Column width="5em" hAlign="Center" minScreenWidth="Tablet" demandPopin="true">
+									<Text text="Discount"/>
+								</Column>
+								<Column width="5em" hAlign="Center" minScreenWidth="Tablet" demandPopin="true" visible="false">
+									<Text text="VAT(%)"/>
+								</Column>
+								<Column width="6em" hAlign="Center" minScreenWidth="Tablet" demandPopin="true" visible="false">
+									<Text text="VAT Amount"/>
+								</Column>
+								<Column width="6em" hAlign="Center" minScreenWidth="Tablet" demandPopin="true">
+									<Text text="Total Amount"/>
+								</Column>
+								<Column width="4em" hAlign="Center" minScreenWidth="Tablet" demandPopin="true">
+									<Text text="Serial Item"/>
+								</Column>
+								<Column width="6em" hAlign="Center" minScreenWidth="Tablet" demandPopin="true">
+									<Text text="Salesman Code"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem type="Active">
+									<cells>
+										<Text text="{ProductModel>Seq}"/>
+										<ObjectIdentifier title="{ProductModel>Itemcode}" text="{ProductModel>Description}"/>
+										<Switch state="{ProductModel>HomeDelivery}" change="openAllLocationMatInfo" customTextOn="Yes" customTextOff="No">
+											<layoutData>
+												<FlexItemData growFactor="1"/>
+											</layoutData>
+										</Switch>
+										<ObjectIdentifier title="{ProductModel>Location}" text="{ProductModel>LocationName}"/>
+										<HBox>
+											<Button type="Transparent" icon="sap-icon://sys-minus" press="onSubtract"/>
+											<Input type="Number" value="{ProductModel>SaleQuantity}" change="onManualChangeQty"/>
+											<Button type="Transparent" icon="sap-icon://add" press="onAddition"/>
+										</HBox>
+										<ObjectNumber number="{ProductModel>UnitPrice}" unit="{ProductModel>Currency}"/>
+										<ObjectNumber number="{ProductModel>Discount}" unit="{ProductModel>Currency}"/>
+										<Text text="{ProductModel>NetPrice}" textAlign="End"/>
+										<Text text="{ProductModel>NetAmount}" textAlign="End"/>
+										<Text text="{ProductModel>NetDiscount}" textAlign="End"/>
+										<Text text="{ProductModel>VatPercent}" textAlign="End"/>
+										<Text
+											text="{parts: [{path: 'ProductModel>UnitPrice'}, {path: 'ProductModel>Discount'},{path: 'ProductModel>VatPercent'},{path: 'ProductModel>VatAmount'},{path: 'ProductModel>Seq'}], formatter: '.formatVatAmount'}"
+											textAlign="End"/>
+										<Text
+											text="{parts: [{path: 'ProductModel>UnitPrice'}, {path: 'ProductModel>Discount'},{path: 'ProductModel>VatPercent'},{path: 'ProductModel>VatAmount'},{path: 'ProductModel>SaleAmount'},{path: 'ProductModel>Seq'}], formatter: '.formatSalesAmount'}"
+											textAlign="End"/>
+										<core:Icon src="sap-icon://add" press="onAddSerialNumber"
+											visible="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}"/>
+										<!-- <Button icon="sap-icon://add" enabled="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}" press="onAddSerialNumber"/> -->
+										<VBox class="sapUiSmallMarginTop sapUiSmallMarginBottom ">
+											<ComboBox change="linkSalesman" items="{ path: '/EmployeeSet', filters: [{ path: 'Etype', operator: 'EQ', value1: 'S' }] }">
+												<core:ListItem key="{EmployeeId}" text="{EmployeeName}" additionalText="{EmployeeId}"/>
+											</ComboBox>
+										</VBox>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</ScrollContainer>
+				</VBox>
+				<VBox>
+					<l:VerticalLayout class="sapUiContentPadding equalColumns" width="100%">
+						<GenericTile id="stocksgt" frameType="OneByHalf" press="onStockAvailability" header="STOCKS" class="customTile">
+							<TileContent>
+								<Button type="Transparent" icon="sap-icon://product"/>
+							</TileContent>
+						</GenericTile>
+						<GenericTile id="customergt" header="CUSTOMER" frameType="OneByHalf" press="onPressCustData" class="customTile" pressEnabled="false">
+							<TileContent>
+								<Button type="Transparent" icon="sap-icon://customer"/>
+							</TileContent>
+						</GenericTile>
+						<GenericTile id="discountgt" header="DISCOUNT" frameType="OneByHalf" press="onPressDiscount1" class="customTile" pressEnabled="false">
+							<TileContent>
+								<Button type="Transparent" icon="sap-icon://activate"/>
+							</TileContent>
+						</GenericTile>
+						<!-- <GenericTile id="testDiscount" visible="false" header="DISCOUNT" frameType="OneByHalf" press="onPressDiscount" class="customTile" pressEnabled="false">
+							<TileContent>
+								<Button type="Transparent" icon="sap-icon://activate"/>
+							</TileContent>
+						</GenericTile> -->
+						<GenericTile id="paymentsgt" header="PAYMENTS" frameType="OneByHalf" press="onPressPayments1" class="customTile" pressEnabled="false">
+							<TileContent>
+								<Button type="Transparent" icon="sap-icon://money-bills"/>
+							</TileContent>
+						</GenericTile>
+						<GenericTile id="suspendgt" header="SUSPEND" frameType="OneByHalf" press="openPressSuspendComments" class="customTile" pressEnabled="false">
+							<TileContent>
+								<Button type="Transparent" icon="sap-icon://reset"/>
+							</TileContent>
+						</GenericTile>
+
+					</l:VerticalLayout>
+				</VBox>
+			</HBox>
+		</content>
+	</Page>
+</mvc:View>
