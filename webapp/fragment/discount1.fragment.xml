@@ -86,7 +86,7 @@
                     <Panel visible="{= ${ShowDiscountSection>/selectedMode} === 'Amount' }">
 						<content>
 							<VBox >
-							<Input  id="discountAmount" placeholder="Enter Discount Amount" change="holdDiscountAmount"></Input>	
+							<Input  id="discountAmount" class="inputStyle sapUiSmallMarginBottom" placeholder="Enter Discount Amount" change="holdDiscountAmount"></Input>	
 							</VBox>
 						</content>
 					</Panel>
@@ -95,10 +95,10 @@
 							<VBox >
 							 <Table mode="Delete"  delete="onDeleteManualDiscount1" items="{discountModelTable>/entries}" >
                                     <columns>
-                                        <Column width="10rem"><Text text="Material" /></Column>
+                                        <Column width="8rem"><Text text="Material" /></Column>
                                         <Column width="8rem"><Text text="Condition" /></Column>
                                         <Column width="8rem"><Text text="Reason" /></Column>
-                                        <Column width="4rem"><Text text="Amount" /></Column>
+                                        <Column width="6rem"><Text text="Amount" /></Column>
                                         <Column width="5rem"><Text text="Authority" /></Column>
                                     </columns>
                                 <items>

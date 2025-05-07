@@ -35,19 +35,19 @@
 							showTableSuggestionValueHelp="false" >
 							<suggestionColumns>
 								<Column>
-									<Label text="Item Code"/>
+									<Label text="Item Code" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Description"/>
+									<Label text="Description" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Available Stock"/>
+									<Label text="Available Stock" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Price"/>
+									<Label text="Price" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Barcode"/>
+									<Label text="Barcode" design="Bold"/>
 								</Column>
 							</suggestionColumns>
 							<suggestionRows>

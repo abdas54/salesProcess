@@ -2,25 +2,25 @@
 	<Dialog title="Stock Availability" contentHeight="400px" contentWidth="1000px">
 		<content>
 		<!--change="getStockDetailManually"-->
-        <Input class="sapUiSmallMarginBegin sapUiSmallMarginTop" placeholder="Enter or Scan Material" value="{StockModel>/inpMatCode}"  width="75%"
+        <Input class="inputStyle sapUiSmallMarginBegin sapUiSmallMarginTop" placeholder="Enter or Scan Material" value="{StockModel>/inpMatCode}"  width="75%"
 		showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}" change="getStockDetailManually"
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionStockSelected"
 							showTableSuggestionValueHelp="false">
 			<suggestionColumns>
 								<Column>
-									<Label text="Item Code"/>
+									<Label text="Item Code" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Description"/>
+									<Label text="Description" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Available Stock"/>
+									<Label text="Available Stock" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Price"/>
+									<Label text="Price" design="Bold"/>
 								</Column>
 								<Column >
-									<Label text="Barcode"/>
+									<Label text="Barcode" design="Bold"/>
 								</Column>
 							</suggestionColumns>
 							<suggestionRows>
@@ -41,14 +41,14 @@
 				
 				<Table id="materialTable"  items="{StockModel>/Product}" >
 					<columns>
-						<Column><Text text="Material ID"/></Column>
-						<Column><Text text="Plant"/></Column>
-						<Column><Text text="Location"/></Column>
-						<Column><Text text="Price"/></Column>
-						<Column><Text text="Discount"/></Column>
-						<Column><Text text="Net Price"/></Column>
-                        <Column><Text text="Reserved Stock"/></Column>
-						<Column><Text text="Balance Stock"/></Column>
+						<Column><Text text="Material ID" wrapping="true"/></Column>
+						<Column><Text text="Plant" wrapping="true"/></Column>
+						<Column><Text text="Location" wrapping="true"/></Column>
+						<Column><Text text="Price" wrapping="true"/></Column>
+						<Column><Text text="Discount" wrapping="true"/></Column>
+						<Column><Text text="Net Price" wrapping="true"/></Column>
+                        <Column><Text text="Reserved Stock" wrapping="true"/></Column>
+						<Column><Text text="Balance Stock" wrapping="true"/></Column>
 						<Column><Text text="On Hand Stock" wrapping="true" tooltip="On Hand Stock"/></Column>
 						<Column><Text text="Consignment Stock" wrapping="true" tooltip="Consignment Stock"/></Column>
 					</columns>

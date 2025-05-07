@@ -2546,7 +2546,7 @@ sap.ui.define([
                 }
 
                 if (!duplicate) {
-                    if (discountData.ItemCode !== "" && discountData.ConditionType !== "") {
+                    if (discountData.ItemCode  && discountData.ConditionType ) {
                         this.aEntries1.push({
                             ItemCode: discountData.ItemCode,
                             ItemDescription: discountData.ItemDesc,
@@ -2943,10 +2943,12 @@ sap.ui.define([
                                             content: [],
                                      beginButton: new sap.m.Button({
                                                       text: "Submit",
+                                                      class: "cstmBtn",
                                                         press: this.onSubmitCardType.bind(this)
                                                     }),
                                     endButton: new sap.m.Button({
                                                     text: "Cancel",
+                                                    class: "cstmBtn",
                                                     press: function () {
                                                             this._oDialogCardType.close();
                                                                 }.bind(this)
@@ -2956,22 +2958,22 @@ sap.ui.define([
         placeholder: "Enter Amount",
         type: "Number",
         width: "60%"
-    }).addStyleClass("sapUiSmallMarginBegin  sapUiSmallMarginTop sapUiSmallMarginBottom");
+    }).addStyleClass("sapUiSmallMarginBegin  sapUiSmallMarginTop sapUiSmallMarginBottom inputStyle");
 
     this._oSelectCardLabel = new sap.m.Input({
         placeholder: "Enter Card Label",
         width: "60%"
-    }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom");
+    }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom inputStyle");
 
     this._oSelectCardApproval = new sap.m.Input({
         placeholder: "Enter Approval Code",
         width: "60%"
-    }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom");
+    }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom inputStyle");
 
     this._oSelectCardReciept = new sap.m.Input({
         placeholder: "Enter Card Reciept Number",
         width: "60%"
-    }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom");
+    }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom inputStyle");
 
     this._oDialogCardType.addContent(this._oAmountCardInput);
     this._oDialogCardType.addContent(this._oSelectCardLabel);
@@ -3081,10 +3083,12 @@ this._oDialogCardType.open();
                                                 content: [],
                                          beginButton: new sap.m.Button({
                                                           text: "Submit",
-                                                            press: this.onSubmitAmount.bind(this)
+                                                          class: "cstmBtn",
+                                                        press: this.onSubmitAmount.bind(this)
                                                         }),
                                         endButton: new sap.m.Button({
                                                         text: "Cancel",
+                                                        class: "cstmBtn",
                                                         press: function () {
                                                                 this._oDialogNonGV.close();
                                                                     }.bind(this)
@@ -3094,13 +3098,13 @@ this._oDialogCardType.open();
             placeholder: "Enter Amount",
             type: "Number",
             width: "60%"
-        }).addStyleClass("sapUiSmallMarginBegin  sapUiSmallMarginTop sapUiSmallMarginBottom");
+        }).addStyleClass("sapUiSmallMarginBegin  sapUiSmallMarginTop sapUiSmallMarginBottom inputStyle");
 
         this._oVoucherNumber = new sap.m.TextArea({
             placeholder: "Enter Voucher Number",
             type: "Number",
             width: "60%"
-        }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom");
+        }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom inputStyle");
 
         this._oDialogNonGV.addContent(this._oAmountInput);
         this._oDialogNonGV.addContent(this._oVoucherNumber);

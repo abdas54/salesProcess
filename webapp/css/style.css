@@ -92,7 +92,7 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
 
 
 .inputStyle .sapMInputBaseInner {
-    background: #fafafa !important;
+   
     border: 0px solid #c2c7cb4a !important;
     border-radius: 3px !important;
     opacity: 1 !important;
@@ -111,6 +111,8 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
     background: #fafafa !important;
     font-size: 1rem !important;
     height: 2.5rem !important;
+    box-sizing: border-box !important;
+    border: 1px solid black !important;
 }
 
 .inputStyle.sapMInputBaseIconPressed .sapMInputBaseIcon::before {
@@ -152,3 +154,17 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
 .sapMInputBaseInner {
     font-size: 1rem !important;
 }
+.sapUiSizeCompact .sapMSFF {
+    height: 2rem !important;
+   
+}
+.sapMLabel {
+    color: black !important;
+    font-size: 1rem !important;
+    font-family: sans-serif !important;
+   
+}
+.sapUiSizeCompact .sapMSlt {
+    height: 2.5rem !important;
+}
+

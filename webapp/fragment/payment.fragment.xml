@@ -24,8 +24,8 @@
 									<RadioButton  text="Manual Mode" />
 							</RadioButtonGroup>
 							<VBox visible="{= ${ShowPaymentSection>/cardPaymentMode} === 0 }">
-							<Input id="creditAmount" placeholder="Enter Amount" change="onRetrieveTerminal" class="sapUiSmallMarginBottom"/>
-							<g:GridList items="{ShowPaymentSection>/Terminal}" noDataText="Enter Amount to Enable Terminal" itemPress="onPressTenderCard">
+							<Input id="creditAmount" placeholder="Enter Amount" change="onRetrieveTerminal" class="inputStyle sapUiSmallMarginBottom"/>
+							<g:GridList items="{ShowPaymentSection>/Terminal}" noDataText="Enter Amount to Enable Terminal" itemPress="onPressTenderCard" class="roundedList">
     							<g:items>
         							<g:GridListItem type="Active">
             							<VBox class="sapUiSmallMargin">
@@ -60,7 +60,7 @@
 					<Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'CreditNote' }">
 						<content>
 							<VBox class="sapUiSmallMargin">
-								<Input id="creditNote" placeholder="Enter Credit Note " liveChange="onCardNumberChange" maxLength="16"/>
+								<Input id="creditNote" placeholder="Enter Credit Note " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom"/>
 								<Button text="Redeem" press="onSubmit"/>
 							</VBox>
 						</content>
@@ -68,7 +68,7 @@
 					<Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Advance Payment' }">
 						<content>
 							<VBox class="sapUiSmallMargin">
-								<Input id="advPayment" placeholder="Enter Advance Payment " liveChange="onCardNumberChange" maxLength="16"/>
+								<Input id="advPayment" placeholder="Enter Advance Payment " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom"/>
 								<Button text="Submit" press="onSubmit"/>
 							</VBox>
 						</content>
@@ -76,7 +76,7 @@
 					<Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Gift Voucher' }">
 						<content>
 							<VBox class="sapUiSmallMargin">
-								<Input id="giftVoucher" placeholder="Enter Gift Voucher " liveChange="onCardNumberChange" maxLength="16"/>
+								<Input id="giftVoucher" placeholder="Enter Gift Voucher " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom"/>
 								<Button text="Redeem" press="onSubmit"/>
 							</VBox>
 						</content>
@@ -105,7 +105,7 @@
 					<Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Cash' }">
 						<content>
 							<VBox class="sapUiSmallMargin">
-								<Input id="cash" placeholder="Enter Amount "  maxLength="16" class="sapUiSmallMarginBottom" />
+								<Input id="cash" placeholder="Enter Amount "  maxLength="16"  class="inputStyle sapUiSmallMarginBottom"/>
 								<Button  text="Submit" press="onCashSubmit"/>
 							</VBox>
 							
@@ -159,7 +159,7 @@
 											<Label design="Bold" text="Exchange Rate :"/>
 											<Text/>
 										</HBox>
-										<Input placeholder="Enter Amount" liveChange="onExpiryDateChange" maxLength="5"/>
+										<Input placeholder="Enter Amount" liveChange="onExpiryDateChange" maxLength="5" class="inputStyle sapUiSmallMarginBottom"/>
 										<Button text="Submit" press="onSubmit"/>
 									</content>
 								</Panel>
