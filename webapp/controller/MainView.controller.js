@@ -390,32 +390,32 @@ sap.ui.define([
                     }
                 });
             },
-            onScanSuccessStock: function (oEvent) {
-                if (oEvent.getParameter("cancelled")) {
-                    MessageToast.show("Scan cancelled", { duration: 1000 });
-                } else {
-                    if (oEvent.getParameter("text")) {
-                        this.getStockDetail(false, oEvent.getParameter("text"));
+            // onScanSuccessStock: function (oEvent) {
+            //     if (oEvent.getParameter("cancelled")) {
+            //         MessageToast.show("Scan cancelled", { duration: 1000 });
+            //     } else {
+            //         if (oEvent.getParameter("text")) {
+            //             this.getStockDetail(false, oEvent.getParameter("text"));
 
-                    }
-                }
-            },
-            onScanErrorOne: function (oEvent) {
-                MessageToast.show("Scan Failed");
-            },
+            //         }
+            //     }
+            // },
+            // onScanErrorOne: function (oEvent) {
+            //     MessageToast.show("Scan Failed");
+            // },
             getStockDetailManually: function (oEvent) {
                 this.getStockDetail(true, oEvent.getParameter("value"));
             },
-            onScanSuccessOne: function (oEvent) {
-                if (oEvent.getParameter("cancelled")) {
-                    MessageToast.show("Scan cancelled", { duration: 1000 });
-                } else {
-                    if (oEvent.getParameter("text")) {
-                        this.getMaterialDetail(false, oEvent.getParameter("text"));
+            // onScanSuccessOne: function (oEvent) {
+            //     if (oEvent.getParameter("cancelled")) {
+            //         MessageToast.show("Scan cancelled", { duration: 1000 });
+            //     } else {
+            //         if (oEvent.getParameter("text")) {
+            //             this.getMaterialDetail(false, oEvent.getParameter("text"));
 
-                    }
-                }
-            },
+            //         }
+            //     }
+            // },
 
             onStockAvailability: function () {
                 this.openStockTile = true;
@@ -871,7 +871,15 @@ sap.ui.define([
                 var checkCustomer = this.validCustomer();
                 var checkSerial = this.validSerial();
                 var discountAmount = this.onCheckSaleAmounts();
-                if(checkCustomer && checkSerial && discountAmount){
+                var checkHomeDelivery = this.checkHomeDelivery();
+                var custData = this.getView().getModel("custAddModel").getData();
+                var homeDelivery = false;
+                if(checkHomeDelivery === "HD"){
+                    if (custData.shippingDate && custData.ShippingInst){
+                        homeDelivery = true;
+                    }
+                }
+                if(checkCustomer && checkSerial && discountAmount && homeDelivery){
                 var oModel = new sap.ui.model.json.JSONModel({
                     totalAmount: "0.00",
                     paymentOptions: [{
@@ -932,6 +940,9 @@ sap.ui.define([
                 }
                 else if(!discountAmount){
                     MessageBox.error("Following Item Codes have negative Sale Amount:\n" + this.aNegativeItems.join(", "));
+                }
+                else if(!homeDelivery){
+                    MessageBox.error("Kindly make sure to enter Shipping Instruction and Date for Home Delivery Item");
                 }
             }
             },
@@ -1834,9 +1845,16 @@ sap.ui.define([
                         for (var count = 0; count < tableData.length; count++) {
 
                             if ((tableData[count].Itemcode === data[0].Itemcode) && (tableData[count].Location === data[0].Location)) {
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", tableData[count].SaleQuantity + 1);
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].NetPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].NetDiscount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
                                 that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
+
+                                var netAmount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetAmount");
+                                var netDiscount = that.getView().getModel("ProductModel").getProperty("/Product/" + count+ "/NetDiscount");
+                                var vatPercent = that.getView().getModel("ProductModel").getProperty("/Product/" + count+ "/VatPercent");
+                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, count);
+                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, count);
                                 bFlag = true;
                             }
                         }
@@ -1895,9 +1913,16 @@ sap.ui.define([
                         for (var count = 0; count < tableData.length; count++) {
 
                             if ((tableData[count].Itemcode === data.Itemcode) && (tableData[count].Location === data.Location)) {
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", tableData[count].SaleQuantity + 1);
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].NetPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].NetDiscount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
                                 that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
+
+                                var netAmount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetAmount");
+                                var netDiscount = that.getView().getModel("ProductModel").getProperty("/Product/" + count+ "/NetDiscount");
+                                var vatPercent = that.getView().getModel("ProductModel").getProperty("/Product/" + count+ "/VatPercent");
+                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, count);
+                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, count);
                                 bFlag = true;
                             }
                         }

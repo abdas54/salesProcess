@@ -12,7 +12,7 @@
                         <Column><Text text="Reserved Stock"/></Column>
 						<Column><Text text="Balance Stock"/></Column>
 						<Column><Text text="Price"/></Column>
-						<Column><Text text="Store Location"/></Column>
+						
 					</columns>
 					<items>
 						<ColumnListItem>
@@ -23,7 +23,7 @@
 								<Text text="{StockGlobalModel>Reservedstock}"/>
                                 <Text text="{StockGlobalModel>Balancestock}" />
 								<ObjectNumber number="{StockGlobalModel>UnitPrice}" unit="{StockGlobalModel>Currency}" />
-								<Text text="{StockGlobalModel>storeloc}"/>
+								
 							</cells>
 						</ColumnListItem>
 					</items>
