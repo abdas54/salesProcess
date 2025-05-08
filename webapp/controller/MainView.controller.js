@@ -130,7 +130,7 @@ sap.ui.define([
                         if (oData.results.length > 0) {
                             oData.results[0].SaleQuantity = 1;
                             oData.results[0].HomeDelivery = false;
-                            oData.results[0].NetAmount = oData.results[0].NetPrice;
+                            oData.results[0].NetAmount = oData.results[0].GrossPrice;
                             oData.results[0].Seq = "";
                             oData.results[0].SalesmanId = "";
                             oData.results[0].SalesmanName = "";
@@ -185,7 +185,7 @@ sap.ui.define([
                             for (var count = 0; count < oData.results.length; count++) {
                                 oData.results[count].SaleQuantity = 1;
                                 oData.results[count].HomeDelivery = true;
-                                oData.results[count].NetAmount = oData.results[count].NetPrice;
+                                oData.results[count].NetAmount = oData.results[count].GrossPrice;
                                 oData.results[count].Seq = "";
                                 oData.results[count].SalesmanId = "";
                                 oData.results[count].SalesmanName = "";
@@ -690,7 +690,7 @@ sap.ui.define([
                     var netDiscount = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
                     var vatPercent = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
 
-                    this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                    //this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                     this.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
                     this.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
                 }
@@ -722,7 +722,7 @@ sap.ui.define([
                     var netAmount = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
                     var netDiscount = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
                     var vatPercent = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
-                    this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                    //this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                     this.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
                     this.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
                 }
@@ -1337,7 +1337,7 @@ sap.ui.define([
                     var netAmount = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
                     var netDiscount = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
                     var vatPercent = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
-                    this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                   // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                     this.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
                     this.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
                 }
@@ -1365,7 +1365,7 @@ sap.ui.define([
                         var netAmount = selIndexData.NetAmount;
                         var netDiscount = selIndexData.NetDiscount
                         var vatPercent = selIndexData.VatPercent
-                        selIndexData.NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                       // selIndexData.NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                         this.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
                         this.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
                     }
@@ -1414,7 +1414,7 @@ sap.ui.define([
                 var netAmount = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
                 var netDiscount = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
                 var vatPercent = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
-                this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+               // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                 this.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
                 this.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
 
