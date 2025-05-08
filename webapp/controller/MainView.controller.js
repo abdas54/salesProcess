@@ -675,7 +675,7 @@ sap.ui.define([
                 this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).Discount = updateDiscount;
                 if (parseInt(productTblData.SaleQuantity) === 1) {
                     updatedNetAmount = parseFloat(parseFloat(productTblData.UnitPrice) + parseFloat(updateDiscount)).toFixed(2);
-                    this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(updatedNetAmount).toFixed(2);
+                    //this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(updatedNetAmount).toFixed(2);
                     var vatAmount = parseFloat(parseInt(updatedNetAmount) * (parseInt(parseFloat(productTblData.VatPercent).toFixed(2)) / 100)).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatAmount = vatAmount;
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).SaleAmount = parseFloat(vatAmount) + parseFloat(updatedNetAmount);
@@ -708,7 +708,7 @@ sap.ui.define([
 
                 if (parseInt(productTblData.SaleQuantity) === 1) {
                     updatedNetAmount = parseFloat(parseFloat(productTblData.UnitPrice) + parseFloat(updateDiscount)).toFixed(2);
-                    this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(updatedNetAmount).toFixed(2);
+                   // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(updatedNetAmount).toFixed(2);
                     var vatAmount = parseFloat(parseInt(updatedNetAmount) * (parseInt(parseFloat(productTblData.VatPercent).toFixed(2)) / 100)).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatAmount = vatAmount;
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).SaleAmount = parseFloat(vatAmount) + parseFloat(updatedNetAmount);
