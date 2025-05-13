@@ -71,7 +71,7 @@
 							itemPress="onProductRowPress">
 							<columns>
 								<Column width="3em">
-									<Text text=""/>
+									<Text text="Seq."/>
 								</Column>
 								<Column width="6em">
 									<Text text="Model No."/>

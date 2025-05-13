@@ -768,6 +768,8 @@ sap.ui.define([
                 aFilters.push(new sap.ui.model.Filter("Etype", sap.ui.model.FilterOperator.EQ, "C"));
                 aFilters.push(new sap.ui.model.Filter("EmployeeId", sap.ui.model.FilterOperator.EQ, empId));
                 aFilters.push(new sap.ui.model.Filter("SecretCode", sap.ui.model.FilterOperator.EQ, pwd));
+                aFilters.push(new sap.ui.model.Filter("Generate", sap.ui.model.FilterOperator.EQ, "Y"));
+               
                 //EmployeeSet?$filter=Etype eq 'C' and EmployeeId eq '112' and SecretCode eq 'Abc#91234'
 
                 this.oModel.read("/EmployeeSet", {
@@ -874,12 +876,12 @@ sap.ui.define([
                 var checkHomeDelivery = this.checkHomeDelivery();
                 var custData = this.getView().getModel("custAddModel").getData();
                 var homeDelivery = false;
-                if(checkHomeDelivery === "HD"){
-                    if (custData.shippingDate && custData.ShippingInst){
-                        homeDelivery = true;
-                    }
-                }
-                if(checkCustomer && checkSerial && discountAmount && homeDelivery){
+                // if(checkHomeDelivery === "HD"){
+                //     if (custData.shippingDate && custData.ShippingInst){
+                //         homeDelivery = true;
+                //     }
+                // }
+                if(checkCustomer && checkSerial && discountAmount){
                 var oModel = new sap.ui.model.json.JSONModel({
                     totalAmount: "0.00",
                     paymentOptions: [{
@@ -941,9 +943,9 @@ sap.ui.define([
                 else if(!discountAmount){
                     MessageBox.error("Following Item Codes have negative Sale Amount:\n" + this.aNegativeItems.join(", "));
                 }
-                else if(!homeDelivery){
-                    MessageBox.error("Kindly make sure to enter Shipping Instruction and Date for Home Delivery Item");
-                }
+                // else if(!homeDelivery){
+                //     MessageBox.error("Kindly make sure to enter Shipping Instruction and Date for Home Delivery Item");
+                // }
             }
             },
             onPressDiscount1: function () {
@@ -1307,11 +1309,19 @@ sap.ui.define([
                 var that = this;
                 var data = this.getView().getModel("custAddModel").getData();
                 data.add_type = "";
+                var shippingDate = data.shippingDate;
+                var shipingInst = data.ShippingInst;
+                var shipingMethod = data.ShippingMethod;
                 delete (data.shippingDate);
                 delete (data.ShippingInst);
                 delete (data.ShippingMethod);
                 this.customerModel.create("/ZER_CUST_MASTERSet", data, {
                     success: function (oData) {
+                        that.getView().getModel("custAddModel").setData({});
+                        that.getView().getModel("custAddModel").setData(oData);
+                        that.getView().getModel("custAddModel").setProperty("/shippingDate",shippingDate);
+                        that.getView().getModel("custAddModel").setProperty("/ShippingInst",shipingInst);
+                        that.getView().getModel("custAddModel").setProperty("/ShippingMethod",shipingMethod);
                         that._oDialogCust.close();
                         sap.m.MessageToast.show("Customer Update Successfully");
                     },
@@ -3253,6 +3263,232 @@ this._oDialogCardType.open();
                         window.alert("Scanning Failed :" + Error)
                     }
                 )
+            },
+            onValidateVoucherAdv: function(oEvent){
+                this.btnEvent = oEvent.getSource();
+                var advanceReciept = sap.ui.getCore().byId("advPayment").getValue();
+                this.onValidateAdvReciept(oEvent,"A",advanceReciept);
+
+            },
+            onValidateGiftVoucher: function(oEvent){
+                this.btnEvent = oEvent.getSource();
+                var giftVoucher = sap.ui.getCore().byId("giftVoucher").getValue();
+                this.onValidateAdvReciept(oEvent,"E",giftVoucher);
+            },
+            onValidateCreditNote: function(oEvent){
+                this.btnEvent = oEvent.getSource();
+                var creditNote = sap.ui.getCore().byId("creditNote").getValue();
+                this.onValidateAdvReciept(oEvent,"C",creditNote);
+            },
+            onValidateAdvReciept: function(oEvent,mode,reciept){
+                var that = this;
+                 this.oModel.read("/RedeemTransactionSet(Transaction='" + reciept + "',RedemptionType='" + mode +"')", {
+                    success: function (oData) {
+                        oEvent.getSource().setType("Accept");
+                        var oModel = new JSONModel();
+                        if(mode === "E"){
+                        oModel.setData({}); 
+                        oModel.setData(oData);
+                        that.getView().setModel(oModel,"GiftVoucher");
+                        sap.ui.getCore().byId("gvPaymentList").setVisible(true);
+                       
+                        }else if(mode === "A"){
+                        oModel.setData({}); 
+                        oModel.setData(oData);
+                        that.getView().setModel(oModel,"AdvancePayment");
+                        sap.ui.getCore().byId("advncePaymentList").setVisible(true);
+
+                        }else if(mode === "C"){
+                        oModel.setData({}); 
+                        oModel.setData(oData);
+                        that.getView().setModel(oModel,"CreditNote");
+                        sap.ui.getCore().byId("creditNoteList").setVisible(true);
+                        }
+                        
+                    },
+                    error: function (oError) {
+                        sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                               
+                            }
+                        });
+                    }
+                });
+            },
+            onRedeemGVPayment: function(oEvent){
+                var that = this;
+                that.paymentId = that.paymentId + 1;
+                var oItem = oEvent.getParameter("listItem") || oEvent.getSource();
+                var oVBox = oItem.getContent ? oItem.getContent()[0] : oItem.getAggregation("content")[0];
+                var aItems = oVBox.getItems ? oVBox.getItems() : oVBox.getAggregation("items");
+                var recieptId = aItems[0]?.getText();
+                var amount = aItems[1]?.getText();
+                var paymentType = aItems[2]?.getText();
+
+                 that.aPaymentEntries.push({
+                    "TransactionId": that.getView().byId("tranNumber").getCount().toString(),
+                    "PaymentId": that.paymentId.toString(),
+                    "PaymentDate": new Date(),
+                    "Amount": amount.toString(),
+                    "Currency": "AED",
+                    "PaymentMethod": that.selectedCardPayMethod,
+                    "PaymentMethodName": that.selectedCardPayMethodName,
+                    "Tid": "",
+                    "Mid": "",
+                    "CardType": "",
+                    "CardLabel": "",
+                    "CardNumber": "",
+                    "AuthorizationCode": "",
+                    "CardReceiptNo": "",
+                    "PaymentType" : "EGV",
+                    "VoucherNumber" : "",
+                    "SourceId" : that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
+                    
+
+                });
+
+                var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
+                var paidAmount = 0;
+                for (var count1 = 0; count1 < this.aPaymentEntries.length; count1++) {
+
+                    paidAmount = parseFloat(parseFloat(this.aPaymentEntries[count1].Amount) + parseFloat(paidAmount)).toFixed(2);
+
+                }
+                var balanceAmount = parseFloat(parseFloat(saleAmount).toFixed(2) - parseFloat(paidAmount).toFixed(2)).toFixed(2);
+                if (balanceAmount <= 0) {
+                    sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
+                    sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
+                    sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                    sap.m.MessageToast.show("Gift Voucher Redeemed Successfully");
+                    that.onPressPaymentTest();
+                }
+                else {
+                    sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
+                    sap.ui.getCore().byId("cash").setValue("");
+                    sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                    sap.m.MessageToast.show("Gift Voucher Redeemed Successfully");
+                }
+                that.getView().getModel("GiftVoucher").setData({});
+                 sap.ui.getCore().byId("gvPaymentList").setVisible(false);
+                 that.btnEvent.setType("Transparent");
+
+            },
+             onRedeemCreditNote: function(oEvent){
+                var that = this;
+                that.paymentId = that.paymentId + 1;
+                var oItem = oEvent.getParameter("listItem") || oEvent.getSource();
+                var oVBox = oItem.getContent ? oItem.getContent()[0] : oItem.getAggregation("content")[0];
+                var aItems = oVBox.getItems ? oVBox.getItems() : oVBox.getAggregation("items");
+                var recieptId = aItems[0]?.getText();
+                var amount = aItems[1]?.getText();
+                var paymentType = aItems[2]?.getText();
+
+                 that.aPaymentEntries.push({
+                    "TransactionId": that.getView().byId("tranNumber").getCount().toString(),
+                    "PaymentId": that.paymentId.toString(),
+                    "PaymentDate": new Date(),
+                    "Amount": amount.toString(),
+                    "Currency": "AED",
+                    "PaymentMethod": that.selectedCardPayMethod,
+                    "PaymentMethodName": that.selectedCardPayMethodName,
+                    "Tid": "",
+                    "Mid": "",
+                    "CardType": "",
+                    "CardLabel": "",
+                    "CardNumber": "",
+                    "AuthorizationCode": "",
+                    "CardReceiptNo": "",
+                    "PaymentType" : "EGV",
+                    "VoucherNumber" : "",
+                    "SourceId" : that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
+                    
+
+                });
+
+                var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
+                var paidAmount = 0;
+                for (var count1 = 0; count1 < this.aPaymentEntries.length; count1++) {
+
+                    paidAmount = parseFloat(parseFloat(this.aPaymentEntries[count1].Amount) + parseFloat(paidAmount)).toFixed(2);
+
+                }
+                var balanceAmount = parseFloat(parseFloat(saleAmount).toFixed(2) - parseFloat(paidAmount).toFixed(2)).toFixed(2);
+                if (balanceAmount <= 0) {
+                    sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
+                    sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
+                    sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                    sap.m.MessageToast.show("Gift Voucher Redeemed Successfully");
+                    that.onPressPaymentTest();
+                }
+                else {
+                    sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
+                    sap.ui.getCore().byId("cash").setValue("");
+                    sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                    sap.m.MessageToast.show("Gift Voucher Redeemed Successfully");
+                }
+                 that.getView().getModel("CreditNote").setData({});
+                 sap.ui.getCore().byId("creditNoteList").setVisible(false);
+                 that.btnEvent.setType("Transparent");
+            },
+             onRedeemAdvPayment: function(oEvent){
+                var that = this;
+                that.paymentId = that.paymentId + 1;
+                var oItem = oEvent.getParameter("listItem") || oEvent.getSource();
+                var oVBox = oItem.getContent ? oItem.getContent()[0] : oItem.getAggregation("content")[0];
+                var aItems = oVBox.getItems ? oVBox.getItems() : oVBox.getAggregation("items");
+                var recieptId = aItems[0]?.getText();
+                var amount = aItems[1]?.getText();
+                var paymentType = aItems[2]?.getText();
+
+                 that.aPaymentEntries.push({
+                    "TransactionId": that.getView().byId("tranNumber").getCount().toString(),
+                    "PaymentId": that.paymentId.toString(),
+                    "PaymentDate": new Date(),
+                    "Amount": amount.toString(),
+                    "Currency": "AED",
+                    "PaymentMethod": that.selectedCardPayMethod,
+                    "PaymentMethodName": that.selectedCardPayMethodName,
+                    "Tid": "",
+                    "Mid": "",
+                    "CardType": "",
+                    "CardLabel": "",
+                    "CardNumber": "",
+                    "AuthorizationCode": "",
+                    "CardReceiptNo": "",
+                    "PaymentType" : "EGV",
+                    "VoucherNumber" : "",
+                    "SourceId" : that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
+                    
+
+                });
+
+                var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
+                var paidAmount = 0;
+                for (var count1 = 0; count1 < this.aPaymentEntries.length; count1++) {
+
+                    paidAmount = parseFloat(parseFloat(this.aPaymentEntries[count1].Amount) + parseFloat(paidAmount)).toFixed(2);
+
+                }
+                var balanceAmount = parseFloat(parseFloat(saleAmount).toFixed(2) - parseFloat(paidAmount).toFixed(2)).toFixed(2);
+                if (balanceAmount <= 0) {
+                    sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
+                    sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
+                    sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                    sap.m.MessageToast.show("Gift Voucher Redeemed Successfully");
+                    that.onPressPaymentTest();
+                }
+                else {
+                    sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
+                    sap.ui.getCore().byId("cash").setValue("");
+                    sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                    sap.m.MessageToast.show("Gift Voucher Redeemed Successfully");
+                }
+                 that.getView().getModel("AdvancePayment").setData({});
+                 sap.ui.getCore().byId("advncePaymentList").setVisible(false);
+                that.btnEvent.setType("Transparent");
             }
             
         });

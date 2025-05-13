@@ -167,4 +167,12 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
 .sapUiSizeCompact .sapMSlt {
     height: 2.5rem !important;
 }
+.largeValidateButton .sapMBtnInner {
+    height: 3rem !important;
+    padding: 0 1.5rem !important;
+    font-size: 1.2rem !important;
+}
 
+.largeValidateButton .sapMBtnIcon {
+    font-size: 1.5rem !important;
+}

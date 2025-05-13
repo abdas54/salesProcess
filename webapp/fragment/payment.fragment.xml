@@ -58,26 +58,93 @@
 						</content>
 					</Panel>
 					<Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'CreditNote' }">
+						
 						<content>
 							<VBox class="sapUiSmallMargin">
-								<Input id="creditNote" placeholder="Enter Credit Note " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom"/>
-								<Button text="Redeem" press="onSubmit"/>
+							<HBox>
+								<Input id="creditNote" placeholder="Enter Credit Note "  class="inputStyle sapUiSmallMarginBottom">
+								<layoutData>
+								<FlexItemData growFactor="1"/>
+							</layoutData>
+							</Input>
+							<Button icon="sap-icon://validate" type="Transparent" iconDensityAware="true" class="sapUiSmallMarginBegin largeValidateButton" press="onValidateCreditNote"/>
+							</HBox>
+							<g:GridList class="sapUiSmallMarginTop" width="40%" id="creditNoteList" visible="false" itemPress="onRedeemCreditNote" >
+    							<g:items>
+        							<g:GridListItem type="Active" highlight="Success">
+            							<VBox class="sapUiSmallMargin">
+            								
+                						<Title text="{CreditNote>/Transaction}" />
+										<Text text="{CreditNote>/Amount}" />
+										<Text text="{CreditNote>/RedemptionType}" visible="false" />
+                						
+                                        
+            							</VBox>
+        							</g:GridListItem>
+    							</g:items>
+								</g:GridList>
+								<!-- <Button text="Submit"  press="onSubmit" /> -->
 							</VBox>
 						</content>
+
+
 					</Panel>
 					<Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Advance Payment' }">
 						<content>
 							<VBox class="sapUiSmallMargin">
-								<Input id="advPayment" placeholder="Enter Advance Payment " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom"/>
-								<Button text="Submit" press="onSubmit"/>
+							<HBox>
+								<Input id="advPayment" placeholder="Enter Advance Payment " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom">
+								<layoutData>
+								<FlexItemData growFactor="1"/>
+							</layoutData>
+							</Input>
+							<Button icon="sap-icon://validate" type="Transparent" iconDensityAware="true" class="sapUiSmallMarginBegin largeValidateButton" press="onValidateVoucherAdv"/>
+							</HBox>
+							<g:GridList class="sapUiSmallMarginTop" width="40%" id="advncePaymentList" visible="false" itemPress="onRedeemAdvPayment" >
+    							<g:items>
+        							<g:GridListItem type="Active" highlight="Success">
+            							<VBox class="sapUiSmallMargin">
+            								
+                						<Title text="{AdvancePayment>/Transaction}" />
+										<Text text="{AdvancePayment>/Amount}" />
+										<Text text="{AdvancePayment>/RedemptionType}" visible="false"/>
+                						
+                                        
+            							</VBox>
+        							</g:GridListItem>
+    							</g:items>
+								</g:GridList>
+								<!-- <Button text="Submit"  press="onSubmit" /> -->
 							</VBox>
 						</content>
 					</Panel>
 					<Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Gift Voucher' }">
+					
+
 						<content>
 							<VBox class="sapUiSmallMargin">
-								<Input id="giftVoucher" placeholder="Enter Gift Voucher " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom"/>
-								<Button text="Redeem" press="onSubmit"/>
+							<HBox>
+								<Input id="giftVoucher" placeholder="Enter Gift Payment "  class="inputStyle sapUiSmallMarginBottom">
+								<layoutData>
+								<FlexItemData growFactor="1"/>
+							</layoutData>
+							</Input>
+							<Button icon="sap-icon://validate" type="Transparent" iconDensityAware="true" class="sapUiSmallMarginBegin largeValidateButton" press="onValidateGiftVoucher"/>
+							</HBox>
+							<g:GridList class="sapUiSmallMarginTop" width="40%" id="gvPaymentList" visible="false" itemPress="onRedeemGVPayment" >
+    							<g:items>
+        							<g:GridListItem type="Active" highlight="Success">
+            							<VBox class="sapUiSmallMargin">
+            								
+                						<Title text="{GiftVoucher>/Transaction}" />
+										<Text text="{GiftVoucher>/Amount}" />
+                						<Text text="{GiftVoucher>/RedemptionType}" visible="false" />
+                                        
+            							</VBox>
+        							</g:GridListItem>
+    							</g:items>
+								</g:GridList>
+								<!-- <Button text="Submit"  press="onSubmit" /> -->
 							</VBox>
 						</content>
 					</Panel>
