@@ -176,3 +176,7 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
 .largeValidateButton .sapMBtnIcon {
     font-size: 1.5rem !important;
 }
+
+.boldText{
+    font-weight: bold !important;
+}
