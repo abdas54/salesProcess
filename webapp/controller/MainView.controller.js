@@ -1077,6 +1077,22 @@ sap.ui.define([
                 }
                 this.getView().setModel(cashModel, "cashCurrencyModel");
                 this.getView().setModel(showSection, "ShowPaymentSection");
+                if(this.getView().getModel("AdvancePayment")){
+                    this.getView().getModel("AdvancePayment").setData({});
+                    sap.ui.getCore().byId("advncePaymentList").setVisible(false);
+                      sap.ui.getCore().byId("advPayment").setValue("");
+                }
+                if(this.getView().getModel("GiftVoucher")){
+                    this.getView().getModel("GiftVoucher").setData({});
+                    sap.ui.getCore().byId("gvPaymentList").setVisible(false);
+                    sap.ui.getCore().byId("giftVoucher").setValue("");
+                }
+                if(this.getView().getModel("CreditNote")){
+                    this.getView().getModel("CreditNote").setData({});
+                   sap.ui.getCore().byId("creditNoteList").setVisible(false);
+                      sap.ui.getCore().byId("creditNote").setValue("");
+  
+                }
             },
             onPressCard: function () {
                 var model = new JSONModel();
@@ -2362,6 +2378,7 @@ sap.ui.define([
                         that.getView().setBusy(false);
                         if (oData) {
                             sap.m.MessageToast.show("Success");
+                            window.location.reload(true);
                         }
                         if (!bflag) {
                             window.location.reload(true);
@@ -2749,7 +2766,7 @@ sap.ui.define([
                             "CardReceiptNo": "",
                             "PaymentType" : "CASH",
                             "VoucherNumber" : "",
-                            "SourceId" : this.getView().byId("tranNumber").getCount().toString() + this.paymentEntSourceCounter.toString()
+                            "SourceId" : ""
                             
 
                         });
@@ -3072,7 +3089,7 @@ this._oDialogCardType.open();
                     "CardReceiptNo": "",
                     "PaymentType" : "CARD",
                     "VoucherNumber" : "",
-                    "SourceId" : that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
+                    "SourceId" : ""
                     
 
                 });
@@ -3185,7 +3202,7 @@ this._oDialogCardType.open();
                     "CardReceiptNo": "",
                     "PaymentType" : "NEGV",
                     "VoucherNumber" : sVoucherNumber,
-                    "SourceId" : that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
+                    "SourceId" : ""
                     
 
                 });
@@ -3282,10 +3299,11 @@ this._oDialogCardType.open();
             },
             onValidateAdvReciept: function(oEvent,mode,reciept){
                 var that = this;
+                var oModel = new JSONModel();
                  this.oModel.read("/RedeemTransactionSet(Transaction='" + reciept + "',RedemptionType='" + mode +"')", {
                     success: function (oData) {
                        
-                        var oModel = new JSONModel();
+                      
                         if(mode === "E"){
                         oModel.setData({}); 
                         oModel.setData(oData);
@@ -3307,6 +3325,21 @@ this._oDialogCardType.open();
                         
                     },
                     error: function (oError) {
+                        if(mode === "E"){
+                        oModel.setData({}); 
+                        that.getView().setModel(oModel,"GiftVoucher");
+                        sap.ui.getCore().byId("gvPaymentList").setVisible(false);
+                       
+                        }else if(mode === "A"){
+                        oModel.setData({}); 
+                        that.getView().setModel(oModel,"AdvancePayment");
+                        sap.ui.getCore().byId("advncePaymentList").setVisible(false);
+
+                        }else if(mode === "C"){
+                        oModel.setData({}); 
+                        that.getView().setModel(oModel,"CreditNote");
+                        sap.ui.getCore().byId("creditNoteList").setVisible(false);
+                        }
                         sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
                             icon: sap.m.MessageBox.Icon.Error,
                             title: "Error",
@@ -3421,6 +3454,9 @@ this._oDialogCardType.open();
 
 
                 }
+                if(parseInt(itemData.BalanceAmount) < parseInt(balanceAmt) ){
+                    oPayload.ToBeRedeemedAmount = itemData.BalanceAmount;
+                }
 
                 this.oModel.create("/RedeemTransactionSet", oPayload, {
                     success: function (oData) {
@@ -3430,7 +3466,7 @@ this._oDialogCardType.open();
                                 "TransactionId": that.getView().byId("tranNumber").getCount().toString(),
                                 "PaymentId": that.paymentId.toString(),
                                 "PaymentDate": new Date(),
-                                "Amount": balanceAmt.toString(),
+                                "Amount": oPayload.ToBeRedeemedAmount.toString(),
                                 "Currency": "AED",
                                 "PaymentMethod": paymentMethod,
                                 "PaymentMethodName": paymentMethodName,
@@ -3443,7 +3479,7 @@ this._oDialogCardType.open();
                                 "CardReceiptNo": "",
                                 "PaymentType" : paymentType1,
                                 "VoucherNumber" : oData.Transaction,
-                                "SourceId" : that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
+                                "SourceId" : ""
                     
 
                 });
@@ -3524,3 +3560,4 @@ this._oDialogCardType.open();
             
         });
     });
+  
