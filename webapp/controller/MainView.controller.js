@@ -1715,6 +1715,9 @@ sap.ui.define([
                         for (var count = 0; count < tableData.length; count++) {
 
                             if ((tableData[count].Itemcode === data.Itemcode) && (tableData[count].Location === data.Location)) {
+                                if(table[count]){
+                                    data.Seq = table[count].Seq;
+                                }
                                 tableData[count] = {};
                                 tableData[count] = data;
                                 bFlag = true;
@@ -2279,6 +2282,7 @@ sap.ui.define([
                     var oModel = oContext.getModel();
                     oModel.setProperty(sPath + "/SalesmanId", sSalesmanCode);
                     oModel.setProperty(sPath + "/SalesmanName", sSalesmanName);
+                 
                 }
             },
             getTimeInISO8601Format: function () {

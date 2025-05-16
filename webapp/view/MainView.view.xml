@@ -29,7 +29,7 @@
 			<HBox width="100%">
 				<VBox alignItems="Stretch" width="100%">
 					<HBox >
-						<Input class=" inputStyle sapUiSmallMarginBottom" value="{ProductModel>/MaterialCode}" change="onSuggest"
+						<Input id="inputSales" class=" inputStyle sapUiSmallMarginBottom" value="{ProductModel>/MaterialCode}" change="onSuggest"
 							placeholder="Enter Model Number / Barcode /Old Material Code:" showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}"
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionSelected"
 							showTableSuggestionValueHelp="false" >
