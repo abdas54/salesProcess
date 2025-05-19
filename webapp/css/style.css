@@ -181,8 +181,8 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
     font-weight: bold !important;
 }
 div[id*="inputSales-popup"] {
-  margin-top: 8px !important;
-  z-index: 9999 !important;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-  border-radius: 6px !important;
+  margin-top: 15px !important;
+ 
+  box-shadow: none !important;
+
 }
