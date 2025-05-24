@@ -28,7 +28,7 @@
                                     <RadioButton  text="Manual Mode" />
                                 </RadioButtonGroup>
                                 <VBox visible="{= ${ShowPaymentSection>/cardPaymentMode} === 0 }">
-                                    <Input id="creditAmount" placeholder="Enter Amount" change="onRetrieveTerminal" class="inputStyle sapUiSmallMarginBottom"/>
+                                    <Input id="creditAmount" placeholder="Enter Amount" type="Number" change="onRetrieveTerminal" class="inputStyle sapUiSmallMarginBottom"/>
                                     <g:GridList items="{ShowPaymentSection>/Terminal}" noDataText="Enter Amount to Enable Terminal" itemPress="onPressTenderCard" class="roundedList">
                                         <g:items>
                                             <g:GridListItem type="Active">
@@ -212,8 +212,8 @@
                         <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Cash' }">
                             <content>
                                 <VBox class="sapUiSmallMargin">
-                                    <Input id="cash" placeholder="Enter Amount " type="Number" maxLength="16"  class="inputStyle sapUiSmallMarginBottom"/>
-                                    <Button  text="Submit" press="onCashSubmit"/>
+                                    <Input id="cash" placeholder="Enter Amount " type="Number"   class="inputStyle sapUiSmallMarginBottom"/>
+                                    <Button id="cashSbmtBtn"  text="Submit" press="onCashSubmit"/>
                                 </VBox>
                             </content>
                         </Panel>

@@ -8,7 +8,7 @@
 					columnsL="1" columnsM="1" singleContainerFullSize="false">
 					<f:content>
 						<Label design="Bold" class="cashierLogin" text="Enter Cashier ID"/>
-						<Input/>
+						<Input type="Number"/>
 						<Label design="Bold" class="cashierLogin" text="Enter Pin"/>
 						<Input type="Password"/>
 					</f:content>

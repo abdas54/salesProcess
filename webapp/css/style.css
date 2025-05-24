@@ -78,6 +78,8 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
 .customTile {
     font-weight: bold !important;
     border-radius: 12px !important; /* rounded corners */
+    text-align: center !important;
+    background-color:  #a6b7c3 !important;
 }
 
 .sapMGTHdrTxt>.sapMText {
@@ -88,6 +90,7 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
 
 .cstmHBox {
     display: contents !important;
+    background-color: #929da5 !important;
 }
 
 
@@ -185,4 +188,87 @@ div[id*="inputSales-popup"] {
  
   box-shadow: none !important;
 
+}
+.page {
+    background-color: #c8d9e6 !important;
+
+}
+#__bar0--header {
+     background-color: #c8d9e6 !important;
+}
+html.sap-desktop .sapMITBFilter .sapMITBCount {
+    color: #151b30 !important;
+    font-family: var(--sapFontFamily) !important;
+    font-size: 1rem !important;
+}
+#application-comerossalesprocess-display-component---MainView--stocksgt-title-inner {
+text-align: center !important;
+margin-top: 15px !important;
+}
+
+#application-comerossalesprocess-display-component---MainView--customergt-title-inner {
+text-align: center !important;
+margin-top: 15px !important;
+}
+
+#application-comerossalesprocess-display-component---MainView--discountgt-title-inner {
+text-align: center !important;
+margin-top: 15px !important;
+}
+
+#application-comerossalesprocess-display-component---MainView--paymentsgt-title-inner {
+text-align: center !important;
+margin-top: 15px !important;
+}
+
+#application-comerossalesprocess-display-component---MainView--suspendgt-title-inner {
+text-align: center !important;
+margin-top: 15px !important;
+}
+
+.customTableHeader .sapMListTblHeader {
+    background-color: #0812db !important; /* light blue */
+}
+
+.customTableHeader .sapMListHdrText {
+    background-color: #f2f7f1 !important;
+    font-weight: bold;
+}
+
+.sapMTableTH {
+    background: #2f4156 !important;
+    
+}
+.sapUiTableHeaderDataCell .sapMText, .sapMColumnHeader .sapMText {
+    color: #dde3e9 !important;
+}
+#__label0-bdi{
+    color: #dde3e9 !important;
+}
+#__label1-bdi{
+    color: #dde3e9 !important;
+}
+#__label2-bdi{
+    color: #dde3e9 !important;
+}
+#__label3-bdi{
+    color: #dde3e9 !important;
+}
+#__label4-bdi{
+    color: #dde3e9 !important;
+}
+#__label5-bdi{
+    color: #dde3e9 !important;
+}
+#__label6-bdi{
+    color: #dde3e9 !important;
+}
+#__label7-bdi{
+    color: #dde3e9 !important;
+}
+#__label8-bdi{
+    color: #dde3e9 !important;
+}
+.sapMGTHdrIconImage {
+    color: #1f2123 !important;
 }

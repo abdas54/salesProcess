@@ -1,9 +1,9 @@
 <mvc:View controllerName="com.eros.salesprocess.controller.MainView" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
 	xmlns:l="sap.ui.layout" xmlns:ndc="sap.ndc" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns:g="sap.f"> 
-	<Page id="page" title="{i18n>title}" enableScrolling="false" showHeader="false"  class="noPaddingPage">
+	<Page id="page" title="{i18n>title}" enableScrolling="false" showHeader="false"  class="noPaddingPage page">
 		<content>
 			<HBox alignItems="Stretch" width="100%" class="cstmHBox">
-				<IconTabBar class="cstmHBox" expandable="false">
+				<IconTabBar class="cstmHBox page textIconBar" expandable="false">
 					<items>
 						<IconTabFilter id="tranNumber" class="sapUiSmallMarginEnd" design="Horizontal" icon="sap-icon://documents" iconColor="Positive" count=""
 							text="Transaction Number" key="Ok"/>
@@ -21,8 +21,7 @@
 						<IconTabFilter id="vat" design="Horizontal" icon="sap-icon://add-activity" iconColor="Critical" count="" text="VAT" key="vat"/>
 						<IconTabSeparator icon="sap-icon://open-command-field"/>
 						<IconTabFilter id="saleAmount" showAll="true" count="" text="AED" key="All"/>
-						<IconTabSeparator/>
-						<IconTabFilter design="Horizontal" icon="sap-icon://print" iconColor="Critical" key="print"/>
+						
 					</items>
 				</IconTabBar>
 			</HBox>
@@ -33,8 +32,8 @@
 							placeholder="Enter Model Number / Barcode /Old Material Code:" showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}"
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionSelected"
 							showTableSuggestionValueHelp="false" >
-							<suggestionColumns>
-								<Column>
+							<suggestionColumns >
+								<Column >
 									<Label text="Item Code" design="Bold"/>
 								</Column>
 								<Column >
@@ -68,7 +67,7 @@
 					</HBox>
 					<ScrollContainer class="sapUiSmallMarginTop" horizontal="false" vertical="true">
 						<Table id="idProductsTable" items="{ProductModel>/Product}" mode="Delete" delete="onDelete" sticky="ColumnHeaders"
-							itemPress="onProductRowPress">
+							itemPress="onProductRowPress" class="customTableHeader tableheader">
 							<columns>
 								<Column width="3em">
 									<Text text="Seq."/>
@@ -160,19 +159,19 @@
 				</VBox>
 				<VBox>
 					<l:VerticalLayout class="sapUiContentPadding equalColumns" width="100%">
-						<GenericTile id="stocksgt" frameType="OneByHalf" press="onStockAvailability" header="STOCKS" class="customTile">
+						<GenericTile id="stocksgt" frameType="OneByHalf" press="onStockAvailability" header="STOCKS" class="customTile" headerImage="sap-icon://product">
 							<TileContent>
-								<Button type="Transparent" icon="sap-icon://product"/>
+								<!-- <Button type="Transparent" icon="sap-icon://product"/> -->
 							</TileContent>
 						</GenericTile>
-						<GenericTile id="customergt" header="CUSTOMER" frameType="OneByHalf" press="onPressCustData" class="customTile" pressEnabled="false">
+						<GenericTile id="customergt" header="CUSTOMER" frameType="OneByHalf" press="onPressCustData" class="customTile" pressEnabled="false" headerImage="sap-icon://customer">
 							<TileContent>
-								<Button type="Transparent" icon="sap-icon://customer"/>
+								<!-- <Button type="Transparent" icon="sap-icon://customer"/> -->
 							</TileContent>
 						</GenericTile>
-						<GenericTile id="discountgt" header="DISCOUNT" frameType="OneByHalf" press="onPressDiscount1" class="customTile" pressEnabled="false">
+						<GenericTile id="discountgt" header="DISCOUNT" frameType="OneByHalf" press="onPressDiscount1" class="customTile" pressEnabled="false" headerImage="sap-icon://activate">
 							<TileContent>
-								<Button type="Transparent" icon="sap-icon://activate"/>
+								<!-- <Button type="Transparent" icon="sap-icon://activate"/> -->
 							</TileContent>
 						</GenericTile>
 						<!-- <GenericTile id="testDiscount" visible="false" header="DISCOUNT" frameType="OneByHalf" press="onPressDiscount" class="customTile" pressEnabled="false">
@@ -180,14 +179,14 @@
 								<Button type="Transparent" icon="sap-icon://activate"/>
 							</TileContent>
 						</GenericTile> -->
-						<GenericTile id="paymentsgt" header="PAYMENTS" frameType="OneByHalf" press="onPressPayments1" class="customTile" pressEnabled="false">
+						<GenericTile id="paymentsgt" header="PAYMENTS" frameType="OneByHalf" press="onPressPayments1" class="customTile" pressEnabled="false" headerImage="sap-icon://money-bills">
 							<TileContent>
-								<Button type="Transparent" icon="sap-icon://money-bills"/>
+								<!-- <Button type="Transparent" icon="sap-icon://money-bills"/> -->
 							</TileContent>
 						</GenericTile>
-						<GenericTile id="suspendgt" header="SUSPEND" frameType="OneByHalf" press="openPressSuspendComments" class="customTile" pressEnabled="false">
+						<GenericTile id="suspendgt" header="SUSPEND" frameType="OneByHalf" press="openPressSuspendComments" class="customTile" pressEnabled="false" headerImage="sap-icon://reset">
 							<TileContent>
-								<Button type="Transparent" icon="sap-icon://reset"/>
+								<!-- <Button type="Transparent" icon="sap-icon://reset"/> -->
 							</TileContent>
 						</GenericTile>
 
