@@ -270,6 +270,9 @@ sap.ui.define([
                 this.oModel.create("/ReservationSet", oPayload, {
                     success: function (oData) {
                         if (oContext) {
+                            that.serialNumbers = that.serialNumbers.filter(function(entry) {
+                                return entry.itemCode !== data.Itemcode;
+                            });
 
                             var iIndex = oContext.getPath().split("/").pop(); // Extract index
                             var delItemCode = that.getView().getModel("ProductModel").getProperty("/Product/" + iIndex).Itemcode;
@@ -1554,9 +1557,11 @@ sap.ui.define([
 
             },
             onAddition: function (oEvent) {
+                var that = this;
                 var event = oEvent;
                 var selIndex = oEvent.getSource().getId().split("--")[2].split("-")[1];
                 var selIndexData = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex);
+                this.oControl = oEvent.getSource().getEventingParent().getItems()[1];
                 var qtyValue = oEvent.getSource().getEventingParent().getItems()[1].getValue();
                 var balanceStock = selIndexData.Balancestock;
                 var iValue = parseInt(qtyValue, 10) || 0;
@@ -1581,8 +1586,8 @@ sap.ui.define([
                         title: "Error",
                         actions: ["OK"],
                         onClose: function (oAction) {
-                            oEvent.getSource().getEventingParent().getItems()[1].setValue(qtyValue);
-                            oEvent.getSource().getEventingParent().getItems()[1].getSource().fireChange();
+                            that.oControl.setValue(qtyValue);
+                            that.oControl.getSource().fireChange();
                         }
                     }
                     );
@@ -1793,7 +1798,7 @@ sap.ui.define([
                                 oTable.fireDelete({ listItem: oItemToDelete });
                                }
                                else{
-                                event.getSource().setState(true);
+                                that.switch.setState(true);
                                }
 				            }
                         })
