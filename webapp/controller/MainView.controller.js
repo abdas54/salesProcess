@@ -902,6 +902,7 @@ sap.ui.define([
                 var checkSerial = this.validSerial();
                 var discountAmount = this.onCheckSaleAmounts();
                 var checkHomeDelivery = this.checkHomeDelivery();
+                var chckSalesman = this.checkSalesman();
                 var custData = this.getView().getModel("custAddModel").getData();
                 var homeDelivery = true;
                 var paidAmount = 0;
@@ -912,7 +913,7 @@ sap.ui.define([
                         homeDelivery = false;
                     }
                 }
-                if (checkCustomer && checkSerial && discountAmount && homeDelivery) {
+                if (checkCustomer && checkSerial && discountAmount && homeDelivery && chckSalesman) {
                     var oModel = new sap.ui.model.json.JSONModel({
                         totalAmount: "0.00",
                         paymentOptions: [{
@@ -993,9 +994,33 @@ sap.ui.define([
                     else if(!homeDelivery){
                         MessageBox.error("Kindly make sure to enter Shipping Instruction and Date for Home Delivery Item");
                     }
+                    else if(!chckSalesman){
+                        MessageBox.error("Following Item Codes does not have Salesman :\n" + this.aMissingSalesmanItems.join(", "));
+                    }
                 }
             },
-            
+            checkSalesman: function(){
+                var that = this;
+                var oTable = this.byId("idProductsTable");
+                var aItems = oTable.getItems();
+                var oModel = this.getView().getModel("ProductModel");
+                this.aMissingSalesmanItems = [];
+                aItems.forEach(function (oItem) {
+                var oContext = oItem.getBindingContext("ProductModel");
+                var oData = oContext.getObject();
+
+                if (!oData.SalesmanId || oData.SalesmanId.trim() === "") {
+                     that.aMissingSalesmanItems.push(oData.Itemcode);
+                 }
+                });
+                if (that.aMissingSalesmanItems.length > 0) {
+                    return false;
+                }
+                else{
+                    return true;
+                }
+
+            },
             onPressDiscount1: function () {
                 var oModel = new sap.ui.model.json.JSONModel({
 
