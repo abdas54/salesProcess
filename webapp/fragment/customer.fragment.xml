@@ -20,7 +20,31 @@
 						<content> -->
 							
 								<form:SimpleForm  columnsM="2" columnsL="2" columnsXL="2" visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }">
-                                
+                                   <Label
+                            required="true"
+                            text="Customer Type"
+                        />
+                        <Select
+                            width="40%"
+                            id="customerType"
+                            change="onCustomerTypeChange"
+                            selectedKey="{custAddModel>/CustomerType}"
+                        >
+                            <items>
+                                <core:Item
+                                    key="0"
+                                    text=""
+                                />
+                                <core:Item
+                                    key="LOCAL"
+                                    text="LOCAL"
+                                />
+                                <core:Item
+                                    key="TOURIST"
+                                    text="TOURIST"
+                                />
+                            </items>
+                        </Select>
                                 
                                 <Label text="Phone Number" />
                                  <!-- <FlexBox
@@ -102,31 +126,7 @@
                                     additionalText="{Country}"
                                 />
                             </ComboBox>
-                               <Label
-                            required="true"
-                            text="Customer Type"
-                        />
-                        <Select
-                            width="40%"
-                            id="customerType"
-                            change="onCustomerTypeChange"
-                            selectedKey="{custAddModel>/CustomerType}"
-                        >
-                            <items>
-                                <core:Item
-                                    key="0"
-                                    text=""
-                                />
-                                <core:Item
-                                    key="LOCAL"
-                                    text="LOCAL"
-                                />
-                                <core:Item
-                                    key="TOURIST"
-                                    text="TOURIST"
-                                />
-                            </items>
-                        </Select>
+                            
                                 <Label
                             id="cardTypelbl"
                             text="Identity Type"
@@ -305,10 +305,18 @@
                             	<DatePicker value="{custAddModel>/shippingDate}" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd" class="inputStyle sapUiSmallMarginBottom"/>
 								<!-- <DatePicker value="{'path':'custAddModel>/shippingDate','type':'sap.ui.model.type.Date','formatOptions': {'pattern': 'yyyy-MM-dd'}}" placeholder="Enter Delivery Date"/> -->
 								<TextArea value="{custAddModel>/ShippingInst}" width="550px" placeholder="Enter Delivery Instruction" class="inputStyle sapUiSmallMarginBottom"/>
+                                <Label text="Select Shipping Method :"/>
+                            
+                            	<RadioButtonGroup  columns="5"   selectedIndex="{custAddModel>/ShippingMethod}">
+			                            <RadioButton  text="HOME DELIVERY" />  
+			                            <RadioButton  text="HD Install HA" />
+			                            <RadioButton  text="HD Install panels" /> 
+		                        </RadioButtonGroup>
+							
 							</VBox>
 						</content>
 					</Panel>
-                    <Panel visible="{= ${ShowSection>/selectedMode} === 'Shipping Method' }">
+                    <!-- <Panel visible="{= ${ShowSection>/selectedMode} === 'Shipping Method' }">
 						<content>
 							<VBox >
                             	<RadioButtonGroup  columns="5"   selectedIndex="{custAddModel>/ShippingMethod}">
@@ -318,7 +326,7 @@
 		                        </RadioButtonGroup>
 							</VBox>
 						</content>
-					</Panel>
+					</Panel> -->
 				</VBox>
 			</HBox>
 		</content>

@@ -1188,10 +1188,8 @@ sap.ui.define([
                         option: "Customer Address"
                     }, {
                         option: "Shipping Instruction"
-                    },
-                    {
-                        option: "Shipping Method"
-                    }]
+                    }
+                    ]
                 });
                 this.getView().setModel(oModel, "CustModel");
 
@@ -2305,20 +2303,23 @@ sap.ui.define([
                 }
             },
             onCustomerTypeChange: function (oEvent) {
+                var that = this;
 
                 if (oEvent.getParameter("selectedItem").getProperty("key") === "TOURIST") {
                     sap.ui.getCore().byId("cardTypelbl").setRequired(true);
                     sap.ui.getCore().byId("issuedBylbl").setRequired(true);
                     sap.ui.getCore().byId("cardNumberlbl").setRequired(true);
-                     sap.ui.getCore().byId("nationnalLbl").setRequired(true);
+                    sap.ui.getCore().byId("nationnalLbl").setRequired(true);
                     sap.ui.getCore().byId("residencelabl").setRequired(true);
+                    that.getView().getModel("custAddModel").setProperty("/Code","");
                 }
                 else {
                     sap.ui.getCore().byId("cardTypelbl").setRequired(false);
                     sap.ui.getCore().byId("issuedBylbl").setRequired(false);
                     sap.ui.getCore().byId("cardNumberlbl").setRequired(false);
-                           sap.ui.getCore().byId("nationnalLbl").setRequired(false);
+                    sap.ui.getCore().byId("nationnalLbl").setRequired(false);
                     sap.ui.getCore().byId("residencelabl").setRequired(false);
+                    that.getView().getModel("custAddModel").setProperty("/Code","00971");
                 }
 
             },
