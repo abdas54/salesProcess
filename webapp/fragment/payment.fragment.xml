@@ -5,7 +5,7 @@
     xmlns:f="sap.f.cards"
     xmlns:l="sap.ui.layout"
     xmlns:g="sap.f">
-    <Dialog title="Payment" contentHeight="400px" contentWidth="1000px">
+    <Dialog title="Payment" contentHeight="600px" contentWidth="1000px">
         <content>
             <Label design="Bold" text="Sale Amount:" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Text id="totalAmountText"  class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
@@ -13,7 +13,7 @@
             <Text id="totalSaleBalText" class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Label design="Bold" text="Tender Change Amount:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Text  id="totaltenderBal" class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
-            <ScrollContainer class="sapUiSmallMarginTop" height="300px" vertical="true">
+            <ScrollContainer class="sapUiSmallMarginTop" height="600px" vertical="true">
                 <HBox>
                     <VBox class="sapUiSmallMargin">
                         <List items="{PaymentModel>/paymentOptions}" mode="None" class="roundedList">
@@ -28,7 +28,7 @@
                                     <RadioButton  text="Manual Mode" />
                                 </RadioButtonGroup>
                                 <VBox visible="{= ${ShowPaymentSection>/cardPaymentMode} === 0 }">
-                                    <Input id="creditAmount" placeholder="Enter Amount" type="Number" change="onRetrieveTerminal" class="inputStyle sapUiSmallMarginBottom"/>
+                                    <Input id="creditAmount" placeholder="Enter Amount" type="Text" liveChange="onLiveChange" change="onRetrieveTerminal" class="inputStyle sapUiSmallMarginBottom"/>
                                     <g:GridList items="{ShowPaymentSection>/Terminal}" noDataText="Enter Amount to Enable Terminal" itemPress="onPressTenderCard" class="roundedList">
                                         <g:items>
                                             <g:GridListItem type="Active">
@@ -61,7 +61,7 @@
                             <content>
                                 <VBox class="sapUiSmallMargin">
                                     <HBox>
-                                        <Input id="creditNote" placeholder="Enter Credit Note "  class="inputStyle sapUiSmallMarginBottom">
+                                        <Input id="creditNote" placeholder="Enter Credit Voucher/Reciept Number "  class="inputStyle sapUiSmallMarginBottom">
                                             <layoutData>
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
@@ -106,7 +106,7 @@
                             <content>
                                 <VBox class="sapUiSmallMargin">
                                     <HBox>
-                                        <Input id="advPayment" placeholder="Enter Advance Payment " liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom">
+                                        <Input id="advPayment" placeholder="Enter Advance Reciept Number" liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom">
                                             <layoutData>
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
@@ -151,7 +151,7 @@
                             <content>
                                 <VBox class="sapUiSmallMargin">
                                     <HBox>
-                                        <Input id="giftVoucher" placeholder="Enter Gift Payment "  class="inputStyle sapUiSmallMarginBottom">
+                                        <Input id="giftVoucher" placeholder="Enter Gift Voucher Number "  class="inputStyle sapUiSmallMarginBottom">
                                             <layoutData>
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
@@ -212,7 +212,7 @@
                         <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Cash' }">
                             <content>
                                 <VBox class="sapUiSmallMargin">
-                                    <Input id="cash" placeholder="Enter Amount " type="Number"   class="inputStyle sapUiSmallMarginBottom"/>
+                                    <Input id="cash" placeholder="Enter Amount " type="Text" liveChange="onLiveChange"   class="inputStyle sapUiSmallMarginBottom"/>
                                     <Button id="cashSbmtBtn"  text="Submit" press="onCashSubmit"/>
                                 </VBox>
                             </content>
@@ -271,6 +271,32 @@
                                 </VBox>
                             </content>
                         </Panel>
+                         <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'View All Records' }">
+						<content>
+							<VBox >
+							 <Table mode="Delete"  delete="onDeleteManualPayment" items="{ShowPaymentSection>/allEntries}" >
+                                    <columns>
+                                        <Column width="4rem" hAlign="Begin" visible="false"><Text text="Seq" /></Column>
+                                        <Column width="4rem" hAlign="Center"><Text text="Payment Type" /></Column>
+                                        <Column width="8rem" hAlign="Center"><Text text="Voucher Number" /></Column>
+                                        <Column width="4rem" hAlign="Right"><Text text="Amount" /></Column>
+                                    
+                                    </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                         
+                                            <Text  text="{ShowPaymentSection>PaymentId}" />
+                                            <Text text="{ShowPaymentSection>PaymentType}" />
+                                            <Text text="{ShowPaymentSection>VoucherNumber}" />
+                                            <Text text="{ShowPaymentSection>Amount}" />
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+							</VBox>
+						</content>
+					</Panel>
                     </VBox>
                 </HBox>
             </ScrollContainer>

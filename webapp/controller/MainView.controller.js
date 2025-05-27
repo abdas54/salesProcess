@@ -64,7 +64,7 @@ sap.ui.define([
 
                 var model3 = new JSONModel();
                 model3.setData({
-                    "selectedMode": "Cash",
+                    "selectedMode": "",
                     "cardPaymentMode": 0
                 });
                 this.getView().setModel(model3, "ShowPaymentSection");
@@ -605,6 +605,23 @@ sap.ui.define([
             onSelectConditionType: function (oEvent) {
                 this.sConditionName = oEvent.getParameter("selectedItem").getProperty("text");
             },
+            onDeleteManualPayment: function(oEvent){
+                var oModel = this.getView().getModel("ShowPaymentSection"); // Get the JSON model
+                var aEntries = oModel.getProperty("/allEntries"); // Get the array from the model
+                var oItem = oEvent.getParameter("listItem");
+                var oContext = oItem.getBindingContext("ShowPaymentSection");
+                var dataObj = oModel.getObject(oContext.sPath);
+                var iIndex = oContext.getPath().split("/").pop();
+                aEntries.splice(iIndex, 1);
+                //this.aPaymentEntries.splice(iIndex,1);
+                var balanceAmount = "";
+                var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
+                balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal)
+                sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(balanceAmount).toFixed(2));
+                this.getView().getModel("ShowPaymentSection").setProperty("/allEntries",this.aPaymentEntries)
+                this.getView().getModel("ShowPaymentSection").refresh();
+
+            },
             onDeleteManualDiscount: function (oEvent) {
                 var bflag = false;
                 var oModel = this.getView().getModel("discountModelTbl"); // Get the JSON model
@@ -930,6 +947,9 @@ sap.ui.define([
                             option: "Non-GV"
                         }, {
                             option: "Forex"
+                        },
+                    {
+                            option: "View All Records"
                         }]
                     });
                     this.getView().setModel(oModel, "PaymentModel");
@@ -953,6 +973,7 @@ sap.ui.define([
                         }).then(function (oFragment) {
                             this._oDialogPayment = oFragment;
                             this.getView().addDependent(this._oDialogPayment);
+                            this.getView().getModel("ShowPaymentSection").setProperty("/selectedMode","");
                             sap.ui.getCore().byId("cashSbmtBtn").setEnabled(true);
                             sap.ui.getCore().byId("totalAmountText").setText(that.getView().byId("saleAmount").getCount());
                             saleAmount = that.getView().byId("saleAmount").getCount();
@@ -966,6 +987,7 @@ sap.ui.define([
                             this._oDialogCashier.close();
                         }.bind(this));
                     } else {
+                        this.getView().getModel("ShowPaymentSection").setProperty("/selectedMode","");
                         sap.ui.getCore().byId("cashSbmtBtn").setEnabled(true);
                         sap.ui.getCore().byId("totalAmountText").setText(that.getView().byId("saleAmount").getCount());
                         saleAmount = that.getView().byId("saleAmount").getCount();
@@ -1165,6 +1187,9 @@ sap.ui.define([
                     sap.ui.getCore().byId("creditNoteList").setVisible(false);
                     sap.ui.getCore().byId("creditNote").setValue("");
 
+                }
+                if (sSelectedOption === "View All Records"){
+                    this.getView().getModel("ShowPaymentSection").setProperty("/allEntries",this.aPaymentEntries)
                 }
             },
             onPressCard: function () {
@@ -2605,9 +2630,11 @@ sap.ui.define([
                     // "ToPayments" : {"results" : this.oPayloadTablePayments()}
                 }
                 this.getView().setBusy(true);
+                this._oDialogPayment.setBusy(true);
                 this.oModel.create("/SalesTransactionHeaderSet", oPayload, {
                     success: function (oData) {
                         that.getView().setBusy(false);
+                        that._oDialogPayment.setBusy(false);
                         if (oData) {
                          
                         	MessageBox.success("Transaction Posted Successfully.", {
@@ -2621,6 +2648,7 @@ sap.ui.define([
                     },
                     error: function (oError) {
                         that.getView().setBusy(false);
+                        that._oDialogPayment.setBusy(false);
                         sap.m.MessageToast.show("Error");
                     }
                 });
@@ -2968,23 +2996,23 @@ sap.ui.define([
                 this.paymentId = this.paymentId + 1;
                 var bFlag = false;
                 var maxcount = "";
-                if (this.aPaymentEntries.length > 0) {
-                    for (var count = 0; count < this.aPaymentEntries.length; count++) {
+                // if (this.aPaymentEntries.length > 0) {
+                //     for (var count = 0; count < this.aPaymentEntries.length; count++) {
 
-                        if (this.aPaymentEntries[count].PaymentMethodName === "Cash") {
-                            bFlag = true;
-                            maxcount = count;
-                            break;
+                //         if (this.aPaymentEntries[count].PaymentMethodName === "Cash") {
+                //             bFlag = true;
+                //             maxcount = count;
+                //             break;
 
-                        }
-                    }
-                }
-                if (cashAmount !== 0 && cashAmount !== "0.00") {
+                //         }
+                //     }
+                // }
+                if (cashAmount !== 0 && cashAmount !== "0.00" && cashAmount !== "") {
 
-                    if (bFlag) {
-                        this.aPaymentEntries[maxcount].Amount = parseFloat(this.aPaymentEntries[maxcount].Amount) + parseFloat(cashAmount)
-                    }
-                    else {
+                    // if (bFlag) {
+                    //     this.aPaymentEntries[maxcount].Amount = parseFloat(this.aPaymentEntries[maxcount].Amount) + parseFloat(cashAmount)
+                    // }
+                    // else {
                         this.aPaymentEntries.push({
                             "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
                             "PaymentId": this.paymentId.toString(),
@@ -3007,7 +3035,7 @@ sap.ui.define([
 
 
                         });
-                    }
+                    //}
 
                     var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
                     var paidAmount = 0;
@@ -3776,6 +3804,12 @@ sap.ui.define([
 
 
 
+            },
+            onLiveChange: function (oEvent) {
+                var oInput = oEvent.getSource();
+  var sRawValue = oInput.getFocusDomRef().value;
+  var sSanitized = sRawValue.replace(/[^0-9]/g, ""); // Allow only digits
+  oInput.setValue(sSanitized);
             },
             updateBalanceAmount: function (msg, modelName) {
                 var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();

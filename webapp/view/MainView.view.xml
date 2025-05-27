@@ -65,7 +65,7 @@
 					
 						<Button class="sapUiSmallMarginTop" type="Transparent"  icon="sap-icon://qr-code" press="onScan" />
 					</HBox>
-					<ScrollContainer class="sapUiSmallMarginTop" horizontal="false" vertical="true">
+					<ScrollContainer class="sapUiSmallMarginTop" horizontal="false" vertical="true" height="550px">
 						<Table id="idProductsTable" items="{ProductModel>/Product}" mode="Delete" delete="onDelete" sticky="ColumnHeaders"
 							itemPress="onProductRowPress" class="customTableHeader tableheader">
 							<columns>
@@ -143,7 +143,7 @@
 										<Text
 											text="{parts: [{path: 'ProductModel>UnitPrice'}, {path: 'ProductModel>Discount'},{path: 'ProductModel>VatPercent'},{path: 'ProductModel>VatAmount'},{path: 'ProductModel>SaleAmount'},{path: 'ProductModel>Seq'}], formatter: '.formatSalesAmount'}"
 											textAlign="End"/>
-										<core:Icon src="sap-icon://add" press="onAddSerialNumber"
+										<core:Icon src="sap-icon://add" press="onAddSerialNumber" size="2rem"
 											visible="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}"/>
 										<!-- <Button icon="sap-icon://add" enabled="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}" press="onAddSerialNumber"/> -->
 										<VBox class="sapUiSmallMarginTop sapUiSmallMarginBottom ">
