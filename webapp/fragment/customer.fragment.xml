@@ -46,7 +46,7 @@
                             </items>
                         </Select>
                                 
-                                <Label text="Phone Number" />
+                                <Label text="Phone Number" required="true" />
                                  <!-- <FlexBox
                            
                             justifyContent="Start"

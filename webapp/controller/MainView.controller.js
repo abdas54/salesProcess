@@ -615,11 +615,40 @@ sap.ui.define([
                 aEntries.splice(iIndex, 1);
                 //this.aPaymentEntries.splice(iIndex,1);
                 var balanceAmount = "";
+                if(dataObj.PaymentType === "CASH"){
                 var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
                 balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal)
                 sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(balanceAmount).toFixed(2));
                 this.getView().getModel("ShowPaymentSection").setProperty("/allEntries",this.aPaymentEntries)
                 this.getView().getModel("ShowPaymentSection").refresh();
+                }
+                else{
+                   this.deRedeemVoucher(dataObj);
+                }
+
+            },
+            deRedeemVoucher: function(dataObj){
+                var balanceAmount = "";
+                var that = this;
+                var data = {
+                    "PaymentType" : dataObj.PaymentType,
+                    "Amount" : dataObj.Amount,
+                    "VoucherNumber" : dataObj.VoucherNumber
+                }
+                this.oModel.create("/PaymentMethodsSet", data, {
+                    success: function (oData,response) {
+                var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
+                balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal)
+                sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(balanceAmount).toFixed(2));
+                that.getView().getModel("ShowPaymentSection").setProperty("/allEntries",that.aPaymentEntries)
+                that.getView().getModel("ShowPaymentSection").refresh(); 
+                        
+                    },
+                    error: function (oError) {
+                        
+
+                    }
+                });
 
             },
             onDeleteManualDiscount: function (oEvent) {
@@ -966,14 +995,14 @@ sap.ui.define([
                     });
                     this.getView().setModel(oModel1, "CashModel");
 
-                    if (!this._oDialogPayment) {
+                    if (!that._oDialogPayment) {
                         Fragment.load({
                             name: "com.eros.salesprocess.fragment.payment",
-                            controller: this
+                            controller: that
                         }).then(function (oFragment) {
-                            this._oDialogPayment = oFragment;
-                            this.getView().addDependent(this._oDialogPayment);
-                            this.getView().getModel("ShowPaymentSection").setProperty("/selectedMode","");
+                            that._oDialogPayment = oFragment;
+                            that.getView().addDependent(that._oDialogPayment);
+                            that.getView().getModel("ShowPaymentSection").setProperty("/selectedMode","");
                             sap.ui.getCore().byId("cashSbmtBtn").setEnabled(true);
                             sap.ui.getCore().byId("totalAmountText").setText(that.getView().byId("saleAmount").getCount());
                             saleAmount = that.getView().byId("saleAmount").getCount();
@@ -983,11 +1012,11 @@ sap.ui.define([
                         }
                         balanceAmount = parseFloat(parseFloat(saleAmount).toFixed(2) - parseFloat(paidAmount).toFixed(2)).toFixed(2);
                         sap.ui.getCore().byId("totalSaleBalText").setText(balanceAmount);
-                            this._oDialogPayment.open();
-                            this._oDialogCashier.close();
-                        }.bind(this));
+                            that._oDialogPayment.open();
+                            that._oDialogCashier.close();
+                        }.bind(that));
                     } else {
-                        this.getView().getModel("ShowPaymentSection").setProperty("/selectedMode","");
+                        that.getView().getModel("ShowPaymentSection").setProperty("/selectedMode","");
                         sap.ui.getCore().byId("cashSbmtBtn").setEnabled(true);
                         sap.ui.getCore().byId("totalAmountText").setText(that.getView().byId("saleAmount").getCount());
                         saleAmount = that.getView().byId("saleAmount").getCount();
@@ -997,8 +1026,8 @@ sap.ui.define([
                         }
                         balanceAmount = parseFloat(parseFloat(saleAmount).toFixed(2) - parseFloat(paidAmount).toFixed(2)).toFixed(2);
                         sap.ui.getCore().byId("totalSaleBalText").setText(balanceAmount);
-                         this._oDialogPayment.open();
-                        this._oDialogCashier.close();
+                         that._oDialogPayment.open();
+                        that._oDialogCashier.close();
                     }
                 }
                 else {
@@ -1369,6 +1398,10 @@ sap.ui.define([
                 var errorMessage = "";
 
                 // Basic Required Fields
+                 if (!custData.Mobile || custData.Mobile.trim() === "") {
+                    errorMessage += "Mobile Number is required.\n";
+                }
+                
                 if (!custData.FirstName || custData.FirstName.trim() === "") {
                     errorMessage += "First Name is required.\n";
                 }
@@ -1478,6 +1511,7 @@ sap.ui.define([
                 oMultiInput.addToken(oToken);
             },
             onSubtract: function (oEvent) {
+                var event = oEvent.getSource();
                 var oTable = this.getView().byId("idProductsTable");
                 var selIndex = oEvent.getSource().getId().split("--")[2].split("-")[1];
                 var selIndexData = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex);
@@ -1522,8 +1556,8 @@ sap.ui.define([
                                 oTable.fireDelete({ listItem: oItemToDelete });
                                }
                                else{
-                                oEvent.getSource().getEventingParent().getItems()[1].setValue(1);
-                                oEvent.getSource().getEventingParent().getItems()[1].getSource().fireChange();
+                                event.getEventingParent().getItems()[1].setValue(1);
+                                event.getEventingParent().getItems()[1].getSource().fireChange();
                                }
 				            }
                         })
@@ -1533,7 +1567,7 @@ sap.ui.define([
 
             },
             onManualChangeQty: function (oEvent) {
-                var event = oEvent;
+                var event = oEvent.getSource();
                 var oTable = this.getView().byId("idProductsTable");
                 var qty = oEvent.getParameter("newValue");
                 var selIndex = oEvent.getSource().getParent().getId().split("--")[2].split("-")[1];
@@ -1560,7 +1594,7 @@ sap.ui.define([
                         this.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
                     }
                     else {
-                        sap.m.MessageBox.confirm("Do you want to delete the Item, press Ok to Continue or Cancel",
+                        sap.m.MessageBox.confirm("Entered Quantity should not be more than Balance Stock",
                              {
                             title: "Confirmation",
                             actions: ["OK", "CANCEL"],
@@ -1570,8 +1604,8 @@ sap.ui.define([
                                 oTable.fireDelete({ listItem: oItemToDelete });
                                }
                                else{
-                                event.getSource().setValue(1);
-                                event.getSource().fireChange();
+                                event.setValue(1);
+                                event.fireChange();
                                }
                                
 
@@ -1592,8 +1626,8 @@ sap.ui.define([
                                 oTable.fireDelete({ listItem: oItemToDelete });
                                }
                                else{
-                                event.getSource().setValue(1);
-                                event.getSource().fireChange();
+                                event.setValue(1);
+                                event.fireChange();
                                }
                                
 
@@ -1958,12 +1992,22 @@ sap.ui.define([
 
                     },
                     error: function (oError) {
-                        sap.m.MessageToast.show("Error in Reserving the item");
+                        sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                if (oAction === MessageBox.Action.OK) {
+
+                                }
+                            }
+                        });
                     }
                 });
             },
             onPressCancelHomeDelivery: function () {
                 that._oHomeDelMat.close();
+                that.switch.setState(false);
             },
             onSuggest: function (oEvent) {
                 var that = this;
@@ -2097,6 +2141,12 @@ sap.ui.define([
                     "Status": ""
 
                 }
+                var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
+                 for (var counter = 0; counter < tableData.length; counter++) {
+                    if ((tableData[counter].Itemcode === data[0].Itemcode) && (tableData[counter].Location === data[0].Location)){
+                        oPayload.Quantity = (parseInt(tableData[counter].SaleQuantity) + 1).toString();
+                    }
+                 }
 
                 this.oModel.create("/ReservationSet", oPayload, {
                     success: function (oData) {
@@ -2136,7 +2186,7 @@ sap.ui.define([
                         }
                     },
                     error: function (oError) {
-                        sap.m.MessageToast.show("Error in Reserving the item");
+                       
                         sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
                             icon: sap.m.MessageBox.Icon.Error,
                             title: "Error",
@@ -2203,7 +2253,7 @@ sap.ui.define([
                         }
                     },
                     error: function (oError) {
-                        sap.m.MessageToast.show("Error in Reserving the item");
+                       
                         sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
                             icon: sap.m.MessageBox.Icon.Error,
                             title: "Error",
@@ -2247,7 +2297,16 @@ sap.ui.define([
 
                     },
                     error: function (oError) {
-                        sap.m.MessageToast.show("Error in Reserving the item");
+                       sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                if (oAction === MessageBox.Action.OK) {
+
+                                }
+                            }
+                        });
                     }
                 });
             },
@@ -2388,9 +2447,14 @@ sap.ui.define([
                     }
                 }
                 this.getView().setBusy(true);
+                this._oDialogSuspComments.setBusy(true);
                 this.oModel.create("/ReservationHeadSet", oPayload, {
                     success: function (oData) {
                         sap.m.MessageToast.show("Success in Suspend the item");
+                        that.getView().setBusy(false);
+                        that._oDialogSuspComments.setBusy(close);
+                        that._oDialogSuspComments.close();
+
                         that.onPressPayment(false);
                         //window.location.reload(true);
                     },
@@ -2630,11 +2694,17 @@ sap.ui.define([
                     // "ToPayments" : {"results" : this.oPayloadTablePayments()}
                 }
                 this.getView().setBusy(true);
+                if(this._oDialogPayment){
                 this._oDialogPayment.setBusy(true);
+                }
+                
                 this.oModel.create("/SalesTransactionHeaderSet", oPayload, {
                     success: function (oData) {
                         that.getView().setBusy(false);
+                         if(that._oDialogPayment){
                         that._oDialogPayment.setBusy(false);
+                        }
+                        
                         if (oData) {
                          
                         	MessageBox.success("Transaction Posted Successfully.", {
@@ -3678,7 +3748,7 @@ sap.ui.define([
                     emphasizedAction: MessageBox.Action.YES,
                     onClose: function (oAction) {
                         if (oAction == "YES") {
-                            that.redeemVoucher(that.paymentId, "030", "Credit Memo", "CREDIT_NOTE", balanceAmount, "CreditNote");
+                            that.redeemVoucher(that.paymentId, "030", "Credit Memo", "CREDIT NOTE", balanceAmount, "CreditNote");
                         }
                     }
                 });
@@ -3706,7 +3776,7 @@ sap.ui.define([
                     emphasizedAction: MessageBox.Action.YES,
                     onClose: function (oAction) {
                         if (oAction == "YES") {
-                            that.redeemVoucher(that.paymentId, "030", "On-Account Receipt", "ADVANCE_PAYMENT", balanceAmount, "AdvancePayment");
+                            that.redeemVoucher(that.paymentId, "030", "On-Account Receipt", "ADVANCE PAYMENT", balanceAmount, "AdvancePayment");
                         }
                     }
                 });
@@ -3772,11 +3842,11 @@ sap.ui.define([
                         if (paymentType1 === "EGV") {
                             that.updateBalanceAmount("Gift Voucher", "GiftVoucher");
                         }
-                        if (paymentType1 === "CREDIT_NOTE") {
+                        if (paymentType1 === "CREDIT NOTE") {
                             that.updateBalanceAmount("Credit Voucher", "CreditNote");
 
                         }
-                        if (paymentType1 === "ADVANCE_PAYMENT") {
+                        if (paymentType1 === "ADVANCE PAYMENT") {
                             that.updateBalanceAmount("Advance Reciept", "AdvancePayment");
                         }
                     },
@@ -3808,7 +3878,7 @@ sap.ui.define([
             onLiveChange: function (oEvent) {
                 var oInput = oEvent.getSource();
   var sRawValue = oInput.getFocusDomRef().value;
-  var sSanitized = sRawValue.replace(/[^0-9]/g, ""); // Allow only digits
+  var sSanitized = sRawValue.replace(/[^0-9.]/g, ""); // Allow only digits
   oInput.setValue(sSanitized);
             },
             updateBalanceAmount: function (msg, modelName) {

@@ -28,7 +28,7 @@
                                     <RadioButton  text="Manual Mode" />
                                 </RadioButtonGroup>
                                 <VBox visible="{= ${ShowPaymentSection>/cardPaymentMode} === 0 }">
-                                    <Input id="creditAmount" placeholder="Enter Amount" type="Text" liveChange="onLiveChange" change="onRetrieveTerminal" class="inputStyle sapUiSmallMarginBottom"/>
+                                    <Input id="creditAmount" placeholder="Enter Amount"  type="Number" change="onRetrieveTerminal" class="inputStyle sapUiSmallMarginBottom"/>
                                     <g:GridList items="{ShowPaymentSection>/Terminal}" noDataText="Enter Amount to Enable Terminal" itemPress="onPressTenderCard" class="roundedList">
                                         <g:items>
                                             <g:GridListItem type="Active">
@@ -66,7 +66,7 @@
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
                                         </Input>
-                                        <Button icon="sap-icon://validate" type="Transparent" iconDensityAware="true" class="sapUiSmallMarginBegin largeValidateButton" press="onValidateCreditNote"/>
+                                        <core:Icon src="sap-icon://validate" size="2rem" class="sapUiSmallMarginBegin" press="onValidateCreditNote"/>
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="creditNoteList" visible="false" itemPress="onRedeemCreditNote" >
                                         <g:items>
@@ -111,7 +111,7 @@
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
                                         </Input>
-                                        <Button icon="sap-icon://validate" type="Transparent" iconDensityAware="true" class="sapUiSmallMarginBegin largeValidateButton" press="onValidateVoucherAdv"/>
+                                        <core:Icon src="sap-icon://validate" size="2rem" class="sapUiSmallMarginBegin" press="onValidateVoucherAdv"/>
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="advncePaymentList" visible="false" itemPress="onRedeemAdvPayment" >
                                         <g:items>
@@ -156,7 +156,7 @@
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
                                         </Input>
-                                        <Button icon="sap-icon://validate" type="Transparent" iconDensityAware="true" class="sapUiSmallMarginBegin largeValidateButton" press="onValidateGiftVoucher"/>
+                                        <core:Icon src="sap-icon://validate" size="2rem"  class="sapUiSmallMarginBegin" press="onValidateGiftVoucher"/>
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="gvPaymentList" visible="false" itemPress="onRedeemGVPayment" >
                                         <g:items>

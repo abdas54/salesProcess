@@ -147,9 +147,9 @@
 											visible="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}"/>
 										<!-- <Button icon="sap-icon://add" enabled="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}" press="onAddSerialNumber"/> -->
 										<VBox class="sapUiSmallMarginTop sapUiSmallMarginBottom ">
-											<ComboBox change="linkSalesman" items="{ path: '/EmployeeSet', filters: [{ path: 'Etype', operator: 'EQ', value1: 'S' }] }">
+											<Select change="linkSalesman" items="{ path: '/EmployeeSet', filters: [{ path: 'Etype', operator: 'EQ', value1: 'S' }] }">
 												<core:ListItem key="{EmployeeId}" text="{EmployeeName}" additionalText="{EmployeeId}"/>
-											</ComboBox>
+											</Select>
 										</VBox>
 									</cells>
 								</ColumnListItem>

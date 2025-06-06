@@ -64,8 +64,8 @@
 								<ObjectNumber number="{StockModel>NetPrice}" unit="{StockModel>Currency}" />
 								<Text text="{StockModel>Reservedstock}"/>
                                 <Text text="{StockModel>Balancestock}" />
-								<ObjectNumber number="{StockModel>Onhandstock}" unit="{StockModel>Currency}" />
-								<ObjectNumber number="{StockModel>Consignmentstock}" unit="{StockModel>Currency}" />
+								<ObjectNumber number="{StockModel>Onhandstock}"  />
+								<ObjectNumber number="{StockModel>Consignmentstock}"  />
 							</cells>
 						</ColumnListItem>
 					</items>
