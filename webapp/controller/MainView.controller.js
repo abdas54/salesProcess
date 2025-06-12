@@ -2745,6 +2745,7 @@ sap.ui.define([
                     "ToDiscounts": { "results": this.oPayloadTableDiscountItems() },
                     "ToPayments": { "results": this.oPayloadPayments(this.aPaymentEntries) },
                     "ToSerials": { "results": this.oPayloadSerialNumber() },
+                    "ToSignature": {"results": this.oPaySignatureload},
                     "Remarks": this.suspendComments
                     // "ToPayments" : {"results" : this.oPayloadTablePayments()}
                 }
@@ -2893,7 +2894,8 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                            that.onPressPaymentTest();
+                            that.OnSignaturePress();
+                           // that.onPressPaymentTest();
                         }
                         else {
                             sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
@@ -3182,7 +3184,8 @@ sap.ui.define([
                         });
                         oEvent.getSource().setEnabled(false);
                         sap.m.MessageToast.show("Cash Payment Successful");
-                        that.onPressPaymentTest();
+                        that.OnSignaturePress();
+                        //that.onPressPaymentTest();
                     }
                     else {
                         sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
@@ -3505,7 +3508,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Manual Card Payment Successful");
-                    that.onPressPaymentTest();
+                    that.OnSignaturePress();
+                    //that.onPressPaymentTest();
                 }
                 else {
                     sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
@@ -3629,7 +3633,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Non EGV Payment Successful");
-                    that.onPressPaymentTest();
+                    that.OnSignaturePress();
+                    //that.onPressPaymentTest();
                 }
                 else {
                     sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
@@ -3951,7 +3956,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
-                    that.onPressPaymentTest();
+                    that.OnSignaturePress();
+                    //that.onPressPaymentTest();
                 }
                 else {
                     sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
@@ -3977,9 +3983,9 @@ sap.ui.define([
                 var that = this,
                     token,
                     dataUrl,
-                    oSvg = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePad").getSVGString();
-                oSvgCash = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePad").getSVGString();
-                oPayload = [];
+                    oSvg = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePad").getSVGString(),
+                    oSvgCash = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePadCash").getSVGString();
+                this.oPaySignatureload = [];
                 // oName = sap.ui.core.Fragment.byId(this.getView().getId(), "idName").getValue(),
                 // oStaff = sap.ui.core.Fragment.byId(this.getView().getId(), "idStaff").getValue(),
                 // oComments = sap.ui.core.Fragment.byId(this.getView().getId(), "idComments").getValue();
@@ -4012,7 +4018,7 @@ sap.ui.define([
                         array[i] = raw.charCodeAt(i);
                     }
 
-                    oPayload.push({
+                    this.oPaySignatureload.push({
                         "TransactionId": this.getView().byId("tranNumber").getCount(),
                         "Value": oArray,
                         "Mimetype": 'image/bmp',
@@ -4040,18 +4046,18 @@ sap.ui.define([
                     const contextCash = canvasCash.getContext('2d');
                     const createdImageCash = document.createElement('img');
 
-                    contextCash.drawImage(img, 0, 0);
-                    createdImageCash.src = canvas.toDataURL('image/bmp');
+                    contextCash.drawImage(imgCash, 0, 0);
+                    createdImageCash.src = canvasCash.toDataURL('image/bmp');
                     //binary code
                     var oArrayCash = (createdImageCash.src).split(";base64,")[1];
                     var rawCash = window.atob(oArrayCash);
                     var rawLengthCash = rawCash.length;
                     var arrayCash = new Uint8Array(new ArrayBuffer(rawLengthCash));
                     for (var j = 0; j < rawLengthCash; j++) {
-                        arrayCash[i] = rawCash.charCodeAt(j);
+                        arrayCash[j] = rawCash.charCodeAt(j);
                     }
 
-                    oPayload.push({
+                    this.oPaySignatureload.push({
                         "TransactionId": this.getView().byId("tranNumber").getCount(),
                         "Value": oArrayCash,
                         "Mimetype": 'image/bmp',
@@ -4063,6 +4069,9 @@ sap.ui.define([
 
                 imgCash.addEventListener('load', onImageLoadedCash);
                 imgCash.src = svgObjectUrlCash;
+
+                setTimeout(function(){
+                    that.onPressPayment(true);},1000)
 
 
             },

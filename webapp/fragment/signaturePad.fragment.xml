@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:sig="com.eros.salesprocess.control">
-	<Dialog contentWidth="600px" contentHeight="400px">
+	<Dialog contentWidth="600px" contentHeight="450px">
 		<customHeader>
 			<Toolbar>
 				<ToolbarSpacer/>
@@ -22,11 +22,11 @@
 		</VBox> -->
 		<VBox class="sapUiTinyMarginBottom sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop" >
 			<Label text="Customer Signature " required="true"/>
-			<sig:signaturePadControl id="idSignaturePad" width="300PX" height="150PX" thickness="" bgcolor="rgb(255, 255, 255)" signcolor="" ></sig:signaturePadControl>
+			<sig:signaturePadControl id="idSignaturePad" width="250PX" height="150PX" thickness="" bgcolor="rgb(255, 255, 255)" signcolor="" ></sig:signaturePadControl>
 		</VBox>
 		<VBox class="sapUiTinyMarginBottom sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop">
 			<Label text="Cashier Signature " required="true"/>
-			<sig:signaturePadControl id="idSignaturePadCash" width="300PX" height="150PX" thickness="" bgcolor="rgb(255, 255, 255)" signcolor="" ></sig:signaturePadControl>
+			<sig:signaturePadControl id="idSignaturePadCash" width="250PX" height="150PX" thickness="" bgcolor="rgb(255, 255, 255)" signcolor="" ></sig:signaturePadControl>
 		</VBox>
 		<buttons>
 			<Button text="Clear" type="Reject" press="onClear"/>

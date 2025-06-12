@@ -35,6 +35,10 @@ sap.ui.define(["sap/ui/core/Control", "com/eros/salesprocess/control/library"], 
 					type: "sap.ui.core.CSSColor",
 					defaultValue: "#ffffff"
 				},
+				border: {
+  					type: "string",
+  					defaultValue: "2px solid #000000"
+				},
 				/**
 				 * Defines color of pen/mouse/pointer for the control
 				 */
@@ -83,7 +87,7 @@ sap.ui.define(["sap/ui/core/Control", "com/eros/salesprocess/control/library"], 
 			oRm.writeAttribute("height", sHeight);
 			oRm.writeAttribute("xmlns", "http://www.w3.org/2000/svg");
 			oRm.addStyle("background-color", sBackgroundColor);
-			oRm.addClass("signaturePad");
+			oRm.addStyle("border", oControl.getBorder());
 			oRm.writeStyles();
 			oRm.write(">");
 
