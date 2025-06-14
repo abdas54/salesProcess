@@ -2869,6 +2869,9 @@ sap.ui.define([
                         if (that._oDialogPayment) {
                             that._oDialogPayment.setBusy(false);
                         }
+                         if(that._pAddRecordDialog){
+                    that._pAddRecordDialog.setBusy(false);
+                }
 
                         if (oData) {
 
@@ -4178,7 +4181,9 @@ sap.ui.define([
 
                 imgCash.addEventListener('load', onImageLoadedCash);
                 imgCash.src = svgObjectUrlCash;
-
+                if(that._pAddRecordDialog){
+                    that._pAddRecordDialog.setBusy(true);
+                }
                 setTimeout(function(){
                     that.onPressPayment(true);},1000)
 
