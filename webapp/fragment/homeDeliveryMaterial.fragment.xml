@@ -22,7 +22,7 @@
 								<ObjectIdentifier title="{HomeDelModel>Location}" text="{HomeDelModel>LocationName}"/>
 								<Text text="{HomeDelModel>Reservedstock}"/>
                                 <Text text="{HomeDelModel>Balancestock}" />
-								<ObjectNumber number="{HomeDelModel>Price}" unit="{HomeDelModel>Currency}" />
+								<ObjectNumber number="{HomeDelModel>NetPrice}" unit="{HomeDelModel>Currency}" />
 								<!-- <Text text="{HomeDelModel>storeloc}"/> -->
 							</cells>
 						</ColumnListItem>
