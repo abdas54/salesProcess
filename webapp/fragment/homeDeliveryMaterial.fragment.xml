@@ -12,7 +12,7 @@
                         <Column><Text text="Reserved Stock"/></Column>
 						<Column><Text text="Balance Stock"/></Column>
 						<Column><Text text="Price"/></Column>
-						<Column><Text text="Store Location"/></Column>
+						<!-- <Column><Text text="Store Location"/></Column> -->
 					</columns>
 					<items>
 						<ColumnListItem>
@@ -23,7 +23,7 @@
 								<Text text="{HomeDelModel>Reservedstock}"/>
                                 <Text text="{HomeDelModel>Balancestock}" />
 								<ObjectNumber number="{HomeDelModel>Price}" unit="{HomeDelModel>Currency}" />
-								<Text text="{HomeDelModel>storeloc}"/>
+								<!-- <Text text="{HomeDelModel>storeloc}"/> -->
 							</cells>
 						</ColumnListItem>
 					</items>

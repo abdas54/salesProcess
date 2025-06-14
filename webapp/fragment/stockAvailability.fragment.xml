@@ -4,7 +4,7 @@
 		<!--change="getStockDetailManually"-->
         <Input class="inputStyle sapUiSmallMarginBegin sapUiSmallMarginTop" placeholder="Enter or Scan Material" value="{StockModel>/inpMatCode}"  width="75%"
 		showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}" change="getStockDetailManually"
-							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionStockSelected"
+							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onStockSuggest" suggestionItemSelected="onSuggestionStockSelected"
 							showTableSuggestionValueHelp="false">
 			<suggestionColumns>
 								<Column>

@@ -89,7 +89,8 @@ sap.ui.define([
                 this.shippingMethod = "";
                 this.suspendComments = "";
                 this.openStockTile = false;
-
+                this.cashierID ="";
+                this.CashierPwd="";
 
             },
 
@@ -830,6 +831,22 @@ sap.ui.define([
             },
             fnCloseCashier: function () {
                 this._oDialogCashier.close();
+            },
+            enableValidateBtn: function(oEvent){
+                if(oEvent.getSource().getId() === "__input1"){
+                    this.cashierID = oEvent.getSource().getValue();
+                }
+                else if(oEvent.getSource().getId() === "__input2"){
+                    this.CashierPwd = oEvent.getSource().getValue();
+                }
+
+                
+                if(this.cashierID.length > 0 && this.CashierPwd.length > 0){
+                    sap.ui.getCore().byId("validatebtn").setEnabled(true);
+                }
+                else{
+                    sap.ui.getCore().byId("validatebtn").setEnabled(false);
+                }
             },
             fnValidateCashier: function (oEvent) {
                 var that = this;
@@ -2144,6 +2161,78 @@ sap.ui.define([
                                     }
                                     );
                                 }
+                            }
+                            else {
+                                sap.m.MessageBox.show(
+                                    JSON.parse(oError.responseText).error.message.value, {
+                                    icon: sap.m.MessageBox.Icon.Error,
+                                    title: "Error",
+                                    actions: ["OK", "CANCEL"],
+                                    onClose: function (oAction) {
+
+                                    }
+                                }
+                                );
+                            }
+                            console.error("Error", oError);
+                        }
+                    });
+
+                }
+            },
+             onStockSuggest: function (oEvent) {
+                var that = this;
+                this.openMessageBox = false;
+                var sValue = "";
+
+                if (oEvent.getParameter("suggestValue")) {
+                    sValue = oEvent.getParameter("suggestValue");
+                }
+                else if (oEvent.getParameter("value")) {
+                    sValue = oEvent.getParameter("value");
+                }
+                // var oInput = oEvent.getSource();
+                // var oSuggestionPopup = oInput._getSuggestionsPopover().getPopover();
+                // oSuggestionPopup.setPlacement(PlacementType.Right);
+                if (sValue.length > 0) { // Suggest only when user types 3 or more characters
+                    var aFilters = [new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.Contains, sValue)];
+                    this.oModel.read("/MaterialSet", {
+                        urlParameters: {
+                            "$expand": "ToDiscounts"
+                        },
+                        filters: aFilters,
+                        success: function (oData) {
+                            if (oData.results.length > 0) {
+
+                                var oSuggestionModel = new sap.ui.model.json.JSONModel({ suggestions: [] });
+                                oSuggestionModel.setProperty("/suggestions", oData.results);
+                                that.getView().setModel(oSuggestionModel, "suggestionModel");
+
+                            }
+
+                        },
+                        error: function (oError) {
+                            aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "X"));
+                            if (JSON.parse(oError.responseText).error.code === "MATERIAL_CHECK") {
+                                // if (!that.openMessageBox) {
+                                //     sap.m.MessageBox.show(
+                                //         "Item is not available at this store location. Do you want to check other locations?", {
+                                //         icon: sap.m.MessageBox.Icon.INFORMATION,
+                                //         title: "Availability Check",
+                                //         actions: ["OK", "CANCEL"],
+                                //         onClose: function (oAction) {
+                                //             if (oAction === "OK") {
+                                //                 that.openMessageBox = true;
+                                //                 that.getMaterialAllLocation(aFilters);
+
+
+                                //             } else {
+
+                                //             }
+                                //         }
+                                //     }
+                                //     );
+                                // }
                             }
                             else {
                                 sap.m.MessageBox.show(
