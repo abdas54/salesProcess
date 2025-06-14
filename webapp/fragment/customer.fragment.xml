@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form" xmlns:f="sap.f.cards">
-	<Dialog title="Customer Details" contentHeight="400px" contentWidth="1000px">
+	<Dialog title="Customer Details" contentHeight="800px" contentWidth="1000px">
 		<content >
         <SearchField
                 id="phoneInput"
@@ -12,7 +12,14 @@
 			<HBox>
 				<VBox >
 					<List items="{CustModel>/customerData}" mode="None" class="roundedList">
-						<StandardListItem title="{CustModel>option}" type="Active" press="onOptionSelect"/>
+                    <CustomListItem>
+                    <GenericTile  frameType="OneByHalf" press="onOptionSelect" header="{CustModel>option}" class="customTileCust" headerImage="{CustModel>icon}">
+							<TileContent>
+								<!-- <Button type="Transparent" icon="sap-icon://product"/> -->
+							</TileContent>
+						</GenericTile>
+                    </CustomListItem>
+						<!-- <StandardListItem title="{CustModel>option}" type="Active" press="onOptionSelect"/> -->
 					</List>
 				</VBox>
 				<VBox >

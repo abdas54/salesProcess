@@ -40,7 +40,7 @@
 /* Make each list item rounded */
 .roundedList .sapMLIB {
     margin: 8px;
-    padding: 12px;
+    padding: 1px;
     background: #f9f9f9; /* light background */
     border-radius: 12px; /* rounded corners */
     box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* light shadow */
@@ -80,6 +80,13 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
     border-radius: 12px !important; /* rounded corners */
     text-align: center !important;
     background-color:  #a6b7c3 !important;
+}
+.customTileCust{
+    font-weight: bold !important;
+    border-radius: 8px !important; /* rounded corners */
+    text-align: center !important;
+    background-color:  #a6b7c3 !important;
+    height: 4rem !important;
 }
 
 .sapMGTHdrTxt>.sapMText {
@@ -278,4 +285,11 @@ margin-top: 15px !important;
 .signaturePad {
   border: 2px solid #050202 !important;
   border-radius: 5px !important;
+}
+.stickyHeaderBox {
+    position: sticky;
+    top: 0;
+    background-color: white; /* Optional: match Dialog background */
+    z-index: 2;
+    padding: 0.5rem;
 }

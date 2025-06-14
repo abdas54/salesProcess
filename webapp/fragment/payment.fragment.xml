@@ -5,19 +5,28 @@
     xmlns:f="sap.f.cards"
     xmlns:l="sap.ui.layout"
     xmlns:g="sap.f">
-    <Dialog title="Payment" contentHeight="600px" contentWidth="1000px">
+    <Dialog title="Payment" contentHeight="900px" contentWidth="1000px" >
         <content>
+        <HBox class="stickyHeaderBox">
             <Label design="Bold" text="Sale Amount:" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Text id="totalAmountText"  class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Label design="Bold" text="Sale Balance Amount:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Text id="totalSaleBalText" class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Label design="Bold" text="Tender Change Amount:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
             <Text  id="totaltenderBal" class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
-            <ScrollContainer class="sapUiSmallMarginTop" height="600px" vertical="true">
+        </HBox>
+            <ScrollContainer class="" height="800px" vertical="true">
                 <HBox>
                     <VBox class="sapUiSmallMargin">
                         <List items="{PaymentModel>/paymentOptions}" mode="None" class="roundedList">
-                            <StandardListItem title="{PaymentModel>option}" type="Active" press="onOptionSelectPayment"/>
+                        <CustomListItem>
+                    <GenericTile  frameType="OneByHalf" press="onOptionSelectPayment" header="{PaymentModel>option}" class="customTileCust" headerImage="{PaymentModel>icon}">
+							<TileContent>
+								<!-- <Button type="Transparent" icon="sap-icon://product"/> -->
+							</TileContent>
+						</GenericTile>
+                    </CustomListItem>
+                            <!-- <StandardListItem title="{PaymentModel>option}" type="Active" press="onOptionSelectPayment"/> -->
                         </List>
                     </VBox>
                     <VBox width="700px">
@@ -309,7 +318,7 @@
         <!--	<Button text="Close" press="onPressClose"/>-->
         <!--</endButton>-->
         <buttons>
-            <Button text="Print Transaction" type="Reject" press="onClear" class="cstmBtn"/>
+            <Button visible="false" text="Print Transaction" type="Reject" press="onClear" class="cstmBtn"/>
             <Button text="Signature" type="Emphasized" press="OnSignaturePress" class="cstmBtn" visible="false"/>
             <Button id="sbmtTrans" visible="false" text="Submit" type="Emphasized" press="onPressPaymentTest" class="cstmBtn"/>
             <Button text="Close" type="Emphasized" press="onPressClose" class="cstmBtn"/>
