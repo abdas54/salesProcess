@@ -833,10 +833,10 @@ sap.ui.define([
                 this._oDialogCashier.close();
             },
             enableValidateBtn: function(oEvent){
-                if(oEvent.getSource().getId() === "__input1"){
+                if(oEvent.getSource().getId() === "cashId"){
                     this.cashierID = oEvent.getSource().getValue();
                 }
-                else if(oEvent.getSource().getId() === "__input2"){
+                else if(oEvent.getSource().getId() === "casPwd"){
                     this.CashierPwd = oEvent.getSource().getValue();
                 }
 
@@ -1452,23 +1452,7 @@ sap.ui.define([
                 }
 
                 // Additional fields for Tourist (CustType === "2")
-                if (custData.CustomerType === "TOURIST") {
-                    if (!custData.IdentityType || custData.IdentityType.trim() === "") {
-                        errorMessage += "Identity Type is required for Tourists.\n";
-                    }
-                    if (!custData.IdentityIssuedBy || custData.IdentityIssuedBy.trim() === "") {
-                        errorMessage += "Identity Document Issued By is required for Tourists.\n";
-                    }
-                    if (!custData.IdentityNumber || custData.IdentityNumber.trim() === "") {
-                        errorMessage += "Identity Document Number is required for Tourists.\n";
-                    }
-                    if (!custData.Residence || custData.Residence.trim() === "") {
-                        errorMessage += "Identity Document Number is required for Tourists.\n";
-                    }
-                    if (!custData.Nationality || custData.Nationality.trim() === "") {
-                        errorMessage += "Identity Document Number is required for Tourists.\n";
-                    }
-                }
+             
 
                 if (checkDelivery === "HD") {
                     if (!custData.shippingDate || custData.shippingDate === "") {
@@ -1504,7 +1488,7 @@ sap.ui.define([
                 delete (data.ShippingMethod);
 
                 var birthDate = sap.ui.getCore().byId("birthDate").getValue();
-                var expiryDate = sap.ui.getCore().byId("expiryDate").getValue();
+              
 
                 if (birthDate) {
                     data.BirthDate = new Date(birthDate);
@@ -1512,12 +1496,9 @@ sap.ui.define([
                 else {
                     data.BirthDate = null;
                 }
-                if (expiryDate) {
-                    data.IdentityExpiry = new Date(expiryDate);
-                }
-                else {
+             
                     data.IdentityExpiry = null;
-                }
+            
                 this.oModel.create("/CustomerSet", data, {
                     success: function (oData, response) {
                         that.getView().getModel("custAddModel").setData({});
@@ -2553,19 +2534,19 @@ sap.ui.define([
                 var that = this;
 
                 if (oEvent.getParameter("selectedItem").getProperty("key") === "TOURIST") {
-                    sap.ui.getCore().byId("cardTypelbl").setRequired(true);
-                    sap.ui.getCore().byId("issuedBylbl").setRequired(true);
-                    sap.ui.getCore().byId("cardNumberlbl").setRequired(true);
-                    sap.ui.getCore().byId("nationnalLbl").setRequired(true);
-                    sap.ui.getCore().byId("residencelabl").setRequired(true);
+                    // sap.ui.getCore().byId("cardTypelbl").setRequired(true);
+                    // sap.ui.getCore().byId("issuedBylbl").setRequired(true);
+                    // sap.ui.getCore().byId("cardNumberlbl").setRequired(true);
+                    // sap.ui.getCore().byId("nationnalLbl").setRequired(true);
+                    // sap.ui.getCore().byId("residencelabl").setRequired(true);
                     that.getView().getModel("custAddModel").setProperty("/Code", "");
                 }
                 else {
-                    sap.ui.getCore().byId("cardTypelbl").setRequired(false);
-                    sap.ui.getCore().byId("issuedBylbl").setRequired(false);
-                    sap.ui.getCore().byId("cardNumberlbl").setRequired(false);
-                    sap.ui.getCore().byId("nationnalLbl").setRequired(false);
-                    sap.ui.getCore().byId("residencelabl").setRequired(false);
+                    // sap.ui.getCore().byId("cardTypelbl").setRequired(false);
+                    // sap.ui.getCore().byId("issuedBylbl").setRequired(false);
+                    // sap.ui.getCore().byId("cardNumberlbl").setRequired(false);
+                    // sap.ui.getCore().byId("nationnalLbl").setRequired(false);
+                    // sap.ui.getCore().byId("residencelabl").setRequired(false);
                     that.getView().getModel("custAddModel").setProperty("/Code", "00971");
                 }
 
@@ -2869,9 +2850,11 @@ sap.ui.define([
                         if (that._oDialogPayment) {
                             that._oDialogPayment.setBusy(false);
                         }
-                         if(that._pAddRecordDialog){
-                    that._pAddRecordDialog.setBusy(false);
-                }
+                         that._pAddRecordDialog.then(
+                    function (oValueHelpDialog) {
+                        oValueHelpDialog.setBusy(false);
+                    }.bind(that)
+                );
 
                         if (oData) {
 
@@ -4181,9 +4164,12 @@ sap.ui.define([
 
                 imgCash.addEventListener('load', onImageLoadedCash);
                 imgCash.src = svgObjectUrlCash;
-                if(that._pAddRecordDialog){
-                    that._pAddRecordDialog.setBusy(true);
-                }
+                that._pAddRecordDialog.then(
+                    function (oValueHelpDialog) {
+                        that.onClear();
+                        oValueHelpDialog.setBusy(true);
+                    }.bind(that)
+                );
                 setTimeout(function(){
                     that.onPressPayment(true);},1000)
 

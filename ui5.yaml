@@ -15,6 +15,7 @@ server:
             - /resources
             - /test-resources
           url: https://ui5.sap.com
+          version: 1.120.30
         backend:
           - path: /sap
             url: https://ersgpdev.sap.erosgroup.ae/

@@ -63,7 +63,7 @@
                             <ComboBox selectedKey="{custAddModel>/Code}" 
                                 showSecondaryValues="true" filterSecondaryValues="true"
                                 class="inputStyle sapUiSmallMarginBottom"
-                                 items="{ path: '/CountryCodesSet', sorter: { path: 'CountryCode' } }"
+                                 items="{ path: '/CountryCodesSet',length :500, sorter: { path: 'CountryCode' } }"
                             >
                                  <core:ListItem
                                     key="{CountryCode}"
@@ -104,107 +104,21 @@
     }
   }" class="inputStyle sapUiSmallMarginBottom"/>
 
-  <Label text="Nationality" id="nationnalLbl" />
 
-                            <ComboBox width="40%"
-                                showSecondaryValues="true"
-                                filterSecondaryValues="true"
-                                selectedKey="{custAddModel>/Nationality}"
-                                items="{ path: '/CountryCodesSet', sorter: { path: 'Country' } }"
-                            >
-                                <core:ListItem
-                                    key="{Country}"
-                                    text="{CountryName}"
-                                    additionalText="{Country}"
-                                />
-                            </ComboBox>
 
-                            <Label id="residencelabl" text="Country of Residence" />
+               
 
-                            <ComboBox width="40%"
-                                showSecondaryValues="true"
-                                filterSecondaryValues="true"
-                                selectedKey="{custAddModel>/Residence}"
-                                items="{ path: '/CountryCodesSet', sorter: { path: 'Country' } }"
-                            >
-                                <core:ListItem
-                                    key="{Country}"
-                                    text="{CountryName}"
-                                    additionalText="{Country}"
-                                />
-                            </ComboBox>
+
                             
-                                <Label
-                            id="cardTypelbl"
-                            text="Identity Type"
-                        />
+ 
 
-                        <Select
-                            id="cardType"
-                            selectedKey="{custAddModel>/IdentityType}"
-                        >
-                            <items>
-                                <core:Item
-                                    key="0"
-                                    text=""
-                                />
-                                <core:Item
-                                    key="PASSPORT"
-                                    text="PASSPORT"
-                                />
-                            </items>
-                        </Select>
+                    
 
-                        <Label
-                            id="issuedBylbl"
-                            text="Identity Document Issued By"
-                        />
-                        <ComboBox
-                            id="issuedBy"
-                            showSecondaryValues="true"
-                            filterSecondaryValues="true"
-                            selectedKey="{custAddModel>/IdentityIssuedBy}"
-                            items="{ path: '/CountryCodesSet', sorter: { path: 'Country' } }"
-                        >
-                            <core:ListItem
-                                key="{Country}"
-                                text="{CountryName}"
-                                additionalText="{Country}"
-                            />
-                        </ComboBox>
 
-                        <Label
-                            id="cardNumberlbl"
-                            text="Identity Document Number"
-                        />
-                        <Input
-                            id="cardNumber"
-                            value="{custAddModel>/IdentityNumber}"
-                        />
-                        <Label
-                            id="cardExpirylbl"
-                            text="Identity Document Expiry Date"
-                        />
+          
+                     
 
-                        <!-- <DatePicker
-                           displayFormat="dd MMMM yyyy" valueFormat="yyyy-MM-dd"
-                            width="40%"
-                            id="expiryDate"
-                            value="{custModel>/IdentityExpiry}"
-                        /> -->
-                        <DatePicker id="expiryDate"
-                            width="40%"
-                            value="{
-    path: 'custAddModel>/IdentityExpiry',
-    type: 'sap.ui.model.type.Date',
-    formatOptions: {
-      pattern: 'dd-MMM-yy'
-    },
-    constraints: {
-      nullable: true
-    }
-  }"
-                        />
+
                                 
 								</form:SimpleForm>
 							
@@ -234,7 +148,7 @@
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/HomeCountry}"
-                                items="{ path: '/CountryCodesSet', sorter: { path: 'Country' } }"
+                                items="{ path: '/CountryCodesSet',length:500, sorter: { path: 'Country' } }"
                             >
                                 <core:ListItem
                                     key="{Country}"
@@ -263,7 +177,7 @@
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/OfficeCountry}"
-                                items="{ path: '/CountryCodesSet', sorter: { path: 'Country' } }"
+                                items="{ path: '/CountryCodesSet', length:500, sorter: { path: 'Country' } }"
                             >
                                 <core:ListItem
                                     key="{Country}"
@@ -292,7 +206,7 @@
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/OtherCountry}"
-                                items="{ path: '/CountryCodesSet', sorter: { path: 'Country' } }"
+                                items="{ path: '/CountryCodesSet', length:500, sorter: { path: 'Country' } }"
                             >
                                 <core:ListItem
                                     key="{Country}"
