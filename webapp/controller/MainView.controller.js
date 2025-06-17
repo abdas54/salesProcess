@@ -338,9 +338,9 @@ sap.ui.define([
                     this._oDialog.open();
                 }
             },
-            onDialogClose: function () {
-                this.getView().byId("page").setVisible(true);
-            },
+            // onDialogClose: function () {
+            //     this.getView().byId("page").setVisible(true);
+            // },
             onDialogConfirm: function () {
                 var sInputValue = this.byId("salesmanInput").getValue();
                 if (sInputValue.trim()) {
@@ -1865,7 +1865,7 @@ sap.ui.define([
                     }.bind(this)
                 );
 
-                this.onPDFDialogClose();
+               
 
             },
             onPressAddButton: function (oEvent) {
