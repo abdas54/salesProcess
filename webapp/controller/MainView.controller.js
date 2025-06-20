@@ -89,8 +89,8 @@ sap.ui.define([
                 this.shippingMethod = "";
                 this.suspendComments = "";
                 this.openStockTile = false;
-                this.cashierID ="";
-                this.CashierPwd="";
+                this.cashierID = "";
+                this.CashierPwd = "";
 
             },
 
@@ -119,10 +119,15 @@ sap.ui.define([
             getManualMatDetail: function (oEvent) {
                 this.getMaterialDetail(true, oEvent.getParameter("value"));
             },
-            getMaterialDetail: function (flag, matCode) {
+            getMaterialDetail: function (flag, matCode, data) {
                 var aFilters = [];
 
                 aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, matCode));
+                if (data !== "") {
+                    aFilters.push(new sap.ui.model.Filter("Plant", sap.ui.model.FilterOperator.EQ, data.getProperty("Plant")));
+                    aFilters.push(new sap.ui.model.Filter("Location", sap.ui.model.FilterOperator.EQ, data.getProperty("Location")));
+                }
+
 
                 this.oModel.read("/MaterialSet", {
                     urlParameters: {
@@ -414,7 +419,16 @@ sap.ui.define([
                         console.log("Success", oData);
                     },
                     error: function (oError) {
-                        console.error("Error", oError);
+                         sap.m.MessageBox.show(
+                                    JSON.parse(oError.responseText).error.message.value, {
+                                    icon: sap.m.MessageBox.Icon.Error,
+                                    title: "Error",
+                                    actions: ["OK", "CANCEL"],
+                                    onClose: function (oAction) {
+
+                                    }
+                                }
+                                );
                     }
                 });
             },
@@ -434,16 +448,7 @@ sap.ui.define([
             getStockDetailManually: function (oEvent) {
                 this.getStockDetail(true, oEvent.getParameter("value"));
             },
-            // onScanSuccessOne: function (oEvent) {
-            //     if (oEvent.getParameter("cancelled")) {
-            //         MessageToast.show("Scan cancelled", { duration: 1000 });
-            //     } else {
-            //         if (oEvent.getParameter("text")) {
-            //             this.getMaterialDetail(false, oEvent.getParameter("text"));
 
-            //         }
-            //     }
-            // },
 
             onStockAvailability: function () {
                 this.openStockTile = true;
@@ -832,19 +837,19 @@ sap.ui.define([
             fnCloseCashier: function () {
                 this._oDialogCashier.close();
             },
-            enableValidateBtn: function(oEvent){
-                if(oEvent.getSource().getId() === "cashId"){
+            enableValidateBtn: function (oEvent) {
+                if (oEvent.getSource().getId() === "cashId") {
                     this.cashierID = oEvent.getSource().getValue();
                 }
-                else if(oEvent.getSource().getId() === "casPwd"){
+                else if (oEvent.getSource().getId() === "casPwd") {
                     this.CashierPwd = oEvent.getSource().getValue();
                 }
 
-                
-                if(this.cashierID.length > 0 && this.CashierPwd.length > 0){
+
+                if (this.cashierID.length > 0 && this.CashierPwd.length > 0) {
                     sap.ui.getCore().byId("validatebtn").setEnabled(true);
                 }
-                else{
+                else {
                     sap.ui.getCore().byId("validatebtn").setEnabled(false);
                 }
             },
@@ -981,26 +986,26 @@ sap.ui.define([
                         totalAmount: "0.00",
                         paymentOptions: [{
                             option: "Cash",
-                            icon : "sap-icon://wallet"
+                            icon: "sap-icon://wallet"
                         }, {
                             option: "Card",
-                            icon : "sap-icon://credit-card"
+                            icon: "sap-icon://credit-card"
                         }, {
                             option: "CreditNote",
-                            icon : "sap-icon://commission-check"
+                            icon: "sap-icon://commission-check"
                         }, {
                             option: "Advance Payment",
-                            icon : "sap-icon://batch-payments"
+                            icon: "sap-icon://batch-payments"
                         }, {
                             option: "Gift Voucher",
-                            icon : "sap-icon://money-bills"
+                            icon: "sap-icon://money-bills"
                         }, {
                             option: "Non-GV",
-                            icon : "sap-icon://money-bills"
-                        }, 
+                            icon: "sap-icon://money-bills"
+                        },
                         {
                             option: "View All Records",
-                            icon : "sap-icon://sum"
+                            icon: "sap-icon://sum"
                         }]
 
                         // {
@@ -1104,22 +1109,22 @@ sap.ui.define([
 
                     DiscountList: [{
                         option: "Item List",
-                         icon : "sap-icon://activities"
+                        icon: "sap-icon://activities"
                     }, {
                         option: "Discounts Condition",
-                         icon : "sap-icon://blank-tag-2"
+                        icon: "sap-icon://blank-tag-2"
                     }, {
                         option: "Reason Type",
-                         icon : "sap-icon://cause"
+                        icon: "sap-icon://cause"
                     }, {
                         option: "Authority",
-                         icon : "sap-icon://employee"
+                        icon: "sap-icon://employee"
                     }, {
                         option: "Amount",
-                         icon : "sap-icon://money-bills"
+                        icon: "sap-icon://money-bills"
                     }, {
                         option: "View All Records",
-                         icon : "sap-icon://sum"
+                        icon: "sap-icon://sum"
                     }]
                 });
                 this.getView().setModel(oModel, "DiscountModel");
@@ -1171,7 +1176,7 @@ sap.ui.define([
 
             },
             onOptionSelect: function (oEvent) {
-                var sSelectedOption =  oEvent.getSource().getProperty("header"); //    oEvent.getSource().getTitle();
+                var sSelectedOption = oEvent.getSource().getProperty("header"); //    oEvent.getSource().getTitle();
                 var showSection = new JSONModel();
                 showSection.setData({
                     "selectedMode": sSelectedOption
@@ -1271,13 +1276,13 @@ sap.ui.define([
                 var oModel = new sap.ui.model.json.JSONModel({
                     customerData: [{
                         option: "Basic Information",
-                        icon : "sap-icon://add-contact"
+                        icon: "sap-icon://add-contact"
                     }, {
                         option: "Customer Address",
-                        icon : "sap-icon://database"
+                        icon: "sap-icon://database"
                     }, {
                         option: "Shipping Instruction",
-                        icon : "sap-icon://shipping-status"
+                        icon: "sap-icon://shipping-status"
                     }
                     ]
                 });
@@ -1452,7 +1457,7 @@ sap.ui.define([
                 }
 
                 // Additional fields for Tourist (CustType === "2")
-             
+
 
                 if (checkDelivery === "HD") {
                     if (!custData.shippingDate || custData.shippingDate === "") {
@@ -1488,7 +1493,7 @@ sap.ui.define([
                 delete (data.ShippingMethod);
 
                 var birthDate = sap.ui.getCore().byId("birthDate").getValue();
-              
+
 
                 if (birthDate) {
                     data.BirthDate = new Date(birthDate);
@@ -1496,9 +1501,9 @@ sap.ui.define([
                 else {
                     data.BirthDate = null;
                 }
-             
-                    data.IdentityExpiry = null;
-            
+
+                data.IdentityExpiry = null;
+
                 this.oModel.create("/CustomerSet", data, {
                     success: function (oData, response) {
                         that.getView().getModel("custAddModel").setData({});
@@ -1540,51 +1545,51 @@ sap.ui.define([
                     oEvent.getSource().getEventingParent().getItems()[1].setValue(iValue - 1);
                     var itemQty = oEvent.getSource().getEventingParent().getItems()[1].getValue();
                     if (parseInt(itemQty) !== 0) {
-                       
-                            var that = this;
-                            var oPayload = {
-                                "TransactionId": this.getView().byId("tranNumber").getCount(),
-                                "ReservedFlag": "I",
-                                "Material": selIndexData.Itemcode,
-                                "Plant": selIndexData.Plant,
-                                "Location": selIndexData.Location,
-                                "ReservationNo": "",
-                                "Type": "",
-                                "Status": "",
-                                "Quantity": selIndexData.SaleQuantity.toString()
 
-                            }
-                            this.oModel.create("/ReservationSet", oPayload, {
-                                success: function (oData) {
-                                    that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
-                                    that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
-                                    var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
-                                    var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
-                                    var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
-                                    // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
-                                    that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
-                                    that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
-                                    that.getView().setBusy(false);
-                                },
-                                error: function (oError) {
-                                    that.getView().setBusy(false);
-                                    sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
-                                        icon: sap.m.MessageBox.Icon.Error,
-                                        title: "Error",
-                                        actions: [MessageBox.Action.OK],
-                                        onClose: function (oAction) {
-                                            if (oAction === MessageBox.Action.OK) {
-                                                event.getEventingParent().getItems()[1].setValue(1);
-                                                event.getEventingParent().getItems()[1].getSource().fireChange();
-                                            }
+                        var that = this;
+                        var oPayload = {
+                            "TransactionId": this.getView().byId("tranNumber").getCount(),
+                            "ReservedFlag": "I",
+                            "Material": selIndexData.Itemcode,
+                            "Plant": selIndexData.Plant,
+                            "Location": selIndexData.Location,
+                            "ReservationNo": "",
+                            "Type": "",
+                            "Status": "",
+                            "Quantity": selIndexData.SaleQuantity.toString()
+
+                        }
+                        this.oModel.create("/ReservationSet", oPayload, {
+                            success: function (oData) {
+                                that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                                that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                                var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
+                                var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
+                                var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
+                                // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                                that.getView().setBusy(false);
+                            },
+                            error: function (oError) {
+                                that.getView().setBusy(false);
+                                sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                                    icon: sap.m.MessageBox.Icon.Error,
+                                    title: "Error",
+                                    actions: [MessageBox.Action.OK],
+                                    onClose: function (oAction) {
+                                        if (oAction === MessageBox.Action.OK) {
+                                            event.getEventingParent().getItems()[1].setValue(1);
+                                            event.getEventingParent().getItems()[1].getSource().fireChange();
                                         }
-                                    });
-                                }
-                            });
+                                    }
+                                });
+                            }
+                        });
 
 
-                      
-                     
+
+
                     } else {
                         sap.m.MessageBox.confirm("Do you want to delete the Item, press Ok to Continue or Cancel",
                             {
@@ -1619,58 +1624,58 @@ sap.ui.define([
                 }
 
                 if ((qty !== "0")) {
-                    
 
-                        var that = this;
-                        var oPayload = {
-                            "TransactionId": this.getView().byId("tranNumber").getCount(),
-                            "ReservedFlag": "I",
-                            "Material": selIndexData.Itemcode,
-                            "Plant": selIndexData.Plant,
-                            "Location": selIndexData.Location,
-                            "ReservationNo": "",
-                            "Type": "",
-                            "Status": "",
-                            "Quantity": selIndexData.SaleQuantity.toString()
 
-                        }
-                        this.oModel.create("/ReservationSet", oPayload, {
-                            success: function (oData) {
-                                var qtyValue = qty;
-                                var iValue = parseInt(qtyValue, 10) || 0;
-                                selIndexData.NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
-                                selIndexData.NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
+                    var that = this;
+                    var oPayload = {
+                        "TransactionId": this.getView().byId("tranNumber").getCount(),
+                        "ReservedFlag": "I",
+                        "Material": selIndexData.Itemcode,
+                        "Plant": selIndexData.Plant,
+                        "Location": selIndexData.Location,
+                        "ReservationNo": "",
+                        "Type": "",
+                        "Status": "",
+                        "Quantity": selIndexData.SaleQuantity.toString()
 
-                                var netAmount = selIndexData.NetAmount;
-                                var netDiscount = selIndexData.NetDiscount
-                                var vatPercent = selIndexData.VatPercent
-                                // selIndexData.NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
-                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
-                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
-                                that.getView().setBusy(false);
-                            },
-                            error: function (oError) {
-                                that.getView().setBusy(false);
-                                sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
-                                    icon: sap.m.MessageBox.Icon.Error,
-                                    title: "Error",
-                                    actions: [MessageBox.Action.OK],
-                                    onClose: function (oAction) {
-                                        if (oAction === MessageBox.Action.OK) {
-                                            if(JSON.parse(oError.responseText).error.message.value){
-                                                var resrveQty = parseInt(JSON.parse(oError.responseText).error.message.value.split(":")[1]);
-                                                event.setValue(resrveQty);
-                                                event.fireChange();
-                                            }
-                                           
+                    }
+                    this.oModel.create("/ReservationSet", oPayload, {
+                        success: function (oData) {
+                            var qtyValue = qty;
+                            var iValue = parseInt(qtyValue, 10) || 0;
+                            selIndexData.NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
+                            selIndexData.NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
+
+                            var netAmount = selIndexData.NetAmount;
+                            var netDiscount = selIndexData.NetDiscount
+                            var vatPercent = selIndexData.VatPercent
+                            // selIndexData.NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                            that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                            that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                            that.getView().setBusy(false);
+                        },
+                        error: function (oError) {
+                            that.getView().setBusy(false);
+                            sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                                icon: sap.m.MessageBox.Icon.Error,
+                                title: "Error",
+                                actions: [MessageBox.Action.OK],
+                                onClose: function (oAction) {
+                                    if (oAction === MessageBox.Action.OK) {
+                                        if (JSON.parse(oError.responseText).error.message.value) {
+                                            var resrveQty = parseInt(JSON.parse(oError.responseText).error.message.value.split(":")[1]);
+                                            event.setValue(resrveQty);
+                                            event.fireChange();
                                         }
-                                    }
-                                });
-                            }
-                        });
 
-                   
-                  
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+
+
                 }
                 else {
                     sap.m.MessageBox.confirm("Do you want to delete the Item, press Ok to Continue or Cancel",
@@ -1707,52 +1712,52 @@ sap.ui.define([
                 var iValue = parseInt(qtyValue, 10) || 0;
                 oEvent.getSource().getEventingParent().getItems()[1].setValue(iValue + 1);
                 var itemQty = oEvent.getSource().getEventingParent().getItems()[1].getValue();
-           
-                    //this.reservedItemonAdditnSub(selIndexData, "add");
-                    var that = this;
-                    var oPayload = {
-                        "TransactionId": this.getView().byId("tranNumber").getCount(),
-                        "ReservedFlag": "I",
-                        "Material": selIndexData.Itemcode,
-                        "Plant": selIndexData.Plant,
-                        "Location": selIndexData.Location,
-                        "ReservationNo": "",
-                        "Type": "",
-                        "Status": "",
-                        "Quantity": selIndexData.SaleQuantity.toString()
 
-                    }
-                    this.oModel.create("/ReservationSet", oPayload, {
-                        success: function (oData) {
-                            that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
-                            that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                //this.reservedItemonAdditnSub(selIndexData, "add");
+                var that = this;
+                var oPayload = {
+                    "TransactionId": this.getView().byId("tranNumber").getCount(),
+                    "ReservedFlag": "I",
+                    "Material": selIndexData.Itemcode,
+                    "Plant": selIndexData.Plant,
+                    "Location": selIndexData.Location,
+                    "ReservationNo": "",
+                    "Type": "",
+                    "Status": "",
+                    "Quantity": selIndexData.SaleQuantity.toString()
 
-                            var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
-                            var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
-                            var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
-                            // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
-                            that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
-                            that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
-                            that.getView().setBusy(false);
-                        },
-                        error: function (oError) {
-                            that.getView().setBusy(false);
-                            sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
-                                icon: sap.m.MessageBox.Icon.Error,
-                                title: "Error",
-                                actions: [MessageBox.Action.OK],
-                                onClose: function (oAction) {
-                                    if (oAction === MessageBox.Action.OK) {
-                                        that.oControl.setValue(qtyValue);
-                                        that.oControl.getSource().fireChange();
-                                    }
+                }
+                this.oModel.create("/ReservationSet", oPayload, {
+                    success: function (oData) {
+                        that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                        that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+
+                        var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
+                        var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
+                        var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
+                        // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                        that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                        that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                        that.getView().setBusy(false);
+                    },
+                    error: function (oError) {
+                        that.getView().setBusy(false);
+                        sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                if (oAction === MessageBox.Action.OK) {
+                                    that.oControl.setValue(qtyValue);
+                                    that.oControl.getSource().fireChange();
                                 }
-                            });
-                        }
-                    });
+                            }
+                        });
+                    }
+                });
 
-              
-             
+
+
 
             },
             calculateSalesAmount: function (netAmount, netDiscount, vatPercent, selIndex) {
@@ -1865,7 +1870,7 @@ sap.ui.define([
                     }.bind(this)
                 );
 
-               
+
 
             },
             onPressAddButton: function (oEvent) {
@@ -2093,6 +2098,8 @@ sap.ui.define([
                 var that = this;
                 this.openMessageBox = false;
                 var sValue = "";
+                that._lastSuggestTimestamp = Date.now();
+                var requestTimestamp = that._lastSuggestTimestamp;
 
                 if (oEvent.getParameter("suggestValue")) {
                     sValue = oEvent.getParameter("suggestValue");
@@ -2104,6 +2111,13 @@ sap.ui.define([
                 // var oSuggestionPopup = oInput._getSuggestionsPopover().getPopover();
                 // oSuggestionPopup.setPlacement(PlacementType.Right);
                 if (sValue.length > 0) { // Suggest only when user types 3 or more characters
+                    var oSuggestionModel = that.getView().getModel("suggestionModel");
+                    if (!oSuggestionModel) {
+                        oSuggestionModel = new sap.ui.model.json.JSONModel({ suggestions: [] });
+                        that.getView().setModel(oSuggestionModel, "suggestionModel");
+                    } else {
+                        oSuggestionModel.setProperty("/suggestions", []);
+                    }
                     var aFilters = [new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.Contains, sValue)];
                     this.oModel.read("/MaterialSet", {
                         urlParameters: {
@@ -2112,26 +2126,31 @@ sap.ui.define([
                         filters: aFilters,
                         success: function (oData) {
                             if (oData.results.length > 0) {
-
-                                var oSuggestionModel = new sap.ui.model.json.JSONModel({ suggestions: [] });
-                                oSuggestionModel.setProperty("/suggestions", oData.results);
-                                that.getView().setModel(oSuggestionModel, "suggestionModel");
+                                if (requestTimestamp !== that._lastSuggestTimestamp) {
+                                    return;
+                                }
+                                else {
+                                    oSuggestionModel.setProperty("/suggestions", oData.results);
+                                }
 
                             }
 
                         },
                         error: function (oError) {
-                            aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "X"));
+                          
                             if (JSON.parse(oError.responseText).error.code === "MATERIAL_CHECK") {
-                                if (!that.openMessageBox) {
-                                    sap.m.MessageBox.show(
+                  
+                                    if(!that.messageBox){
+                                    that.messageBox = sap.m.MessageBox;
+                                    that.messageBox.show(
                                         "Item is not available at this store location. Do you want to check other locations?", {
                                         icon: sap.m.MessageBox.Icon.INFORMATION,
                                         title: "Availability Check",
                                         actions: ["OK", "CANCEL"],
                                         onClose: function (oAction) {
                                             if (oAction === "OK") {
-                                                that.openMessageBox = true;
+                                                that.messageBox = null;
+                                                aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "X"));
                                                 that.getMaterialAllLocation(aFilters);
 
 
@@ -2141,7 +2160,9 @@ sap.ui.define([
                                         }
                                     }
                                     );
-                                }
+                                    }
+                                   
+                                
                             }
                             else {
                                 sap.m.MessageBox.show(
@@ -2150,7 +2171,7 @@ sap.ui.define([
                                     title: "Error",
                                     actions: ["OK", "CANCEL"],
                                     onClose: function (oAction) {
-
+                                          
                                     }
                                 }
                                 );
@@ -2161,11 +2182,12 @@ sap.ui.define([
 
                 }
             },
-             onStockSuggest: function (oEvent) {
+            onStockSuggest: function (oEvent) {
                 var that = this;
                 this.openMessageBox = false;
                 var sValue = "";
-
+                 that._lastSuggestTimestamp = Date.now();
+                var requestTimestamp = that._lastSuggestTimestamp;
                 if (oEvent.getParameter("suggestValue")) {
                     sValue = oEvent.getParameter("suggestValue");
                 }
@@ -2175,7 +2197,14 @@ sap.ui.define([
                 // var oInput = oEvent.getSource();
                 // var oSuggestionPopup = oInput._getSuggestionsPopover().getPopover();
                 // oSuggestionPopup.setPlacement(PlacementType.Right);
-                if (sValue.length > 0) { // Suggest only when user types 3 or more characters
+                if (sValue.length > 0) {
+                     var oSuggestionModel = that.getView().getModel("suggestionModel");
+                    if (!oSuggestionModel) {
+                        oSuggestionModel = new sap.ui.model.json.JSONModel({ suggestions: [] });
+                        that.getView().setModel(oSuggestionModel, "suggestionModel");
+                    } else {
+                        oSuggestionModel.setProperty("/suggestions", []);
+                    } // Suggest only when user types 3 or more characters
                     var aFilters = [new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.Contains, sValue)];
                     this.oModel.read("/MaterialSet", {
                         urlParameters: {
@@ -2185,9 +2214,15 @@ sap.ui.define([
                         success: function (oData) {
                             if (oData.results.length > 0) {
 
-                                var oSuggestionModel = new sap.ui.model.json.JSONModel({ suggestions: [] });
-                                oSuggestionModel.setProperty("/suggestions", oData.results);
-                                that.getView().setModel(oSuggestionModel, "suggestionModel");
+                                if (requestTimestamp !== that._lastSuggestTimestamp) {
+                                    return;
+                                }
+                                else{
+                                    oSuggestionModel.setProperty("/suggestions", oData.results);
+                                }
+                              
+                               
+                               
 
                             }
 
@@ -2263,7 +2298,7 @@ sap.ui.define([
                         );
 
                     } else {
-                        this.getMaterialDetail(true, sItemCode);
+                        this.getMaterialDetail(true, sItemCode, oContext);
                     }
 
                 }
@@ -2824,7 +2859,7 @@ sap.ui.define([
                     "SaleAmount": this.getView().byId("saleAmount").getCount().toString(),
                     "Currency": "AED",
                     "OriginalTransactionId": "", // Required for Return Sales
-                    "CustomerType" : this.getView().getModel("custAddModel").getData().CustomerType,
+                    "CustomerType": this.getView().getModel("custAddModel").getData().CustomerType,
                     "CustomerName": this.getView().byId("customer").getCount(),
                     "ContactNo": contactNumber,
                     "EMail": this.getView().getModel("custAddModel").getData().Email,
@@ -2835,7 +2870,7 @@ sap.ui.define([
                     "ToDiscounts": { "results": this.oPayloadTableDiscountItems() },
                     "ToPayments": { "results": this.oPayloadPayments(this.aPaymentEntries) },
                     "ToSerials": { "results": this.oPayloadSerialNumber() },
-                    "ToSignature": {"results": this.oPaySignatureload},
+                    "ToSignature": { "results": this.oPaySignatureload },
                     "Remarks": this.suspendComments
                     // "ToPayments" : {"results" : this.oPayloadTablePayments()}
                 }
@@ -2850,11 +2885,11 @@ sap.ui.define([
                         if (that._oDialogPayment) {
                             that._oDialogPayment.setBusy(false);
                         }
-                         that._pAddRecordDialog.then(
-                    function (oValueHelpDialog) {
-                        oValueHelpDialog.setBusy(false);
-                    }.bind(that)
-                );
+                        that._pAddRecordDialog.then(
+                            function (oValueHelpDialog) {
+                                oValueHelpDialog.setBusy(false);
+                            }.bind(that)
+                        );
 
                         if (oData) {
 
@@ -2990,7 +3025,7 @@ sap.ui.define([
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                             that.OnSignaturePress();
-                           // that.onPressPaymentTest();
+                            // that.onPressPaymentTest();
                         }
                         else {
                             sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
@@ -3767,7 +3802,7 @@ sap.ui.define([
                     function (mResult) {
 
                         if (!mResult.cancelled) {
-                            that.getMaterialDetail(true, mResult.text);
+                            that.getMaterialDetail(true, mResult.text, "");
                         }
                     },
                     function (Error) {
@@ -4170,11 +4205,13 @@ sap.ui.define([
                         oValueHelpDialog.setBusy(true);
                     }.bind(that)
                 );
-                setTimeout(function(){
-                    that.onPressPayment(true);},1000)
+                setTimeout(function () {
+                    that.onPressPayment(true);
+                }, 1000)
 
 
-            },
+            }
+
 
         });
     });

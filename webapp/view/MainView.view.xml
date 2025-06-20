@@ -33,26 +33,26 @@
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionSelected"
 							showTableSuggestionValueHelp="false" >
 							<suggestionColumns >
-								<Column >
+								<Column width="15rem" >
 									<Label text="Item Code" design="Bold"/>
 								</Column>
-								<Column >
+								<Column width="20rem">
 									<Label text="Description" design="Bold"/>
 								</Column>
-								<Column >
+								<Column hAlign="Right" width="10rem">
 									<Label text="Available Stock" design="Bold"/>
 								</Column>
-								<Column >
+								<Column hAlign="Right" width="10rem">
 									<Label text="Price" design="Bold"/>
 								</Column>
-								<Column >
+								<Column hAlign="Right" width="10rem">
 									<Label text="Barcode" design="Bold"/>
 								</Column>
 							</suggestionColumns>
 							<suggestionRows>
 								<ColumnListItem>
-									<Label text="{suggestionModel>Itemcode}"/>
-									<Label text="{suggestionModel>Description}"/>
+									<Label text="{suggestionModel>Itemcode}" wrapping="true"/>
+									<Label text="{suggestionModel>Description}" wrapping="true"/>
 									<Label text="{suggestionModel>Balancestock}"/>
 									<ObjectNumber number="{suggestionModel>UnitPrice}" unit="{suggestionModel>Currency}"/>
 									<Label text="{suggestionModel>Barcode}"/>

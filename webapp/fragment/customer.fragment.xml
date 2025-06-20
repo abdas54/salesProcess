@@ -60,7 +60,7 @@
                             alignItems="Center"
                         > -->
                         <HBox>
-                            <ComboBox selectedKey="{custAddModel>/Code}" 
+                            <ComboBox id="custMobCode" selectedKey="{custAddModel>/Code}" 
                                 showSecondaryValues="true" filterSecondaryValues="true"
                                 class="inputStyle sapUiSmallMarginBottom"
                                  items="{ path: '/CountryCodesSet',length :500, sorter: { path: 'CountryCode' } }"
