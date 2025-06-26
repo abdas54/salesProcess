@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form" xmlns:f="sap.f.cards">
-	<Dialog title="Customer Details" contentHeight="800px" contentWidth="1000px">
+	<Dialog title="Customer Details" contentHeight="800px" contentWidth="1000px" class="customerDialog">
 		<content >
         <SearchField
                 id="phoneInput"
@@ -32,7 +32,7 @@
                             text="Customer Type"
                         />
                         <Select
-                            width="40%"
+                           
                             id="customerType"
                             change="onCustomerTypeChange"
                             selectedKey="{custAddModel>/CustomerType}"
@@ -59,8 +59,8 @@
                             justifyContent="Start"
                             alignItems="Center"
                         > -->
-                        <HBox>
-                            <ComboBox id="custMobCode" selectedKey="{custAddModel>/Code}" 
+                        <HBox >
+                            <ComboBox   id="custMobCode" selectedKey="{custAddModel>/Code}" 
                                 showSecondaryValues="true" filterSecondaryValues="true"
                                 class="inputStyle sapUiSmallMarginBottom"
                                  items="{ path: '/CountryCodesSet',length :500, sorter: { path: 'CountryCode' } }"
@@ -70,19 +70,15 @@
                                     text="{CountryCode}"
                                     additionalText="{CountryName}"
                                 />
-                                <layoutData>
-								<FlexItemData growFactor="1"/>
-							</layoutData>
+                               
                             </ComboBox>
-                            <Input
+                            <Input 
                                 id="mobileNumber"
                                 type="Number"
                                 value="{custAddModel>/Mobile}"
-                                class="inputStyle sapUiSmallMarginBottom"
+                                class="inputStyle sapUiSmallMarginBottom sapUiSmallMarginBeginEnd"
                             >
-                            <layoutData>
-            <FlexItemData growFactor="3"/>
-        </layoutData> </Input> </HBox>
+                            </Input> </HBox>
                         <!-- </FlexBox> -->
 
                                 <!-- <Input type="Tel" value="{custAddModel>/MobNo}"/> -->

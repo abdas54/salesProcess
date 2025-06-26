@@ -5,7 +5,7 @@
     xmlns:f="sap.f.cards"
     xmlns:l="sap.ui.layout"
     xmlns:g="sap.f">
-    <Dialog title="Payment" contentHeight="900px" contentWidth="1000px" >
+    <Dialog title="Payment" contentHeight="900px" contentWidth="1000px" class="stockDialog">
         <content>
         <HBox class="stickyHeaderBox">
             <Label design="Bold" text="Sale Amount:" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
@@ -30,7 +30,7 @@
                         </List>
                     </VBox>
                     <VBox width="700px">
-                        <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Card' }">
+                        <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Card' }" >
                             <content>
                                 <RadioButtonGroup  columns="5"  class="sapUiSmallMarginBottom" selectedIndex="{ShowPaymentSection>/cardPaymentMode}" select="onSelectCardPaymodeMode">
                                     <RadioButton  text="Regular Mode" />
@@ -56,7 +56,7 @@
                                 <VBox visible="{= ${ShowPaymentSection>/cardPaymentMode} === 1 }">
                                     <g:GridList items="{/CardPaymentMenthodsSet}" itemPress="onSelectCardType" >
                                         <g:items>
-                                            <g:GridListItem type="Active" highlight="Success">
+                                            <g:GridListItem type="Active" >
                                                 <VBox class="sapUiSmallMargin">
                                                     <Title text="{CardType}" />
                                                 </VBox>
@@ -79,7 +79,7 @@
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="creditNoteList" visible="false" itemPress="onRedeemCreditNote" >
                                         <g:items>
-                                            <g:GridListItem type="Active" highlight="Success">
+                                            <g:GridListItem type="Active" >
                                                 <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
                                                     <VBox alignItems="Start">
                                                         <Label text="Reciept Id:" class=" sapUiTinyMarginTop boldText"/>
@@ -124,7 +124,7 @@
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="advncePaymentList" visible="false" itemPress="onRedeemAdvPayment" >
                                         <g:items>
-                                            <g:GridListItem type="Active" highlight="Success">
+                                            <g:GridListItem type="Active" >
                                                 <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
                                                     <VBox alignItems="Start">
                                                         <Label text="Reciept Id:" class=" sapUiTinyMarginTop boldText"/>
@@ -169,7 +169,7 @@
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="gvPaymentList" visible="false" itemPress="onRedeemGVPayment" >
                                         <g:items>
-                                            <g:GridListItem type="Active" highlight="Success">
+                                            <g:GridListItem type="Active" >
                                                 <!-- <VBox class="sapUiSmallMargin"><Title text="{GiftVoucher>/Transaction}" /><Text text="{GiftVoucher>/BalanceAmount}" /><Text text="{GiftVoucher>/RedemptionType}" visible="false" /></VBox> -->
                                                 <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
                                                     <VBox alignItems="Start">
@@ -207,7 +207,7 @@
                                 <VBox >
                                     <g:GridList items="{/NEGVPaymentMenthodsSet}" itemPress="onSelectNonGV" >
                                         <g:items>
-                                            <g:GridListItem type="Active" highlight="Success">
+                                            <g:GridListItem type="Active" >
                                                 <VBox class="sapUiSmallMargin">
                                                     <Title text="{PaymentMethodName}" />
                                                     <Text text="{PaymentMethod}" />

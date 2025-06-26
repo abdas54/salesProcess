@@ -146,11 +146,16 @@
 										<core:Icon src="sap-icon://add" press="onAddSerialNumber" size="2rem"
 											visible="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}"/>
 										<!-- <Button icon="sap-icon://add" enabled="{parts: [{path: 'ProductModel>SerialFlag'}], formatter: '.enableSerialNumber'}" press="onAddSerialNumber"/> -->
-										<VBox class="sapUiSmallMarginTop sapUiSmallMarginBottom ">
-											<Select change="linkSalesman" items="{ path: '/EmployeeSet', filters: [{ path: 'Etype', operator: 'EQ', value1: 'S' }] }">
-												<core:ListItem key="{EmployeeId}" text="{EmployeeName}" additionalText="{EmployeeId}"/>
-											</Select>
-										</VBox>
+										
+										
+  <ComboBox
+    change="linkSalesman"
+    class="inputStyle sapUiSmallMarginBottom"
+    items="{ path: '/EmployeeSet', filters: [{ path: 'Etype', operator: 'EQ', value1: 'S' }] }">
+    <core:ListItem key="{EmployeeId}" text="{EmployeeName}" additionalText="{EmployeeId}" />
+  </ComboBox>
+
+										
 									</cells>
 								</ColumnListItem>
 							</items>

@@ -755,7 +755,7 @@ sap.ui.define([
                 if (parseInt(productTblData.SaleQuantity) === 1) {
                     updatedNetAmount = parseFloat(parseFloat(productTblData.UnitPrice) + parseFloat(updateDiscount)).toFixed(2);
                     //this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(updatedNetAmount).toFixed(2);
-                    var vatAmount = parseFloat(parseInt(updatedNetAmount) * (parseInt(parseFloat(productTblData.VatPercent).toFixed(2)) / 100)).toFixed(2);
+                    var vatAmount = parseFloat(updatedNetAmount * (productTblData.VatPercent)/100).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatAmount = vatAmount;
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).SaleAmount = parseFloat(parseFloat(vatAmount) + parseFloat(updatedNetAmount)).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(updateDiscount).toFixed(2) * parseFloat(productTblData.SaleQuantity).toFixed(2)).toFixed(2);
@@ -1761,14 +1761,15 @@ sap.ui.define([
 
             },
             calculateSalesAmount: function (netAmount, netDiscount, vatPercent, selIndex) {
-                var netPrice = parseFloat(parseInt(parseFloat(netAmount).toFixed(2)) + parseInt(parseFloat(netDiscount).toFixed(2))).toFixed(2);
-                var vatAmount = parseFloat(parseInt(netPrice) * (parseInt(parseFloat(vatPercent).toFixed(2)) / 100)).toFixed(2);
+                
+                var netPrice = (parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                 this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).SaleAmount = parseFloat(vatAmount) + parseFloat(netPrice);
                 this.getView().getModel("ProductModel").refresh();
             },
             calculateVATAmount: function (netAmount, netDiscount, vatPercent, selIndex) {
-                var netPrice = parseFloat(parseInt(parseFloat(netAmount).toFixed(2)) + parseInt(parseFloat(netDiscount).toFixed(2))).toFixed(2);
-                var vatAmount = parseFloat(parseInt(netPrice) * (parseInt(parseFloat(vatPercent).toFixed(2)) / 100)).toFixed(2);
+                var netPrice = (parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                 this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatAmount = vatAmount;
                 this.getView().getModel("ProductModel").refresh();
 
@@ -1776,8 +1777,8 @@ sap.ui.define([
             formatVatAmount: function (unitPrice, unitDiscount, vatPercent, vatAmount, seq) {
 
                 if (parseFloat(vatAmount).toFixed(2) === "0.00") {
-                    var netPrice = parseFloat(parseInt(parseFloat(unitPrice).toFixed(2)) + parseInt(parseFloat(unitDiscount).toFixed(2))).toFixed(2);
-                    var vatAmount = parseFloat(parseInt(netPrice) * (parseInt(parseFloat(vatPercent).toFixed(2)) / 100)).toFixed(2);
+                    var netPrice = (parseFloat(unitPrice) + parseFloat(unitDiscount)).toFixed(2);
+                    var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).VatAmount = vatAmount;
                     this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).NetDiscount = unitDiscount;
                     this.getView().getModel("ProductModel").refresh();
@@ -1793,8 +1794,8 @@ sap.ui.define([
             formatSalesAmount: function (unitPrice, unitDiscount, vatPercent, vatAmount, salesAmount, seq) {
 
                 if (parseFloat(salesAmount).toFixed(2) === "0.00") {
-                    var netPrice = parseFloat(parseInt(parseFloat(unitPrice).toFixed(2)) + parseInt(parseFloat(unitDiscount).toFixed(2))).toFixed(2);
-                    var vatAmount = parseFloat(parseInt(netPrice) * (parseInt(parseFloat(vatPercent).toFixed(2)) / 100)).toFixed(2);
+                    var netPrice = (parseFloat(unitPrice) + parseFloat(unitDiscount)).toFixed(2);
+                    var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).NetDiscount = unitDiscount;
                     this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).SaleAmount = parseFloat(parseFloat(vatAmount) + parseFloat(netPrice)).toFixed(2);
                     this.getView().getModel("ProductModel").refresh();

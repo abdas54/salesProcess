@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:ndc="sap.ndc">
-	<Dialog title="Stock Availability" contentHeight="400px" contentWidth="1000px">
+	<Dialog title="Stock Availability" contentHeight="400px" contentWidth="1000px" class="stockDialog">
 		<content>
         
 			<VBox class="sapUiSmallMarginTop">
