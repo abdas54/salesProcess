@@ -1,31 +1,31 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout">
-<Dialog title="Item Detail Information" contentHeight="400px" contentWidth="1000px">
+<Dialog title="Item Detail Information" contentHeight="400px" contentWidth="1000px" class="customerDialog">
 		<content >
   <!-- <VBox class="sapUiSmallMargin"> -->
 
  <l:Grid defaultSpan="XL3 L3 M12 S12" class="sapUiSmallMarginTop">
     <HBox>
       <VBox >
-        <Label text="Location" />
+        <Label text="Location" design="Bold"/>
          <Text text="{itemDataModel>/Location}" />
       </VBox>
     </HBox>
 
   
       <VBox >
-        <Label text="Unit Discount" />
+        <Label text="Unit Discount" design="Bold"/>
          <Text text="{itemDataModel>/UnitDiscount}" />
   </VBox>
   
     
       <VBox >
-     <Label text="Gross Discount" />
+     <Label text="Gross Discount" design="Bold"/>
          <Text text="{itemDataModel>/GrossDiscount}" />
  </VBox>
    
    
       <VBox >
-    <Label text="VAT  Amount" />
+    <Label text="VAT  Amount" design="Bold"/>
          <Text text="{itemDataModel>/VatAmount}" />
     </VBox>
    
@@ -34,7 +34,7 @@
    
       <VBox >
    
-    <Label text="VAT  Percentage" />
+    <Label text="VAT  Percentage" design="Bold"/>
         <Text text="{itemDataModel>/VatPercent}" />
  </VBox>
    

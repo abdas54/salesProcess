@@ -26,7 +26,7 @@
         							<g:GridListItem type="Active" >
             							<VBox class="sapUiSmallMargin">
             								
-                						<Title text="{ProductModel>Itemcode}" />
+                						<Title text="{ProductModel>Itemcode}" class="boldText" />
                 						<Text text="{ProductModel>Description}" />
                                         
             							</VBox>
@@ -44,7 +44,7 @@
         							<g:GridListItem type="Active" >
             							<VBox class="sapUiSmallMargin">
             								
-                						<Title text="{ConditionType}" />
+                						<Title text="{ConditionType}" class="boldText" />
                 						<Text text="{ConditionName}" />
                                         
             							</VBox>
@@ -62,7 +62,7 @@
         							<g:GridListItem type="Active" >
             							<VBox class="sapUiSmallMargin">
             								
-                						<Title text="{Reason}" />
+                						<Title text="{Reason}" class="boldText"/>
                 						
                                         
             							</VBox>
@@ -80,7 +80,7 @@
         							<g:GridListItem type="Active" >
             							<VBox class="sapUiSmallMargin">
             								
-                						<Title text="{Authority}" />
+                						<Title text="{Authority}" class="boldText" />
                 						
                                         
             							</VBox>

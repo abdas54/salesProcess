@@ -8,12 +8,12 @@
     <Dialog title="Payment" contentHeight="900px" contentWidth="1000px" class="stockDialog">
         <content>
         <HBox class="stickyHeaderBox">
-            <Label design="Bold" text="Sale Amount:" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
-            <Text id="totalAmountText"  class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
-            <Label design="Bold" text="Sale Balance Amount:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
-            <Text id="totalSaleBalText" class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
-            <Label design="Bold" text="Tender Change Amount:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop"/>
-            <Text  id="totaltenderBal" class="sapUiSmallMarginEnd sapUiSmallMarginTop"/>
+            <Label design="Bold" text="Sale Amount:" class="sapUiSmallMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop whiteLabel"/>
+            <Text id="totalAmountText"  class="sapUiSmallMarginEnd sapUiSmallMarginTop whiteLabelNumber"/>
+            <Label design="Bold" text="Sale Balance Amount:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop whiteLabel"/>
+            <Text id="totalSaleBalText" class="sapUiSmallMarginEnd sapUiSmallMarginTop whiteLabelNumber"/>
+            <Label design="Bold" text="Tender Change Amount:" class="sapUiMediumMarginBegin sapUiSmallMarginEnd sapUiSmallMarginTop whiteLabel"/>
+            <Text  id="totaltenderBal" class="sapUiSmallMarginEnd sapUiSmallMarginTop whiteLabelNumber"/>
         </HBox>
             <ScrollContainer class="" height="800px" vertical="true">
                 <HBox>
@@ -83,25 +83,25 @@
                                                 <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
                                                     <VBox alignItems="Start">
                                                         <Label text="Reciept Id:" class=" sapUiTinyMarginTop boldText"/>
-                                                        <Label text="{CreditNote>/Transaction}" class=" sapUiTinyMarginTop"/>
+                                                        <Label text="{CreditNote>/Transaction}" class=" sapUiTinyMarginTop "/>
                                                     </VBox>
                                                     <VBox alignItems="Start">
                                                         <Label text="Total Value:" class=" sapUiTinyMarginTop boldText"/>
-                                                        <Label text="{CreditNote>/TransactionAmount}" class=" sapUiTinyMarginTop"/>
+                                                        <Label text="{CreditNote>/TransactionAmount}" class=" sapUiTinyMarginTop "/>
                                                     </VBox>
                                                 </l:Grid>
                                                 <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
                                                     <VBox alignItems="Start">
                                                         <Label text="Redeemed Value:" class=" sapUiTinyMarginTop boldText"/>
-                                                        <Label text="{CreditNote>/RedeemedAmount}" class=" sapUiTinyMarginTop"/>
+                                                        <Label text="{CreditNote>/RedeemedAmount}" class=" sapUiTinyMarginTop "/>
                                                     </VBox>
                                                     <VBox alignItems="Start">
                                                         <Label text="Balance Value:" class=" sapUiTinyMarginTop boldText"/>
-                                                        <Label text="{CreditNote>/BalanceAmount}" class=" sapUiTinyMarginTop"/>
+                                                        <Label text="{CreditNote>/BalanceAmount}" class=" sapUiTinyMarginTop "/>
                                                     </VBox>
                                                     <VBox visible="false" alignItems="Start">
                                                         <Label text="Redemption Type:" class=" sapUiTinyMarginTop boldText"/>
-                                                        <Label text="{CreditNote>/RedemptionType}" class=" sapUiTinyMarginTop"/>
+                                                        <Label text="{CreditNote>/RedemptionType}" class=" sapUiTinyMarginTop " />
                                                     </VBox>
                                                 </l:Grid>
                                             </g:GridListItem>
@@ -209,7 +209,7 @@
                                         <g:items>
                                             <g:GridListItem type="Active" >
                                                 <VBox class="sapUiSmallMargin">
-                                                    <Title text="{PaymentMethodName}" />
+                                                    <Title text="{PaymentMethodName}" class="boldText"/>
                                                     <Text text="{PaymentMethod}" />
                                                 </VBox>
                                             </g:GridListItem>

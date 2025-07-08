@@ -28,7 +28,7 @@
 			<HBox width="100%">
 				<VBox alignItems="Stretch" width="100%">
 					<HBox >
-						<Input id="inputSales" class=" inputStyle sapUiSmallMarginBottom" value="{ProductModel>/MaterialCode}" change="onSuggest"
+						<Input  class="customInputHeight inputStyle " value="{ProductModel>/MaterialCode}" change="onSuggest"
 							placeholder="Enter Model Number / Barcode /Old Material Code:" showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}"
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionSelected"
 							showTableSuggestionValueHelp="false" >
@@ -150,7 +150,7 @@
 										
   <ComboBox
     change="linkSalesman"
-    class="inputStyle sapUiSmallMarginBottom"
+    class="inputStyle customInputHeight sapUiSmallMarginBottom"
     items="{ path: '/EmployeeSet', filters: [{ path: 'Etype', operator: 'EQ', value1: 'S' }] }">
     <core:ListItem key="{EmployeeId}" text="{EmployeeName}" additionalText="{EmployeeId}" />
   </ComboBox>

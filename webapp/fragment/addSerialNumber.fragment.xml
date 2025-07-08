@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-    <Dialog   contentHeight="400px" contentWidth="400px" showHeader="false">
+    <Dialog   contentHeight="400px" contentWidth="400px" showHeader="false" class="customerDialog">
         <content>
-            <Table id="idSerNumber" items="{serialModel>/serials}">
+            <Table id="idSerNumber" items="{serialModel>/serials}" >
             <headerToolbar>
             <Toolbar >
             <content> 
@@ -12,7 +12,7 @@
             </Toolbar>
             
             </headerToolbar>
-                <ColumnListItem id="serNumberColmnList">
+                <ColumnListItem id="serNumberColmnList" class="lstBackground">
 			<cells>
 				<Input value="{serialModel>serialNumber}" maxLength="25" class="inputStyle sapUiSmallMarginBottom" ></Input>
 				

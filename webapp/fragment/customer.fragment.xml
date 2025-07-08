@@ -1,10 +1,10 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form" xmlns:f="sap.f.cards">
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form" xmlns:f="sap.f.cards" 	xmlns:l="sap.ui.layout">
 	<Dialog title="Customer Details" contentHeight="800px" contentWidth="1000px" class="customerDialog">
 		<content >
         <SearchField
                 id="phoneInput"
                 width="40%"
-                class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom sapUiSmallMarginTop inputStyle"
+                class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom sapUiSmallMarginTop inputStyle customInputHeight"
                 placeholder="Enter registered Mobile Number"
                 search="onSearchNumber"
             />
@@ -26,13 +26,14 @@
 					<!-- <Panel visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }">
 						<content> -->
 							
-								<form:SimpleForm  columnsM="2" columnsL="2" columnsXL="2" visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }">
+								<form:SimpleForm   layout="ResponsiveGridLayout" columnsM="2" columnsL="2" columnsXL="1" visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }">
                                    <Label
                             required="true"
                             text="Customer Type"
                         />
-                        <Select
-                           
+                        <ComboBox
+
+                            class="customInputHeight inputStyle"
                             id="customerType"
                             change="onCustomerTypeChange"
                             selectedKey="{custAddModel>/CustomerType}"
@@ -51,7 +52,7 @@
                                     text="TOURIST"
                                 />
                             </items>
-                        </Select>
+                        </ComboBox>
                                 
                                 <Label text="Phone Number" required="true" />
                                  <!-- <FlexBox
@@ -59,10 +60,10 @@
                             justifyContent="Start"
                             alignItems="Center"
                         > -->
-                        <HBox >
-                            <ComboBox   id="custMobCode" selectedKey="{custAddModel>/Code}" 
+                        <HBox width="100%">
+                            <ComboBox   selectedKey="{custAddModel>/Code}" 
                                 showSecondaryValues="true" filterSecondaryValues="true"
-                                class="inputStyle sapUiSmallMarginBottom"
+                                class=" customInputHeight inputStyle sapUiSmallMarginBottom"
                                  items="{ path: '/CountryCodesSet',length :500, sorter: { path: 'CountryCode' } }"
                             >
                                  <core:ListItem
@@ -76,18 +77,18 @@
                                 id="mobileNumber"
                                 type="Number"
                                 value="{custAddModel>/Mobile}"
-                                class="inputStyle sapUiSmallMarginBottom sapUiSmallMarginBeginEnd"
-                            >
-                            </Input> </HBox>
+                                class="inputStyle customInputHeight sapUiSmallMarginBegin "
+                            /> </HBox>
+                            
                         <!-- </FlexBox> -->
 
                                 <!-- <Input type="Tel" value="{custAddModel>/MobNo}"/> -->
                                 <Label text="First Name" />
-								<Input placeholder="Enter name" value="{custAddModel>/FirstName}" class="inputStyle sapUiSmallMarginBottom"/>
+								<Input placeholder="Enter name" value="{custAddModel>/FirstName}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                                 <Label text="Last Name" />
-								<Input placeholder="Enter name" value="{custAddModel>/LastName}" class="inputStyle sapUiSmallMarginBottom"/>
+								<Input placeholder="Enter name" value="{custAddModel>/LastName}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
 								<Label text="Email" />
-                                <Input  type="Email" value="{custAddModel>/Email}" class="inputStyle sapUiSmallMarginBottom"/>
+                                <Input  type="Email" value="{custAddModel>/Email}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
 								<Label  text="Date of Birth"/>
                                 <DatePicker id="birthDate"  value="{
     path: 'custAddModel>/BirthDate',
@@ -98,7 +99,7 @@
     constraints: {
       nullable: true
     }
-  }" class="inputStyle sapUiSmallMarginBottom"/>
+  }" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
 
 
 
@@ -121,7 +122,7 @@
 						<!-- </content>
 					</Panel> -->
 					
-					<Panel width="700px" visible="{= ${ShowSection>/selectedMode} === 'Customer Address' }">
+					<Panel  visible="{= ${ShowSection>/selectedMode} === 'Customer Address' }">
 						<content>
 							<RadioButtonGroup id="addressRbGrp" columns="5"  class="sapUiSmallMarginBottom" selectedIndex="0" select="onSelectAddressType">
 									<RadioButton id="homeaddr" text="Home Address" />
@@ -129,18 +130,19 @@
 								<RadioButton id="otheraddr" text="Other Address" />
 								</RadioButtonGroup>
 							<HBox>
-							<VBox class="sapUiMediumMarginBeginEnd" id="homeSection" width="30%">
+							<VBox class="sapUiMediumMarginBeginEnd" id="homeSection" >
                             <Label text="Address Line 1" />
-                            <Input value="{custAddModel>/HomeAddressLine1}" class="inputStyle sapUiSmallMarginBottom" />
+                            <Input value="{custAddModel>/HomeAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom" />
                             <Label text="Address Line 2" />
-                            <Input value="{custAddModel>/HomeAddressLine2}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/HomeAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="Street / PO Box" />
-                            <Input value="{custAddModel>/HomeStreet}"  class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/HomeStreet}"  class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="City" />
-                            <Input value="{custAddModel>/HomeCity}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/HomeCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="Country" />
 
                             <ComboBox
+                                class="customInputHeight inputStyle"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/HomeCountry}"
@@ -156,20 +158,21 @@
 							<VBox
                             id="workSection"
                             visible="false"
-                            width="30%"
+                           
                             class="sapUiMediumMarginBeginEnd"
                         >
    
                             <Label text="Address Line 1" />
-                            <Input value="{custAddModel>/OfficeAddressLine1}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/OfficeAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="Address Line 2" />
-                            <Input value="{custAddModel>/OfficeAddressLine2}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/OfficeAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="Street / PO Box" />
-                            <Input value="{custAddModel>/OfficeStreet}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/OfficeStreet}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="City" />
-                            <Input value="{custAddModel>/OfficeCity}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/OfficeCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="Country" />
                            <ComboBox
+                                class="customInputHeight inputStyle"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/OfficeCountry}"
@@ -185,20 +188,21 @@
 						 <VBox
                             id="otherSection"
                             visible="false"
-                            width="30%"
+                           
                             class="sapUiMediumMarginBeginEnd"
                         >
                             
                             <Label text="Address Line 1" />
-                            <Input value="{custAddModel>/OtherAddressLine1}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/OtherAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="Address Line 2" />
-                            <Input value="{custAddModel>/OtherAddressLine2}" class="inputStyle sapUiSmallMarginBottom" />
+                            <Input value="{custAddModel>/OtherAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom" />
                             <Label text="Street / PO Box" />
-                            <Input value="{custAddModel>/OtherStreet}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/OtherStreet}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="City" />
-                            <Input value="{custAddModel>/OtherCity}" class="inputStyle sapUiSmallMarginBottom"/>
+                            <Input value="{custAddModel>/OtherCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                             <Label text="Country" />
                             <ComboBox
+                                class="customInputHeight inputStyle"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/OtherCountry}"
@@ -219,10 +223,10 @@
 					<Panel visible="{= ${ShowSection>/selectedMode} === 'Shipping Instruction' }">
 						<content>
 							<VBox >
-                            	<DatePicker value="{custAddModel>/shippingDate}" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd" class="inputStyle sapUiSmallMarginBottom"/>
+                            	<DatePicker value="{custAddModel>/shippingDate}" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
 								<!-- <DatePicker value="{'path':'custAddModel>/shippingDate','type':'sap.ui.model.type.Date','formatOptions': {'pattern': 'yyyy-MM-dd'}}" placeholder="Enter Delivery Date"/> -->
-								<TextArea value="{custAddModel>/ShippingInst}" width="550px" placeholder="Enter Delivery Instruction" class="inputStyle sapUiSmallMarginBottom"/>
-                                <Label text="Select Shipping Method :"/>
+								<TextArea value="{custAddModel>/ShippingInst}" width="550px" placeholder="Enter Delivery Instruction" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                <Label text="Shipping Method :" design="Bold"/>
                             
                             	<RadioButtonGroup  columns="5"   selectedIndex="{custAddModel>/ShippingMethod}">
 			                            <RadioButton  text="HOME DELIVERY" />  

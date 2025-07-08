@@ -419,16 +419,16 @@ sap.ui.define([
                         console.log("Success", oData);
                     },
                     error: function (oError) {
-                         sap.m.MessageBox.show(
-                                    JSON.parse(oError.responseText).error.message.value, {
-                                    icon: sap.m.MessageBox.Icon.Error,
-                                    title: "Error",
-                                    actions: ["OK", "CANCEL"],
-                                    onClose: function (oAction) {
+                        sap.m.MessageBox.show(
+                            JSON.parse(oError.responseText).error.message.value, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: ["OK", "CANCEL"],
+                            onClose: function (oAction) {
 
-                                    }
-                                }
-                                );
+                            }
+                        }
+                        );
                     }
                 });
             },
@@ -755,7 +755,7 @@ sap.ui.define([
                 if (parseInt(productTblData.SaleQuantity) === 1) {
                     updatedNetAmount = parseFloat(parseFloat(productTblData.UnitPrice) + parseFloat(updateDiscount)).toFixed(2);
                     //this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(updatedNetAmount).toFixed(2);
-                    var vatAmount = parseFloat(updatedNetAmount * (productTblData.VatPercent)/100).toFixed(2);
+                    var vatAmount = parseFloat(updatedNetAmount * (productTblData.VatPercent) / 100).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatAmount = vatAmount;
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).SaleAmount = parseFloat(parseFloat(vatAmount) + parseFloat(updatedNetAmount)).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(updateDiscount).toFixed(2) * parseFloat(productTblData.SaleQuantity).toFixed(2)).toFixed(2);
@@ -1761,7 +1761,7 @@ sap.ui.define([
 
             },
             calculateSalesAmount: function (netAmount, netDiscount, vatPercent, selIndex) {
-                
+
                 var netPrice = (parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                 var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                 this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).SaleAmount = parseFloat(vatAmount) + parseFloat(netPrice);
@@ -1851,7 +1851,7 @@ sap.ui.define([
 
                 this._pAddRecordDialog.then(
                     function (oValueHelpDialog) {
-                        that.onClear();
+                    //    that.onClear();
                         oValueHelpDialog.open();
                     }.bind(that)
                 );
@@ -1864,7 +1864,7 @@ sap.ui.define([
                 // sap.ui.core.Fragment.byId(this.getView().getId(), "idComments").setValue("");
             },
             onDialogClose: function () {
-                this.onClear();
+                //this.onClear();
                 this._pAddRecordDialog.then(
                     function (oValueHelpDialog) {
                         oValueHelpDialog.close();
@@ -2138,10 +2138,10 @@ sap.ui.define([
 
                         },
                         error: function (oError) {
-                          
+
                             if (JSON.parse(oError.responseText).error.code === "MATERIAL_CHECK") {
-                  
-                                    if(!that.messageBox){
+
+                                if (!that.messageBox) {
                                     that.messageBox = sap.m.MessageBox;
                                     that.messageBox.show(
                                         "Item is not available at this store location. Do you want to check other locations?", {
@@ -2161,9 +2161,9 @@ sap.ui.define([
                                         }
                                     }
                                     );
-                                    }
-                                   
-                                
+                                }
+
+
                             }
                             else {
                                 sap.m.MessageBox.show(
@@ -2172,7 +2172,7 @@ sap.ui.define([
                                     title: "Error",
                                     actions: ["OK", "CANCEL"],
                                     onClose: function (oAction) {
-                                          
+
                                     }
                                 }
                                 );
@@ -2187,7 +2187,7 @@ sap.ui.define([
                 var that = this;
                 this.openMessageBox = false;
                 var sValue = "";
-                 that._lastSuggestTimestamp = Date.now();
+                that._lastSuggestTimestamp = Date.now();
                 var requestTimestamp = that._lastSuggestTimestamp;
                 if (oEvent.getParameter("suggestValue")) {
                     sValue = oEvent.getParameter("suggestValue");
@@ -2199,7 +2199,7 @@ sap.ui.define([
                 // var oSuggestionPopup = oInput._getSuggestionsPopover().getPopover();
                 // oSuggestionPopup.setPlacement(PlacementType.Right);
                 if (sValue.length > 0) {
-                     var oSuggestionModel = that.getView().getModel("suggestionModel");
+                    var oSuggestionModel = that.getView().getModel("suggestionModel");
                     if (!oSuggestionModel) {
                         oSuggestionModel = new sap.ui.model.json.JSONModel({ suggestions: [] });
                         that.getView().setModel(oSuggestionModel, "suggestionModel");
@@ -2218,12 +2218,12 @@ sap.ui.define([
                                 if (requestTimestamp !== that._lastSuggestTimestamp) {
                                     return;
                                 }
-                                else{
+                                else {
                                     oSuggestionModel.setProperty("/suggestions", oData.results);
                                 }
-                              
-                               
-                               
+
+
+
 
                             }
 
@@ -2583,7 +2583,7 @@ sap.ui.define([
                     // sap.ui.getCore().byId("cardNumberlbl").setRequired(false);
                     // sap.ui.getCore().byId("nationnalLbl").setRequired(false);
                     // sap.ui.getCore().byId("residencelabl").setRequired(false);
-                    that.getView().getModel("custAddModel").setProperty("/Code", "00971");
+                    that.getView().getModel("custAddModel").setProperty("/Code", "971");
                 }
 
             },
@@ -2882,27 +2882,30 @@ sap.ui.define([
 
                 this.oModel.create("/SalesTransactionHeaderSet", oPayload, {
                     success: function (oData) {
-                        that.getView().setBusy(false);
-                        if (that._oDialogPayment) {
-                            that._oDialogPayment.setBusy(false);
+                        if (oData.PlanetURL.length > 0) {
+                            that.openPlanet(oData.PlanetURL, bflag, that.getView().byId("tranNumber").getCount().toString());
                         }
-                        that._pAddRecordDialog.then(
-                            function (oValueHelpDialog) {
-                                oValueHelpDialog.setBusy(false);
-                            }.bind(that)
-                        );
+                        else {
+                            that.getView().setBusy(false);
+                            if (that._oDialogPayment) {
+                                that._oDialogPayment.setBusy(false);
+                            }
+                            that._pAddRecordDialog.setBusy(false);
+                            
 
-                        if (oData) {
+                            if (oData) {
 
-                            MessageBox.success("Transaction Posted Successfully.", {
-                                onClose: function (sAction) {
-                                    window.location.reload(true);
-                                }
-                            });
+                                MessageBox.success("Transaction Posted Successfully.", {
+                                    onClose: function (sAction) {
+                                        window.location.reload(true);
+                                    }
+                                });
+                            }
+                            if (!bflag) {
+                                window.location.reload(true);
+                            }
                         }
-                        if (!bflag) {
-                            window.location.reload(true);
-                        }
+
                     },
                     error: function (oError) {
                         that.getView().setBusy(false);
@@ -2911,6 +2914,40 @@ sap.ui.define([
                     }
                 });
 
+            },
+            openPlanet: function (url, bflag, transID) {
+                var that = this;
+                var wind = window.open(url, "_blank");
+                that.oModel.read("/PlanetTagSet('" + transID + "')", {
+                    success: function (oData) {
+                        
+                            that.getView().setBusy(false);
+                            if (that._oDialogPayment) {
+                                that._oDialogPayment.setBusy(false);
+                            }
+                            that._pAddRecordDialog.setBusy(false);
+                           
+                            MessageBox.success("Transaction Posted Successfully.", {
+                                onClose: function (sAction) {
+                                    window.location.reload(true);
+                                }
+                            });
+                            if (!bflag) {
+                                window.location.reload(true);
+                            }
+                     
+
+
+
+
+
+
+                    },
+                    error: function (oError) {
+
+                        sap.m.MessageToast.show("Error");
+                    }
+                });
             },
             oPayloadPayments: function (arrPayment) {
                 if (arrPayment.length > 0) {
@@ -3025,7 +3062,8 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                            that.OnSignaturePress();
+                            that.onOpenSignaturePad();
+                            //that.OnSignaturePress();
                             // that.onPressPaymentTest();
                         }
                         else {
@@ -3308,14 +3346,21 @@ sap.ui.define([
                         sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                         sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                        this.aPaymentEntries.forEach(function (entry) {
-                            if (entry.PaymentType === "CASH") {
-                                entry.ChangeAmount = balanceAmount.toString();
+                        // this.aPaymentEntries.forEach(function (entry) {
+                        //     if (entry.PaymentType === "CASH") {
+                        //         entry.ChangeAmount = balanceAmount.toString();
+                        //     }
+                        // });
+                        for (var i = this.aPaymentEntries.length - 1; i >= 0; i--) {
+                            if (this.aPaymentEntries[i].PaymentType === "CASH") {
+                                this.aPaymentEntries[i].ChangeAmount = balanceAmount.toString();
+                                break; // Stop after updating the last CASH entry
                             }
-                        });
+                        }
                         oEvent.getSource().setEnabled(false);
                         sap.m.MessageToast.show("Cash Payment Successful");
-                        that.OnSignaturePress();
+                        that.onOpenSignaturePad();
+                        //that.OnSignaturePress();
                         //that.onPressPaymentTest();
                     }
                     else {
@@ -3528,15 +3573,15 @@ sap.ui.define([
                             text: "Submit",
                             class: "cstmBtn",
                             press: this.onSubmitCardType.bind(this)
-                        }),
+                        }).addStyleClass("cstmBtn"),
                         endButton: new sap.m.Button({
                             text: "Cancel",
                             class: "cstmBtn",
                             press: function () {
                                 this._oDialogCardType.close();
                             }.bind(this)
-                        })
-                    });
+                        }).addStyleClass("cstmBtn")
+                    }).addStyleClass("customerDialog");
                     this._oAmountCardInput = new sap.m.Input({
                         placeholder: "Enter Amount",
                         type: "Number",
@@ -3639,7 +3684,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Manual Card Payment Successful");
-                    that.OnSignaturePress();
+                    that.onOpenSignaturePad();
+                   // that.OnSignaturePress();
                     //that.onPressPaymentTest();
                 }
                 else {
@@ -3680,15 +3726,15 @@ sap.ui.define([
                             text: "Submit",
                             class: "cstmBtn",
                             press: this.onSubmitAmount.bind(this)
-                        }),
+                        }).addStyleClass("cstmBtn"),
                         endButton: new sap.m.Button({
                             text: "Cancel",
                             class: "cstmBtn",
                             press: function () {
                                 this._oDialogNonGV.close();
                             }.bind(this)
-                        })
-                    });
+                        }).addStyleClass("cstmBtn")
+                    }).addStyleClass("customerDialog");
                     this._oAmountInput = new sap.m.Input({
                         placeholder: "Enter Amount",
                         type: "Number",
@@ -3764,7 +3810,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Non EGV Payment Successful");
-                    that.OnSignaturePress();
+                    that.onOpenSignaturePad();
+                    //that.OnSignaturePress();
                     //that.onPressPaymentTest();
                 }
                 else {
@@ -4087,7 +4134,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
-                    that.OnSignaturePress();
+                    that.onOpenSignaturePad();
+                    //that.OnSignaturePress();
                     //that.onPressPaymentTest();
                 }
                 else {
@@ -4110,109 +4158,352 @@ sap.ui.define([
                     sap.ui.getCore().byId("advncePaymentList").setVisible(false);
                 }
             },
-            onSave: function () {
-                var that = this,
-                    token,
-                    dataUrl,
-                    oSvg = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePad").getSVGString(),
-                    oSvgCash = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePadCash").getSVGString();
-                this.oPaySignatureload = [];
-                // oName = sap.ui.core.Fragment.byId(this.getView().getId(), "idName").getValue(),
-                // oStaff = sap.ui.core.Fragment.byId(this.getView().getId(), "idStaff").getValue(),
-                // oComments = sap.ui.core.Fragment.byId(this.getView().getId(), "idComments").getValue();
+            // onSave: function () {
+            //     var that = this,
+            //         token,
+            //         dataUrl,
+            //         oSvg = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePad").getSVGString(),
+            //         oSvgCash = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePadCash").getSVGString();
+            //     this.oPaySignatureload = [];
+            //     // oName = sap.ui.core.Fragment.byId(this.getView().getId(), "idName").getValue(),
+            //     // oStaff = sap.ui.core.Fragment.byId(this.getView().getId(), "idStaff").getValue(),
+            //     // oComments = sap.ui.core.Fragment.byId(this.getView().getId(), "idComments").getValue();
 
-                if (!oSvg.includes('d=') || !oSvgCash.includes('d=')) {
-                    MessageBox.error('Signature is required');
-                    return false;
-                }
-                const svgBlob = new Blob([oSvg], {
-                    type: 'image/svg+xml'
-                });
-                const svgObjectUrl = globalThis.URL.createObjectURL(svgBlob);
-                const img = document.createElement('img');
+            //     if (!oSvg.includes('d=') || !oSvgCash.includes('d=')) {
+            //         MessageBox.error('Signature is required');
+            //         return false;
+            //     }
+            //     const svgBlob = new Blob([oSvg], {
+            //         type: 'image/svg+xml'
+            //     });
+            //     const svgObjectUrl = globalThis.URL.createObjectURL(svgBlob);
+            //     const img = document.createElement('img');
 
-                const onImageLoaded = () => {
-                    const canvas = document.createElement('canvas');
-                    //canvas.width="350";
-                    //canvas.height="100";
-                    const context = canvas.getContext('2d');
-                    const createdImage = document.createElement('img');
+            //     const onImageLoaded = () => {
+            //         const canvas = document.createElement('canvas');
+            //         //canvas.width="350";
+            //         //canvas.height="100";
+            //         const context = canvas.getContext('2d');
+            //         const createdImage = document.createElement('img');
 
-                    context.drawImage(img, 0, 0);
-                    createdImage.src = canvas.toDataURL('image/bmp');
-                    //binary code
-                    var oArray = (createdImage.src).split(";base64,")[1];
-                    var raw = window.atob(oArray);
-                    var rawLength = raw.length;
-                    var array = new Uint8Array(new ArrayBuffer(rawLength));
-                    for (var i = 0; i < rawLength; i++) {
-                        array[i] = raw.charCodeAt(i);
-                    }
+            //         context.drawImage(img, 0, 0);
+            //         createdImage.src = canvas.toDataURL('image/bmp');
+            //         //binary code
+            //         var oArray = (createdImage.src).split(";base64,")[1];
+            //         var raw = window.atob(oArray);
+            //         var rawLength = raw.length;
+            //         var array = new Uint8Array(new ArrayBuffer(rawLength));
+            //         for (var i = 0; i < rawLength; i++) {
+            //             array[i] = raw.charCodeAt(i);
+            //         }
 
-                    this.oPaySignatureload.push({
+            //         this.oPaySignatureload.push({
+            //             "TransactionId": this.getView().byId("tranNumber").getCount(),
+            //             "Value": oArray,
+            //             "Mimetype": 'image/bmp',
+            //             "SignType": "S"
+            //         })
+
+
+            //     };
+
+            //     img.addEventListener('load', onImageLoaded);
+            //     img.src = svgObjectUrl;
+
+
+
+            //     const svgBlobCash = new Blob([oSvgCash], {
+            //         type: 'image/svg+xml'
+            //     });
+            //     const svgObjectUrlCash = globalThis.URL.createObjectURL(svgBlobCash);
+            //     const imgCash = document.createElement('img');
+
+            //     const onImageLoadedCash = () => {
+            //         const canvasCash = document.createElement('canvas');
+            //         //canvas.width="350";
+            //         //canvas.height="100";
+            //         const contextCash = canvasCash.getContext('2d');
+            //         const createdImageCash = document.createElement('img');
+
+            //         contextCash.drawImage(imgCash, 0, 0);
+            //         createdImageCash.src = canvasCash.toDataURL('image/bmp');
+            //         //binary code
+            //         var oArrayCash = (createdImageCash.src).split(";base64,")[1];
+            //         var rawCash = window.atob(oArrayCash);
+            //         var rawLengthCash = rawCash.length;
+            //         var arrayCash = new Uint8Array(new ArrayBuffer(rawLengthCash));
+            //         for (var j = 0; j < rawLengthCash; j++) {
+            //             arrayCash[j] = rawCash.charCodeAt(j);
+            //         }
+
+            //         this.oPaySignatureload.push({
+            //             "TransactionId": this.getView().byId("tranNumber").getCount(),
+            //             "Value": oArrayCash,
+            //             "Mimetype": 'image/bmp',
+            //             "SignType": "C"
+            //         })
+
+
+            //     };
+
+            //     imgCash.addEventListener('load', onImageLoadedCash);
+            //     imgCash.src = svgObjectUrlCash;
+            //     that._pAddRecordDialog.then(
+            //         function (oValueHelpDialog) {
+            //             that.onClear();
+            //             oValueHelpDialog.setBusy(true);
+            //         }.bind(that)
+            //     );
+            //     setTimeout(function () {
+            //         that.onPressPayment(true);
+            //     }, 1000)
+
+
+            // }
+            onSave: function(){
+                var that = this;
+                 this.oPaySignatureload = [];
+                var oSvg = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePad").getSignature(),
+                     oSvgCash = sap.ui.core.Fragment.byId(this.getView().getId(), "idSignaturePadCash").getSignature();
+                
+                     this.oPaySignatureload.push({
                         "TransactionId": this.getView().byId("tranNumber").getCount(),
-                        "Value": oArray,
-                        "Mimetype": 'image/bmp',
+                        "Value": oSvg.split("data:image/png;base64,")[1],
+                        "Mimetype": 'image/png',
                         "SignType": "S"
                     })
 
-
-                };
-
-                img.addEventListener('load', onImageLoaded);
-                img.src = svgObjectUrl;
-
-
-
-                const svgBlobCash = new Blob([oSvgCash], {
-                    type: 'image/svg+xml'
-                });
-                const svgObjectUrlCash = globalThis.URL.createObjectURL(svgBlobCash);
-                const imgCash = document.createElement('img');
-
-                const onImageLoadedCash = () => {
-                    const canvasCash = document.createElement('canvas');
-                    //canvas.width="350";
-                    //canvas.height="100";
-                    const contextCash = canvasCash.getContext('2d');
-                    const createdImageCash = document.createElement('img');
-
-                    contextCash.drawImage(imgCash, 0, 0);
-                    createdImageCash.src = canvasCash.toDataURL('image/bmp');
-                    //binary code
-                    var oArrayCash = (createdImageCash.src).split(";base64,")[1];
-                    var rawCash = window.atob(oArrayCash);
-                    var rawLengthCash = rawCash.length;
-                    var arrayCash = new Uint8Array(new ArrayBuffer(rawLengthCash));
-                    for (var j = 0; j < rawLengthCash; j++) {
-                        arrayCash[j] = rawCash.charCodeAt(j);
-                    }
-
-                    this.oPaySignatureload.push({
+                     this.oPaySignatureload.push({
                         "TransactionId": this.getView().byId("tranNumber").getCount(),
-                        "Value": oArrayCash,
-                        "Mimetype": 'image/bmp',
+                        "Value": oSvgCash.split("data:image/png;base64,")[1],
+                        "Mimetype": 'image/png',
                         "SignType": "C"
                     })
 
-
-                };
-
-                imgCash.addEventListener('load', onImageLoadedCash);
-                imgCash.src = svgObjectUrlCash;
                 that._pAddRecordDialog.then(
                     function (oValueHelpDialog) {
-                        that.onClear();
                         oValueHelpDialog.setBusy(true);
                     }.bind(that)
                 );
                 setTimeout(function () {
                     that.onPressPayment(true);
                 }, 1000)
+          
+            },
+        onClearSignature: function() {
+			const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas");
+			const canvas = oCanvasControl.getDomRef();
+			const ctx = canvas.getContext("2d");
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+			const oCanvasControl1 = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas1");
+			const canvas1 = oCanvasControl1.getDomRef();
+			const ctx1 = canvas1.getContext("2d");
+			ctx1.clearRect(0, 0, canvas1.width, canvas1.height);
+		},
 
-            }
+		onSaveSignature: function() {
+            var that = this;
+            this.oPaySignatureload = [];
+			const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas");
+			const canvas = oCanvasControl.getDomRef();
+			const imageData = canvas.toDataURL("image/png"); // base64 format
+			// You can now send this to backend or store it
+			console.log("Signature Base64:", imageData);
 
+			const oCanvasControl1 = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas1");
+			const canvas1 = oCanvasControl1.getDomRef();
+			const imageData1 = canvas1.toDataURL("image/png"); // base64 format
+			// You can now send this to backend or store it
+			console.log("Signature Base64:", imageData1);
+
+            this.oPaySignatureload.push({
+                        "TransactionId": this.getView().byId("tranNumber").getCount(),
+                        "Value": imageData.split("data:image/png;base64,")[1],
+                        "Mimetype": 'image/png',
+                        "SignType": "S"
+                    })
+
+            this.oPaySignatureload.push({
+                        "TransactionId": this.getView().byId("tranNumber").getCount(),
+                        "Value": imageData1.split("data:image/png;base64,")[1],
+                        "Mimetype": 'image/png',
+                        "SignType": "C"
+                    })
+            
+
+            that._pAddRecordDialog.setBusy(true);
+            setTimeout(function () {
+                    that.onPressPayment(true);
+                }, 1000)
+		},
+        getEventPosition: function(e, canvas) {
+			let x, y;
+			if (e.touches && e.touches.length > 0) {
+				x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+				y = e.touches[0].clientY - canvas.getBoundingClientRect().top;
+			} else {
+				x = e.clientX - canvas.getBoundingClientRect().left;
+				y = e.clientY - canvas.getBoundingClientRect().top;
+			}
+			return {
+				x,
+				y
+			};
+		},
+        		_initializeCanvas: function() {
+			this._initializeCanvas1();
+			this._initializeCanvas2();
+		},
+		_initializeCanvas1: function() {
+			const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas");
+			if (!oCanvasControl) {
+				console.error("Canvas control not found");
+				return;
+			}
+
+			const canvas = oCanvasControl.getDomRef(); // Get actual <canvas> DOM element
+			if (!canvas || !canvas.getContext) {
+				console.error("Canvas DOM element not ready or invalid");
+				return;
+			}
+
+			const ctx = canvas.getContext("2d");
+			let isDrawing = false;
+
+			const getEventPosition = (e) => {
+				let x, y;
+				if (e.touches && e.touches.length > 0) {
+					x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+					y = e.touches[0].clientY - canvas.getBoundingClientRect().top;
+				} else {
+					x = e.clientX - canvas.getBoundingClientRect().left;
+					y = e.clientY - canvas.getBoundingClientRect().top;
+				}
+				return {
+					x,
+					y
+				};
+			};
+
+			const start = (e) => {
+				isDrawing = true;
+				ctx.beginPath();
+				const pos = getEventPosition(e);
+				ctx.moveTo(pos.x, pos.y);
+				e.preventDefault();
+			};
+
+			const draw = (e) => {
+				if (!isDrawing) return;
+				const pos = getEventPosition(e);
+				ctx.lineTo(pos.x, pos.y);
+				ctx.stroke();
+				e.preventDefault();
+			};
+
+			const end = () => {
+				isDrawing = false;
+			};
+
+			canvas.addEventListener("mousedown", start);
+			canvas.addEventListener("mousemove", draw);
+			canvas.addEventListener("mouseup", end);
+			canvas.addEventListener("mouseout", end);
+
+			canvas.addEventListener("touchstart", start, {
+				passive: false
+			});
+			canvas.addEventListener("touchmove", draw, {
+				passive: false
+			});
+			canvas.addEventListener("touchend", end);
+		},
+		_initializeCanvas2: function() {
+			const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas1");
+			if (!oCanvasControl) {
+				console.error("Canvas control not found");
+				return;
+			}
+
+			const canvas = oCanvasControl.getDomRef(); // Get actual <canvas> DOM element
+			if (!canvas || !canvas.getContext) {
+				console.error("Canvas DOM element not ready or invalid");
+				return;
+			}
+
+			const ctx = canvas.getContext("2d");
+			let isDrawing = false;
+
+			const getEventPosition = (e) => {
+				let x, y;
+				if (e.touches && e.touches.length > 0) {
+					x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+					y = e.touches[0].clientY - canvas.getBoundingClientRect().top;
+				} else {
+					x = e.clientX - canvas.getBoundingClientRect().left;
+					y = e.clientY - canvas.getBoundingClientRect().top;
+				}
+				return {
+					x,
+					y
+				};
+			};
+
+			const start = (e) => {
+				isDrawing = true;
+				ctx.beginPath();
+				const pos = getEventPosition(e);
+				ctx.moveTo(pos.x, pos.y);
+				e.preventDefault();
+			};
+
+			const draw = (e) => {
+				if (!isDrawing) return;
+				const pos = getEventPosition(e);
+				ctx.lineTo(pos.x, pos.y);
+				ctx.stroke();
+				e.preventDefault();
+			};
+
+			const end = () => {
+				isDrawing = false;
+			};
+
+			canvas.addEventListener("mousedown", start);
+			canvas.addEventListener("mousemove", draw);
+			canvas.addEventListener("mouseup", end);
+			canvas.addEventListener("mouseout", end);
+
+			canvas.addEventListener("touchstart", start, {
+				passive: false
+			});
+			canvas.addEventListener("touchmove", draw, {
+				passive: false
+			});
+			canvas.addEventListener("touchend", end);
+		},
+        onOpenSignaturePad: function() {
+			if (!this._pAddRecordDialog) {
+				const oContent = sap.ui.xmlfragment(
+					"SignaturePad",
+					"com.eros.salesprocess.fragment.SignaturePads",
+					this
+				);
+
+				this._pAddRecordDialog = new sap.m.Dialog({
+					title: "Signature Pad",
+					content: [oContent],
+					stretch: true,
+					afterOpen: this._initializeCanvas.bind(this),
+					
+				});
+
+				this.getView().addDependent(this._pAddRecordDialog);
+			}
+			this._pAddRecordDialog.open();
+		}
+      
 
         });
     });

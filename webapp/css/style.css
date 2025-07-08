@@ -16,6 +16,25 @@
     letter-spacing: 0.14px !important;
     color: #000000 !important;
     font-size: 17px !important;
+   
+}
+.customInputHeight {
+  height: 3rem !important;
+  font-size: 1.2rem !important;
+}
+.sapMDialog>header .sapMDialogTitleGroup .sapMTitle {
+    color: black !important;
+    font-weight: bold !important;
+    font-size: 17px !important;
+}
+
+
+.sapUiFormResGrid>div {
+    background-color: #c8d9e6 !important; 
+
+}
+#__dialog1-cont {
+    background-color: #c8d9e6 !important; 
 }
 .cstmBtn .sapMBtnInner {
     -webkit-background-clip: padding-box;
@@ -190,18 +209,7 @@ html.sap-desktop .sapMITBFilter .sapMITBCount {
 .boldText{
     font-weight: bold !important;
 }
-div[id*="inputSales-popup"] {
-  margin-top: 15px !important;
- 
-  box-shadow: none !important;
 
-}
-div[id*="inputStockSales-popup"] {
-  margin-top: 17px !important;
-  width: auto !important;
-  box-shadow: none !important;
-
-}
 div[id*="custMobCode-popup"] {
   margin-top: 25px !important;
   box-shadow: none !important;
@@ -210,6 +218,15 @@ div[id*="custMobCode-popup"] {
 .page {
     background-color: #c8d9e6 !important;
 
+}
+.customerDialog {
+    letter-spacing: 0.14px !important;
+    color: #000000 !important;
+    font-size: 17px !important;
+   
+}
+.lstBackground {
+     background-color: #c8d9e6 !important; 
 }
 .customerDialog .sapMDialogSection{
     background-color: #c8d9e6 !important; 
@@ -273,35 +290,9 @@ margin-top: 15px !important;
     
 }
 .sapUiTableHeaderDataCell .sapMText, .sapMColumnHeader .sapMText {
-    color: #dde3e9 !important;
+    color: white !important;
 }
-#__label0-bdi{
-    color: #dde3e9 !important;
-}
-#__label1-bdi{
-    color: #dde3e9 !important;
-}
-#__label2-bdi{
-    color: #dde3e9 !important;
-}
-#__label3-bdi{
-    color: #dde3e9 !important;
-}
-#__label4-bdi{
-    color: #dde3e9 !important;
-}
-#__label5-bdi{
-    color: #dde3e9 !important;
-}
-#__label6-bdi{
-    color: #dde3e9 !important;
-}
-#__label7-bdi{
-    color: #dde3e9 !important;
-}
-#__label8-bdi{
-    color: #dde3e9 !important;
-}
+
 .sapMGTHdrIconImage {
     color: #1f2123 !important;
 }
@@ -315,9 +306,19 @@ margin-top: 15px !important;
 .stickyHeaderBox {
     position: sticky;
     top: 0;
-    background-color: white; /* Optional: match Dialog background */
     z-index: 2;
     padding: 0.5rem;
+    background-color: #2f4156 !important ;
+   
+    
+}
+.whiteLabel {
+     color: #eadf05 !important; 
+}
+.whiteLabelNumber {
+     color: #eadf05 !important; 
+     font-weight: bold !important;
+     font-size: 17px !important;
 }
 #__form0--FC-NoHead--Grid {
     background-color:  #c8d9e6 !important;
@@ -388,6 +389,29 @@ margin-top: 15px !important;
 #__panel20-content {
      background-color:  #c8d9e6 !important;
 }
+.sapUiTableHeaderDataCell .sapMLabel, .sapMListTbl .sapMColumnHeader .sapMLabel {
+    font-size: 1rem !important;
+    color: white !important;
+}
+.sapUiSizeCompact .sapMSFF {
+    height: 2.5rem !important;
+}
+
+.sapUiSizeCompact .sapMSFB {
+    margin-top: 8px !important;
+}
+.sapMTB-Transparent-CTX>.sapMTitleTB.sapMTitleStyleAuto {
+    font-size: 17px !important;
+    font-weight: bold !important;
+    color: #000000 !important;
+}
+.sapUiSizeCompact.sapMDialog>.sapMDialogSection, .sapUiSizeCompact .sapMDialog>.sapMDialogSection{
+     background-color:  #c8d9e6 !important;
+}
+.sapUshellShellHeadItm{
+    display : none !important;
+}
+
 
 
 

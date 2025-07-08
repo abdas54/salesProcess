@@ -1,0 +1,18 @@
+<core:FragmentDefinition xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:html="http://www.w3.org/1999/xhtml">
+    <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom sapUiSmallMarginTop customerDialog" width="480px" height="480px" >
+        <Label text="Cashier Signature" design="Bold" class="sapUiSmallMarginTop sapUiSmallMarginBottom"></Label>
+        <html:canvas id="signatureCanvas" width="450" height="200"
+                     style="border:1px solid #000; touch-action: none;">
+        </html:canvas>
+        <Label text="Customer Signature" design="Bold"  class="sapUiSmallMarginTop sapUiSmallMarginBottom"></Label>
+        <html:canvas id="signatureCanvas1" width="450" height="200"
+                     style="border:1px solid #000; touch-action: none;">
+        </html:canvas>
+        <HBox>
+            <Button text="Clear" press="onClearSignature" />
+            <Button text="Save" press="onSaveSignature" />
+        </HBox>
+    </VBox>
+</core:FragmentDefinition>

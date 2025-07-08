@@ -2,13 +2,13 @@
 	<Dialog title="Stock Availability" contentHeight="800px" contentWidth="1000px" class="stockDialog">
 		<content>
 		<!--change="getStockDetailManually"-->
-        <Input id="inputStockSales" class="inputStyle sapUiSmallMarginBegin sapUiSmallMarginTop" placeholder="Enter or Scan Material" value="{StockModel>/inpMatCode}"  width="75%"
+        <Input  class=" customInputHeight inputStyle sapUiSmallMarginBegin sapUiSmallMarginTop whiteSuggestionHeader" placeholder="Enter or Scan Material" value="{StockModel>/inpMatCode}"  width="75%"
 		showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}" change="getStockDetailManually"
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onStockSuggest" suggestionItemSelected="onSuggestionStockSelected"
 							showTableSuggestionValueHelp="false">
 			<suggestionColumns>
 								<Column width="15rem">
-									<Label text="Item Code" design="Bold"/>
+									<Label text="Item Code" design="Bold" />
 								</Column>
 								<!-- <Column width="20rem">
 									<Label text="Description" design="Bold"/>
@@ -38,7 +38,7 @@
 							</layoutData>
 						</Input>
 						<Button class="sapUiSmallMarginTop" type="Transparent"  icon="sap-icon://qr-code" press="onScanStockAvailability" />
-				<VBox class="sapUiSmallMarginTop">
+				<VBox class="sapUiSmallMarginTop sapUiSmallMarginBeginEnd">
 				
 				<Table id="materialTable"  items="{StockModel>/Product}" >
 					<columns>
