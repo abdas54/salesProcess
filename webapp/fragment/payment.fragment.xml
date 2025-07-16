@@ -75,7 +75,7 @@
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
                                         </Input>
-                                        <core:Icon src="sap-icon://validate" size="2rem" class="sapUiSmallMarginBegin" press="onValidateCreditNote"/>
+                                        <core:Icon src="sap-icon://validate" size="2rem" class="sapUiSmallMarginBegin sapUiTinyMarginTop" press="onValidateCreditNote"/>
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="creditNoteList" visible="false" itemPress="onRedeemCreditNote" >
                                         <g:items>
@@ -120,7 +120,7 @@
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
                                         </Input>
-                                        <core:Icon src="sap-icon://validate" size="2rem" class="sapUiSmallMarginBegin" press="onValidateVoucherAdv"/>
+                                        <core:Icon src="sap-icon://validate" size="2rem" class="sapUiSmallMarginBegin sapUiTinyMarginTop" press="onValidateVoucherAdv"/>
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="advncePaymentList" visible="false" itemPress="onRedeemAdvPayment" >
                                         <g:items>
@@ -165,7 +165,7 @@
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
                                         </Input>
-                                        <core:Icon src="sap-icon://validate" size="2rem"  class="sapUiSmallMarginBegin" press="onValidateGiftVoucher"/>
+                                        <core:Icon src="sap-icon://validate" size="2rem"  class="sapUiSmallMarginBegin sapUiTinyMarginTop" press="onValidateGiftVoucher"/>
                                     </HBox>
                                     <g:GridList class="sapUiSmallMarginTop"  id="gvPaymentList" visible="false" itemPress="onRedeemGVPayment" >
                                         <g:items>
@@ -229,7 +229,7 @@
                         <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Forex' }">
                             <content>
                                 <VBox class="sapUiSmallMargin">
-                                    <l:HorizontalLayout class="sapUiContentPadding equalColumns" width="100%">
+                                    <l:HorizontalLayout class="sapUiContentPadding equalColumns" >
                                         <!--<FlexBox class="columns" justifyContent="SpaceBetween" alignItems="Center" direction="Row" wrap="Wrap">-->
                                         <GenericTile frameType="OneByHalf" press="onPressCurrency" header="USD" class="customTile1">
                                             <TileContent >
@@ -247,7 +247,7 @@
                                             </TileContent>
                                         </GenericTile>
                                     </l:HorizontalLayout>
-                                    <l:HorizontalLayout class="sapUiContentPadding equalColumns" width="100%">
+                                    <l:HorizontalLayout class="sapUiContentPadding equalColumns" >
                                         <!--</FlexBox>-->
                                         <!--<FlexBox class="columns" justifyContent="SpaceBetween" alignItems="Center" direction="Row" wrap="Wrap">-->
                                         <GenericTile header="AUD" frameType="OneByHalf" press="onPressCurrency" class="customTile1">
@@ -277,6 +277,56 @@
                                             <Button text="Submit" press="onSubmit"/>
                                         </content>
                                     </Panel>
+                                </VBox>
+                            </content>
+                        </Panel>
+                        <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Bounze' }">
+                            <content>
+                                <VBox class="sapUiSmallMargin">
+                                    <HBox>
+                                        <Input id="bounzeCustNumber"  enabled="false" class="inputStyle sapUiSmallMarginBottom">
+                                            <layoutData>
+                                                <FlexItemData growFactor="1"/>
+                                            </layoutData>
+                                        </Input>
+                                        <core:Icon src="sap-icon://validate" size="2rem"  class="sapUiSmallMarginBegin sapUiTinyMarginTop" press="onFetchBounzeDetails"/>
+                                    </HBox>
+                                     <Button id="registerBounz" text="Register"  enabled="false" press="onBounzRegister" class="inputStyle sapUiSmallMarginTopBottom cstmBtn"/>
+                                           
+                                    
+                                    <g:GridList class="sapUiSmallMarginTop"  id="bounzeDetails" visible="false" itemPress="onRedeemBounze" >
+                                        <g:items>
+                                            <g:GridListItem type="Active" >
+                                                <!-- <VBox class="sapUiSmallMargin"><Title text="{GiftVoucher>/Transaction}" /><Text text="{GiftVoucher>/BalanceAmount}" /><Text text="{GiftVoucher>/RedemptionType}" visible="false" /></VBox> -->
+                                                <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
+                                                    <VBox alignItems="Start">
+                                                        <Label text="FirstName:" class=" sapUiTinyMarginTop boldText"/>
+                                                        <Label text="{BounzeModel>/FirstName}" class=" sapUiTinyMarginTop"/>
+                                                    </VBox>
+                                                    <VBox alignItems="Start">
+                                                    <Label text="LastName:" class=" sapUiTinyMarginTop boldText"/>
+                                                        <Label text="{BounzeModel>/LastName}" class=" sapUiTinyMarginTop"/>
+                                                       
+                                                    </VBox>
+                                                </l:Grid>
+                                                <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
+                                                    <VBox alignItems="Start">
+                                                         <Label text="Points Available:" class=" sapUiTinyMarginTop boldText"/>
+                                                        <Label text="{BounzeModel>/PointBalance}" class=" sapUiTinyMarginTop"/>
+                                                    </VBox>
+                                                    <VBox alignItems="Start">
+                                                        <Label text="Account Status:" class=" sapUiTinyMarginTop boldText"/>
+                                                        <Label text="{BounzeModel>/AccountStatus}" class=" sapUiTinyMarginTop"/>
+                                                    </VBox>
+                                                    <VBox visible="false" alignItems="Start">
+                                                        <Label text="Redemption Type:" class=" sapUiTinyMarginTop boldText"/>
+                                                        <Label text="{GiftVoucher>/RedemptionType}" class=" sapUiTinyMarginTop"/>
+                                                    </VBox>
+                                                </l:Grid>
+                                            </g:GridListItem>
+                                        </g:items>
+                                    </g:GridList>
+                                    <!-- <Button text="Submit"  press="onSubmit" /> -->
                                 </VBox>
                             </content>
                         </Panel>

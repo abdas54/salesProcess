@@ -69,10 +69,10 @@
 						<Table id="idProductsTable" items="{ProductModel>/Product}" mode="Delete" delete="onDelete" sticky="ColumnHeaders"
 							itemPress="onProductRowPress" class="customTableHeader tableheader">
 							<columns>
-								<Column width="3em">
+								<Column width="3em" visible="false">
 									<Text text="Seq."/>
 								</Column>
-								<Column width="6em">
+								<Column width="12em">
 									<Text text="Model No."/>
 								</Column>
 								<Column width="6em">

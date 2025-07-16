@@ -1,7 +1,8 @@
 <core:FragmentDefinition xmlns="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:html="http://www.w3.org/1999/xhtml">
-    <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom sapUiSmallMarginTop customerDialog" width="480px" height="480px" >
+    <HBox>
+    <VBox class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom sapUiSmallMarginTop customerDialog" width="30%" height="480px" >
         <Label text="Cashier Signature" design="Bold" class="sapUiSmallMarginTop sapUiSmallMarginBottom"></Label>
         <html:canvas id="signatureCanvas" width="450" height="200"
                      style="border:1px solid #000; touch-action: none;">
@@ -15,4 +16,9 @@
             <Button text="Save" press="onSaveSignature" />
         </HBox>
     </VBox>
+    <VBox width="10%"></VBox>
+    <VBox class="sapUiSmallMarginEnd sapUiSmallMarginBottom sapUiMediumMarginBegin sapUiSmallMarginTop customerDialog" width="60%" height="480px" >
+     <core:HTML visible="false" id="pdfIframe1" />
+     </VBox>
+      </HBox>
 </core:FragmentDefinition>
