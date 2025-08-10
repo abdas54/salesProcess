@@ -57,7 +57,8 @@
                      <Panel visible="{= ${ShowDiscountSection>/selectedMode} === 'Reason Type' }">
 						<content>
 							<VBox >
-							<g:GridList items="{/DiscountReasonsSet}"  itemPress="holdReasonType">
+							<TextArea rows="5" change="holdReasonType" width="50%" class="sapUiSmallMargin"></TextArea>
+							<!-- <g:GridList items="{/DiscountReasonsSet}"  itemPress="holdReasonType">
     							<g:items>
         							<g:GridListItem type="Active" >
             							<VBox class="sapUiSmallMargin">
@@ -68,7 +69,7 @@
             							</VBox>
         							</g:GridListItem>
     							</g:items>
-								</g:GridList>
+								</g:GridList> -->
 							</VBox>
 						</content>
 					</Panel>
@@ -93,7 +94,7 @@
                     <Panel visible="{= ${ShowDiscountSection>/selectedMode} === 'Amount' }">
 						<content>
 							<VBox >
-							<Input  id="discountAmount" type="Number" class="inputStyle sapUiSmallMarginBottom" placeholder="Enter Discount Amount" change="holdDiscountAmount"></Input>	
+							<Input  id="discountAmount" type="Number" class="inputStyle sapUiSmallMarginBottom" change="holdDiscountAmount"></Input>	
 							</VBox>
 						</content>
 					</Panel>
@@ -133,7 +134,7 @@
 		
 			<buttons>
 			
-			<Button text="Apply Discount" type="Emphasized" press="onApplyManualDiscount1" class="cstmBtn"/>
+			<Button id="applyDiscBtn" text="Apply Discount" type="Emphasized" press="onApplyManualDiscount1" class="cstmBtn"/>
 			<Button text="Close" type="Emphasized" press="onCloseManualDiscount1" class="cstmBtn"/>
 		</buttons>
 	</Dialog>

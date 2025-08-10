@@ -411,8 +411,43 @@ margin-top: 15px !important;
 .sapUshellShellHeadItm{
     display : none !important;
 }
+.customScrollContainer {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; /* Ensures momentum scroll on iOS/Android */
+  scrollbar-width: auto; /* For Firefox */
+  scrollbar-color: #888 #f1f1f1;
+}
 
+.customScrollContainer::-webkit-scrollbar {
+  width: 20px; /* Adjust to make it thicker */
+}
 
+.customScrollContainer::-webkit-scrollbar-thumb {
+  background-color: #888;       /* Scrollbar color */
+  border-radius: 6px;           /* Rounded thumb */
+  border: 3px solid #f1f1f1;    /* Optional padding around thumb */
+}
 
+.customScrollContainer::-webkit-scrollbar-track {
+  background-color: #f1f1f1;    /* Track background */
+}
+
+.sapMInputSuggestionPopup .sapMPopoverCont,
+.sapMInputSuggestionTable {
+    -webkit-overflow-scrolling: touch !important;
+    overflow-y: auto !important;
+}
+
+/* Make scrollbar always visible on mobile */
+.sapMInputSuggestionPopup .sapMListUl {
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+.customInputWithScroll .sapMInputSuggestionPopup {
+    max-height: 400px !important;
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch !important;
+}
 
 
