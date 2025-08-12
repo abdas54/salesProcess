@@ -13,15 +13,13 @@
             visible="{= ${PromotionModel>/ZPM1} ? ${PromotionModel>/ZPM1}.length > 0 : false }"
             class="sapUiSmallMarginBottom sapUiSmallMarginBegin sapUiSmallMarginTop sapUiSmallMarginEnd"
             mode="SingleSelectLeft"
-            width="95%">
+            width="95%"
+            selectionChange="onZPM1SelectionChange">
             <headerToolbar>
                         <OverflowToolbar>
                         <Title   text="{= 'ZPM1 - ' + ${PromotionModel>/ZPM1/0/ConditionName} }" level="H4" />
                             <ToolbarSpacer />
-                            <Button 
-                                text="Apply" 
-                                icon="sap-icon://add" 
-                                press="onAddProductZPM1" />
+                           
                         </OverflowToolbar>
                     </headerToolbar>
 
@@ -74,15 +72,13 @@
             id="zpm2PromotionTbl"
             class="sapUiSmallMarginBottom sapUiSmallMarginBegin sapUiSmallMarginEnd"
             mode="MultiSelect"
-            width="95%">
+            width="95%"
+            selectionChange="onZPM2SelectionChange">
             <headerToolbar>
                         <OverflowToolbar>
                          <Title text="{= 'ZPM2 - ' + ${PromotionModel>/ZPM2/0/ConditionName} }" level="H4" />
                             <ToolbarSpacer />
-                            <Button 
-                                text="Apply" 
-                                icon="sap-icon://add" 
-                                press="onAddProductZPM2" />
+                           
                         </OverflowToolbar>
                     </headerToolbar>
 
@@ -131,6 +127,9 @@
             <beginButton>
 			<Button text="Close" press="fnClosePromotion" class="cstmBtn"/>
 		</beginButton>
+        <endButton>
+        <Button text="Apply" press="fnApplyPromotion" class="cstmBtn"/>
+        </endButton>
             </Dialog>
 
 </core:FragmentDefinition>

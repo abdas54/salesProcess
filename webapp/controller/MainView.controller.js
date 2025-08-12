@@ -13,7 +13,7 @@ sap.ui.define([
     /**
      * @param {typeof sap.ui.core.mvc.Controller} Controller
      */
-    function (Controller, JSONModel, MessageToast, Fragment, MessageBox, formatter, BusyDialog, PlacementType, BarcodeScanner,epson2) {
+    function (Controller, JSONModel, MessageToast, Fragment, MessageBox, formatter, BusyDialog, PlacementType, BarcodeScanner, epson2) {
         "use strict";
         var that;
         return Controller.extend("com.eros.salesprocess.controller.MainView", {
@@ -2397,6 +2397,21 @@ sap.ui.define([
                         }
                         if (!bFlag) {
                             var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
+                            if(that.bPromoItem){
+                               data[0].ToDiscounts.results.push({
+                                    "ConditionAmount": "",
+                                    "ConditionId": that.retrieveConditionId(data[0]),
+                                    "ConditionName": that.promoCondName,
+                                    "ConditionType": that.convertPromotionCode(that.promoCondType),
+                                    "Currency": "AED",
+                                    "DiscountType": "M",
+                                    "ItemCode": data[0].Itemcode,
+                                    "ModifierType": "D",
+                                    "Remarks": "Promotional Discount",
+                                    "Authority": ""
+
+                                })
+                            }
                             aProducts.push(...data);
                             that.updateSeq(aProducts);
                             that.checkEnableDisableTile(true);
@@ -2427,6 +2442,10 @@ sap.ui.define([
                     }
                 });
             },
+            convertPromotionCode: function (sCode) {
+    // Match with regex and rearrange
+    return sCode.replace(/ZPM(\d+)/, "Z$1PM");
+},
             reservedItemGlobalLocation: function (data) {
                 var that = this;
                 var oPayload = {
@@ -2978,7 +2997,7 @@ sap.ui.define([
                 xhr.onload = function () {
                     if (xhr.status === 200) {
                         var oHtmlControl = sap.ui.core.Fragment.byId("SignaturePad", "pdfCanvas");
-                       var iframeContent = '<div id="pdf-viewport"></div>';
+                        var iframeContent = '<div id="pdf-viewport"></div>';
                         oHtmlControl.setContent(iframeContent);
                         oHtmlControl.setVisible(true);
 
@@ -3041,10 +3060,10 @@ sap.ui.define([
                 }
 
             },
-            onPressPrint: function(){
-               this.sendToEpsonPrinter(this.canvasp, this.printerIP);
+            onPressPrint: function () {
+                this.sendToEpsonPrinter(this.canvasp, this.printerIP);
             },
-                isSingleColor: function (imageData) {
+            isSingleColor: function (imageData) {
                 const stride = 4;
                 for (let offset = 0; offset < stride; offset++) {
                     const first = imageData[offset];
@@ -3056,7 +3075,7 @@ sap.ui.define([
                 }
                 return true;
             },
-  loadPdfToCanvas: async function (pdfUrl) {
+            loadPdfToCanvas: async function (pdfUrl) {
                 await this.ensurePdfJsLib();
 
                 try {
@@ -3080,7 +3099,7 @@ sap.ui.define([
                         canvas.setAttribute("willReadFrequently", "true");
                         // canvas.width = viewport.width;
                         // canvas.height = viewport.height;
-                        const context = canvas.getContext("2d",{willReadFrequently: true});
+                        const context = canvas.getContext("2d", { willReadFrequently: true });
                         context.clearRect(0, 0, width, height);
 
                         await page.render({
@@ -3143,20 +3162,20 @@ sap.ui.define([
                         }
 
                         context.clearRect(0, 0, width, height);
-          const adjustedScale = printerWidth / (right - left);
-          const adjustedWidth = (right - left) * adjustedScale;
-          const adjustedHeight = (bottom - top) * adjustedScale;
- 
-          canvas.height = adjustedHeight + 10;
-          canvas.width = adjustedWidth ;
-          canvas.style.width = `${adjustedWidth}px`;
-          canvas.style.height = `${adjustedHeight}px`;
- 
-          pdfContainer.appendChild(canvas);
-          await page.render({
-            canvasContext: context,
-            viewport,
-          }).promise;
+                        const adjustedScale = printerWidth / (right - left);
+                        const adjustedWidth = (right - left) * adjustedScale;
+                        const adjustedHeight = (bottom - top) * adjustedScale;
+
+                        canvas.height = adjustedHeight + 10;
+                        canvas.width = adjustedWidth;
+                        canvas.style.width = `${adjustedWidth}px`;
+                        canvas.style.height = `${adjustedHeight}px`;
+
+                        pdfContainer.appendChild(canvas);
+                        await page.render({
+                            canvasContext: context,
+                            viewport,
+                        }).promise;
 
                         // Store each rendered canvas
                         canvasArray.push(canvas);
@@ -3187,7 +3206,7 @@ sap.ui.define([
                 }
             },
 
-             sendToEpsonPrinter: function (canvases, printerIp) {
+            sendToEpsonPrinter: function (canvases, printerIp) {
                 var ePosDev = new epson.ePOSDevice();
                 //var ip = this.getView().byId("ipaddr").getValue();
                 // var wdth = this.getView().byId("wdth").getValue();
@@ -3206,7 +3225,7 @@ sap.ui.define([
                                     printer.brightness = 1.0;
                                     printer.halftone = printer.HALFTONE_ERROR_DIFFUSION;
                                     for (const canvas of canvases) {
-                                        printer.addImage(canvas.getContext("2d",{willReadFrequently: true}), 0, 0, canvas.width, canvas.height, printer.COLOR_1, printer.MODE_MONO);
+                                        printer.addImage(canvas.getContext("2d", { willReadFrequently: true }), 0, 0, canvas.width, canvas.height, printer.COLOR_1, printer.MODE_MONO);
                                     }
 
 
@@ -3245,7 +3264,7 @@ sap.ui.define([
                         MessageBox.success("Transaction Posted Successfully.", {
                             onClose: function (sAction) {
                                 that.getPDFBase64();
-                               // window.location.reload(true);
+                                // window.location.reload(true);
                             }
                         });
                         if (!bflag) {
@@ -3719,7 +3738,7 @@ sap.ui.define([
                             promotionModel.setData({});
                             promotionModel.setData(groupedData);
                             that.getView().setModel(promotionModel, "PromotionModel");
-                            that._oPromotionFragment = null;
+
                             if (!that._oPromotionFragment) {
                                 // Load the fragment only once
                                 that._oPromotionFragment = sap.ui.xmlfragment(
@@ -3759,6 +3778,73 @@ sap.ui.define([
             },
             fnClosePromotion: function () {
                 this._oPromotionFragment.close();
+
+            },
+            fnApplyPromotion: function () {
+                var oTableZPM1 = this.byId("zpm1PromotionTbl");
+                var oTableZPM2 = this.byId("zpm2PromotionTbl");
+                var oModel = this.getView().getModel("PromotionModel");
+                this.bPromoItem = false;
+
+                var aSelectedItemsZPM1 = oTableZPM1.getSelectedItems();
+                var aSelectedItemsZPM2 = oTableZPM2.getSelectedItems();
+
+                // If ZPM1 selected → 1 API call
+                if (aSelectedItemsZPM1.length > 0) {
+                    var oData = aSelectedItemsZPM1[0].getBindingContext("PromotionModel").getObject();
+                    this.bPromoItem = true;
+                    this.promoCondName = oData.ConditionName;
+                    this.promoCondType = oData.ConditionType;
+                    this.getMaterialDetail(true, oData.Material,"");
+                     this._oPromotionFragment.close();
+                    
+                    return;
+                }
+
+                // If ZPM2 selected → Multiple API calls
+                if (aSelectedItemsZPM2.length > 0) {
+                    var aData = aSelectedItemsZPM2.map(function (oItem) {
+                        return oItem.getBindingContext("PromotionModel").getObject();
+                    });
+
+                    aData.forEach(function (oRow) {
+                        this.bPromoItem = true;
+                        this.promoCondName = oRow.ConditionName;
+                        this.promoCondType = oRow.ConditionType;
+                        this.getMaterialDetail(true, oRow.Material,"");
+                        
+                    }.bind(this));
+                    this._oPromotionFragment.close();
+                    return;
+                }
+
+                sap.m.MessageToast.show("Please select a promotion.");
+            },
+
+
+
+
+            onZPM1SelectionChange: function (oEvent) {
+                var oTableZPM1 = this.byId("zpm1PromotionTbl");
+                var oTableZPM2 = this.byId("zpm2PromotionTbl");
+
+                // If something is selected in ZPM1, clear ZPM2 selections
+                if (oEvent.getParameter("selected")) {
+                    oTableZPM2.removeSelections(true); // 'true' to suppress selectionChange event
+                }
+            },
+            onZPM2SelectionChange: function (oEvent) {
+                var oTableZPM1 = this.byId("zpm1PromotionTbl");
+                var oTableZPM2 = this.byId("zpm2PromotionTbl");
+
+                // If any item in ZPM2 is selected
+                if (oTableZPM2.getSelectedItems().length > 0) {
+                    // Clear ZPM1 selections
+                    oTableZPM1.removeSelections(true);
+
+                    // Select all rows in ZPM2
+                    oTableZPM2.selectAll();
+                }
             },
             onCashSubmit: function (oEvent) {
 
@@ -4119,11 +4205,11 @@ sap.ui.define([
                 // sap.ui.getCore().byId("manCardApproveCode").setValue("");
                 // sap.ui.getCore().byId("manCardReciept").setValue("");
             },
-            validateEnterAmount: function(oEvent){
-             if(oEvent.getSource().getValue() > sap.ui.getCore().byId("totalSaleBalText").getText()){
-                sap.m.MessageToast.show("Entered Value is more than Sale Balance");
-                oEvent.getSource().setValue("");
-             }
+            validateEnterAmount: function (oEvent) {
+                if (oEvent.getSource().getValue() > sap.ui.getCore().byId("totalSaleBalText").getText()) {
+                    sap.m.MessageToast.show("Entered Value is more than Sale Balance");
+                    oEvent.getSource().setValue("");
+                }
             },
             onSubmitCardType: function () {
                 var that = this;
