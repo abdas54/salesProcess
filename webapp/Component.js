@@ -22,6 +22,11 @@ sap.ui.define([
              */
             init: function () {
                 // call the base component's init function
+
+                const meta = document.createElement("meta");
+meta.httpEquiv = "Content-Security-Policy";
+meta.content = "upgrade-insecure-requests";
+document.head.appendChild(meta);
                 UIComponent.prototype.init.apply(this, arguments);
 
                 // enable routing

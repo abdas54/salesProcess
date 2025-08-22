@@ -1,0 +1,63 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:g="sap.f"
+    xmlns:l="sap.ui.layout"
+    xmlns:core="sap.ui.core">
+
+    <Dialog
+        id="giftVoucherDialog"
+        title="Voucher Details"
+        draggable="true"
+        resizable="true"
+        contentWidth="500px"
+        contentHeight="auto"
+        >
+
+        <g:GridList width="450px"
+            class="sapUiSmallMarginTop sapUiSmallMarginBegin sapUiSmallMarginEnd"
+            id="negvPaymentList"
+            itemPress="onNegvRedeemGVPayment">
+
+            <g:items>
+                <g:GridListItem type="Active">
+                    <l:Grid defaultSpan="XL4 L4 M6 S12"
+                        class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
+
+                        <VBox alignItems="Start">
+                            <Label text="Receipt Id:" class="sapUiTinyMarginTop boldText"/>
+                            <Label text="{NEGVModel>/Transaction}" class="sapUiTinyMarginTop"/>
+                        </VBox>
+
+                        <VBox alignItems="Start">
+                            <Label text="Total Value:" class="sapUiTinyMarginTop boldText"/>
+                            <Label text="{NEGVModel>/TransactionAmount}" class="sapUiTinyMarginTop"/>
+                        </VBox>
+                    </l:Grid>
+
+                    <l:Grid defaultSpan="XL4 L4 M6 S12"
+                        class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
+
+                        <VBox alignItems="Start">
+                            <Label text="Redeemed Value:" class="sapUiTinyMarginTop boldText"/>
+                            <Label text="{NEGVModel>/RedeemedAmount}" class="sapUiTinyMarginTop"/>
+                        </VBox>
+
+                        <VBox alignItems="Start">
+                            <Label text="Balance Value:" class="sapUiTinyMarginTop boldText"/>
+                            <Label text="{NEGVModel>/BalanceAmount}" class="sapUiTinyMarginTop"/>
+                        </VBox>
+
+                        <VBox visible="false" alignItems="Start">
+                            <Label text="Redemption Type:" class="sapUiTinyMarginTop boldText"/>
+                            <Label text="{NEGVModel>/RedemptionType}" class="sapUiTinyMarginTop"/>
+                        </VBox>
+                    </l:Grid>
+                </g:GridListItem>
+            </g:items>
+        </g:GridList>
+
+        <endButton>
+            <Button text="Close" press="onCloseNEGVVoucherDialog"/>
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

@@ -128,7 +128,7 @@
 			<Button text="Close" press="fnClosePromotion" class="cstmBtn"/>
 		</beginButton>
         <endButton>
-        <Button text="Apply" press="fnApplyPromotion" class="cstmBtn"/>
+        <Button id="applyPromotionBtn" text="Apply" press="fnApplyPromotion" class="cstmBtn"/>
         </endButton>
             </Dialog>
 

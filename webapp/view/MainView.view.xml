@@ -177,7 +177,7 @@
                                 <!-- <Button type="Transparent" icon="sap-icon://product"/> -->
                             </TileContent>
                         </GenericTile>
-                        <GenericTile id="customergt" header="CUSTOMER" frameType="OneByHalf" press="onPressCustData" class="customTile" pressEnabled="false" headerImage="sap-icon://customer">
+                        <GenericTile id="customergt" header="CUSTOMER" frameType="OneByHalf" press="onPressCustData" class="customTile" pressEnabled="true" headerImage="sap-icon://customer">
                             <TileContent>
                                 <!-- <Button type="Transparent" icon="sap-icon://customer"/> -->
                             </TileContent>
