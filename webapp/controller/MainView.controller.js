@@ -277,6 +277,16 @@ sap.ui.define([
 
                         }
                         else {
+                            if (this._appliedPromotions) {
+                                var aData = oModel.getObject(oContext.sPath).ToDiscounts.results;
+                                var selectedItemCode = oModel.getObject(oContext.sPath).Itemcode;
+
+                                for (let key in this._appliedPromotions) {
+                                    if (this._appliedPromotions[key].Material === selectedItemCode) {
+                                        delete this._appliedPromotions[key];
+                                    }
+                                }
+                            }
                             this.deleteItemReservation(oModel.getObject(oContext.sPath), oContext);
                         }
 
@@ -759,6 +769,9 @@ sap.ui.define([
                 }
                 else if (dataObj.PaymentType === "BOUNZ") {
                     sap.m.MessageBox.INFORMATION("Bounz Payment cannot be deleted");
+                }
+                else if (dataObj.PaymentType === "NEGV") {
+                    sap.m.MessageBox.INFORMATION("NEGV Payment cannot be deleted");
                 }
                 else {
                     this.deRedeemVoucher(dataObj);
@@ -3126,7 +3139,7 @@ sap.ui.define([
             getPDFBase64: function () {
                 var that = this;
                 var tranNumber = this.getView().byId("tranNumber").getCount().toString();
-                var sUrl = "/sap/opu/odata/SAP/ZEROS_RETAIL_PROJECT_SRV/TransactionPDFSet(TransactionId='" + tranNumber + "')/$value";
+                var sUrl = "/sap/opu/odata/SAP/ZEROS_RETAIL_PROJECT_SRV/TransactionPDFSet(TransactionId='" + tranNumber + "',TransactionCopy='1')/$value";
 
                 // Create XMLHttpRequest
                 var xhr = new XMLHttpRequest();
@@ -3383,7 +3396,16 @@ sap.ui.define([
                             }
                         );
                     } else {
-                        sap.m.MessageBox.error("Connection failed: " + resultConnect);
+                        //sap.m.MessageBox.error("Connection failed: " + resultConnect);
+                        sap.m.MessageBox.error("Connection failed: " + resultConnect, {
+                            title: "Error",
+                            actions: [sap.m.MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                if (oAction === sap.m.MessageBox.Action.OK) {
+                                    window.location.reload(true);
+                                }
+                            }.bind(this)
+                        });
                     }
                 });
             },
@@ -4040,7 +4062,7 @@ sap.ui.define([
                         "Material": oData.Material
                     };
 
-                    this.getMaterialDetail(true, oData.Material, "");
+                    this.getMaterialDetail(true, oData.Material, "", this.bPromoItem);
                     this._oPromotionFragment.close();
 
                     return;
@@ -4410,7 +4432,12 @@ sap.ui.define([
                         beginButton: new sap.m.Button({
                             text: "Submit",
                             class: "cstmBtn",
-                            press: this.onSubmitCardType.bind(this)
+                            press: function () {
+                                if (this.validateCardInputs()) {
+                                    this.onSubmitCardType(); // call your method only if valid
+                                    this._oDialogCardType.close();
+                                }
+                            }.bind(this)
                         }).addStyleClass("cstmBtn"),
                         endButton: new sap.m.Button({
                             text: "Cancel",
@@ -4461,11 +4488,62 @@ sap.ui.define([
                 // sap.ui.getCore().byId("manCardApproveCode").setValue("");
                 // sap.ui.getCore().byId("manCardReciept").setValue("");
             },
+            validateCardInputs: function () {
+                var isValid = true;
+
+                // Amount field
+                if (!this._oAmountCardInput.getValue()) {
+                    this._oAmountCardInput.setValueState("Error");
+                    this._oAmountCardInput.setValueStateText("Amount is required");
+                    isValid = false;
+                } else {
+                    if (parseFloat(this._oAmountCardInput.getValue()) <= parseFloat(sap.ui.getCore().byId("totalSaleBalText").getText())) {
+                        this._oAmountCardInput.setValueState("None");
+                    }
+                    else{
+                        isValid = false;
+                        this._oAmountCardInput.setValueState("Error");
+                        sap.m.MessageBox.error("Entered Amount is more than Sale Amount");
+                    }
+                    
+                }
+
+                // Card Label
+                if (!this._oSelectCardLabel.getValue()) {
+                    this._oSelectCardLabel.setValueState("Error");
+                    this._oSelectCardLabel.setValueStateText("Card Label is required");
+                    isValid = false;
+                } else {
+                    this._oSelectCardLabel.setValueState("None");
+                }
+
+                // Approval Code
+                if (!this._oSelectCardApproval.getValue()) {
+                    this._oSelectCardApproval.setValueState("Error");
+                    this._oSelectCardApproval.setValueStateText("Approval Code is required");
+                    isValid = false;
+                } else {
+                    this._oSelectCardApproval.setValueState("None");
+                }
+
+                // Receipt Number
+                if (!this._oSelectCardReciept.getValue()) {
+                    this._oSelectCardReciept.setValueState("Error");
+                    this._oSelectCardReciept.setValueStateText("Receipt Number is required");
+                    isValid = false;
+                } else {
+                    this._oSelectCardReciept.setValueState("None");
+                }
+
+                return isValid;
+            },
+
             validateEnterAmount: function (oEvent) {
-                if (oEvent.getSource().getValue() > sap.ui.getCore().byId("totalSaleBalText").getText()) {
+                if (parseFloat(oEvent.getSource().getValue()) > parseFloat(sap.ui.getCore().byId("totalSaleBalText").getText())) {
                     sap.m.MessageToast.show("Entered Value is more than Sale Balance");
                     oEvent.getSource().setValue("");
                 }
+                
             },
             onSubmitCardType: function () {
                 var that = this;
