@@ -21,7 +21,7 @@
         </HBox>
     </VBox>
     <VBox width="10%"></VBox>
-    <VBox id="printBox" class="sapUiSmallMarginEnd sapUiSmallMarginBottom sapUiMediumMarginBegin sapUiSmallMarginTop customerDialog" width="60%" height="480px" >
+    <VBox id="printBox" visible="false" class="sapUiSmallMarginEnd sapUiSmallMarginBottom sapUiMediumMarginBegin sapUiSmallMarginTop customerDialog" width="60%" height="480px" >
      <Button text="Print" press="onPressPrint" class="sapUiTinySmallMarginTop cstmBtn" />
      <core:HTML id="pdfCanvas" />
      </VBox>

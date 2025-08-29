@@ -1,33 +1,36 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:form="sap.ui.layout.form" xmlns:f="sap.f.cards" 	xmlns:l="sap.ui.layout">
-	<Dialog title="Customer Details" contentHeight="800px" contentWidth="1000px" class="customerDialog">
-		<content >
-        <SearchField
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:f="sap.f.cards"
+    xmlns:l="sap.ui.layout">
+    <Dialog title="Customer Details" contentHeight="800px" contentWidth="1000px" class="customerDialog">
+        <content >
+            <SearchField
                 id="phoneInput"
                 width="40%"
                 class="sapUiMediumMarginBeginEnd sapUiSmallMarginBottom sapUiSmallMarginTop inputStyle customInputHeight"
                 placeholder="Enter registered Mobile Number"
                 search="onSearchNumber"
             />
-			<!-- <Input class="sapUiSmallMarginEnd" id="phoneInput" width="40%" placeholder="Enter Customer Phone Number" liveChange="onPhoneChange"/> -->
-			<HBox>
-				<VBox >
-					<List items="{CustModel>/customerData}" mode="None" class="roundedList">
-                    <CustomListItem>
-                    <GenericTile  frameType="OneByHalf" press="onOptionSelect" header="{CustModel>option}" class="customTileCust" headerImage="{CustModel>icon}">
-							<TileContent>
-								<!-- <Button type="Transparent" icon="sap-icon://product"/> -->
-							</TileContent>
-						</GenericTile>
-                    </CustomListItem>
-						<!-- <StandardListItem title="{CustModel>option}" type="Active" press="onOptionSelect"/> -->
-					</List>
-				</VBox>
-				<VBox >
-					<!-- <Panel visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }">
-						<content> -->
-							
-								<form:SimpleForm   layout="ResponsiveGridLayout" columnsM="2" columnsL="2" columnsXL="1" visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }">
-                                   <Label
+            <!-- <Input class="sapUiSmallMarginEnd" id="phoneInput" width="40%" placeholder="Enter Customer Phone Number" liveChange="onPhoneChange"/> -->
+            <HBox>
+                <VBox >
+                    <List items="{CustModel>/customerData}" mode="None" class="roundedList">
+                        <CustomListItem>
+                            <GenericTile  frameType="OneByHalf" press="onOptionSelect" header="{CustModel>option}" class="customTileCust" headerImage="{CustModel>icon}">
+                                <TileContent>
+                                    <!-- <Button type="Transparent" icon="sap-icon://product"/> -->
+                                </TileContent>
+                            </GenericTile>
+                        </CustomListItem>
+                        <!-- <StandardListItem title="{CustModel>option}" type="Active" press="onOptionSelect"/> -->
+                    </List>
+                </VBox>
+                <VBox >
+                    <!-- <Panel visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }"><content> -->
+                    <form:SimpleForm   layout="ResponsiveGridLayout" columnsM="2" columnsL="2" columnsXL="1" visible="{= ${ShowSection>/selectedMode} === 'Basic Information' }">
+                        <Label
                             required="true"
                             text="Customer Type"
                         />
@@ -53,9 +56,8 @@
                                 />
                             </items>
                         </ComboBox>
-                                
-                                <Label text="Phone Number" required="true" />
-                                 <!-- <FlexBox
+                        <Label text="Phone Number" required="true" />
+                        <!-- <FlexBox
                            
                             justifyContent="Start"
                             alignItems="Center"
@@ -66,31 +68,29 @@
                                 class=" customInputHeight inputStyle sapUiSmallMarginBottom"
                                  items="{ path: '/CountryCodesSet',length :500, sorter: { path: 'CountryCode' } }"
                             >
-                                 <core:ListItem
+                                <core:ListItem
                                     key="{CountryCode}"
                                     text="{CountryCode}"
                                     additionalText="{CountryName}"
                                 />
-                               
                             </ComboBox>
                             <Input 
                                 id="mobileNumber"
                                 type="Number"
                                 value="{custAddModel>/Mobile}"
                                 class="inputStyle customInputHeight sapUiSmallMarginBegin "
-                            /> </HBox>
-                            
+                            />
+                        </HBox>
                         <!-- </FlexBox> -->
-
-                                <!-- <Input type="Tel" value="{custAddModel>/MobNo}"/> -->
-                                <Label text="First Name" />
-								<Input placeholder="Enter name" value="{custAddModel>/FirstName}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                                <Label text="Last Name" />
-								<Input placeholder="Enter name" value="{custAddModel>/LastName}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-								<Label text="Email" />
-                                <Input  type="Email" value="{custAddModel>/Email}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-								<Label  text="Date of Birth"/>
-                                <DatePicker id="birthDate"  value="{
+                        <!-- <Input type="Tel" value="{custAddModel>/MobNo}"/> -->
+                        <Label text="First Name" />
+                        <Input placeholder="Enter name" value="{custAddModel>/FirstName}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                        <Label text="Last Name" />
+                        <Input placeholder="Enter name" value="{custAddModel>/LastName}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                        <Label text="Email" />
+                        <Input  type="Email" value="{custAddModel>/Email}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                        <Label  text="Date of Birth"/>
+                        <DatePicker id="birthDate"  value="{
     path: 'custAddModel>/BirthDate',
     type: 'sap.ui.model.type.Date',
     formatOptions: {
@@ -100,162 +100,246 @@
       nullable: true
     }
   }" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-
-
-
-               
-
-
-                            
- 
-
-                    
-
-
-          
-                     
-
-
-                                
-								</form:SimpleForm>
-							
-						<!-- </content>
-					</Panel> -->
-					
-					<Panel  visible="{= ${ShowSection>/selectedMode} === 'Customer Address' }">
-						<content>
-							<RadioButtonGroup id="addressRbGrp" columns="5"  class="sapUiSmallMarginBottom" selectedIndex="0" select="onSelectAddressType">
-									<RadioButton id="homeaddr" text="Home Address" />
-									<RadioButton id="offaddr" text="Office Address" />
-								<RadioButton id="otheraddr" text="Other Address" />
-								</RadioButtonGroup>
-							<HBox>
-							<VBox class="sapUiMediumMarginBeginEnd" id="homeSection" >
-                            <Label text="Address Line 1" />
-                            <Input value="{custAddModel>/HomeAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom" />
-                            <Label text="Address Line 2" />
-                            <Input value="{custAddModel>/HomeAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="Street / PO Box" />
-                            <Input value="{custAddModel>/HomeStreet}"  class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="City" />
-                            <Input value="{custAddModel>/HomeCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="Country" />
-
-                            <ComboBox
+                    </form:SimpleForm>
+                    <!-- </content></Panel> -->
+                    <Panel  visible="{= ${ShowSection>/selectedMode} === 'Customer Address' }">
+                        <content>
+                            <RadioButtonGroup id="addressRbGrp" columns="5"  class="sapUiSmallMarginBottom" selectedIndex="0" select="onSelectAddressType">
+                                <RadioButton id="homeaddr" text="Home Address" />
+                                <RadioButton id="offaddr" text="Office Address" />
+                                <RadioButton id="otheraddr" text="Other Address" />
+                            </RadioButtonGroup>
+                            <HBox>
+                                <VBox class="sapUiMediumMarginBeginEnd" id="homeSection" >
+                                    <Label text="Address Line 1" />
+                                    <Input value="{custAddModel>/HomeAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom" />
+                                    <Label text="Address Line 2" />
+                                    <Input value="{custAddModel>/HomeAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="Street / PO Box" />
+                                    <Input value="{custAddModel>/HomeStreet}"  class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="City" />
+                                    <Input value="{custAddModel>/HomeCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="Country" />
+                                    <ComboBox
                                 class="customInputHeight inputStyle"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/HomeCountry}"
                                 items="{ path: '/CountryCodesSet',length:500, sorter: { path: 'Country' } }"
                             >
-                                <core:ListItem
+                                        <core:ListItem
                                     key="{Country}"
                                     text="{CountryName}"
                                     additionalText="{Country}"
                                 />
-                            </ComboBox>
-							</VBox>
-							<VBox
+                                    </ComboBox>
+                                </VBox>
+                                <VBox
                             id="workSection"
                             visible="false"
                            
                             class="sapUiMediumMarginBeginEnd"
                         >
-   
-                            <Label text="Address Line 1" />
-                            <Input value="{custAddModel>/OfficeAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="Address Line 2" />
-                            <Input value="{custAddModel>/OfficeAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="Street / PO Box" />
-                            <Input value="{custAddModel>/OfficeStreet}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="City" />
-                            <Input value="{custAddModel>/OfficeCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="Country" />
-                           <ComboBox
+                                    <Label text="Address Line 1" />
+                                    <Input value="{custAddModel>/OfficeAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="Address Line 2" />
+                                    <Input value="{custAddModel>/OfficeAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="Street / PO Box" />
+                                    <Input value="{custAddModel>/OfficeStreet}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="City" />
+                                    <Input value="{custAddModel>/OfficeCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="Country" />
+                                    <ComboBox
                                 class="customInputHeight inputStyle"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/OfficeCountry}"
                                 items="{ path: '/CountryCodesSet', length:500, sorter: { path: 'Country' } }"
                             >
-                                <core:ListItem
+                                        <core:ListItem
                                     key="{Country}"
                                    text="{CountryName}"
                                     additionalText="{Country}"
                                 />
-                            </ComboBox>
-                        </VBox>
-						 <VBox
+                                    </ComboBox>
+                                </VBox>
+                                <VBox
                             id="otherSection"
                             visible="false"
                            
                             class="sapUiMediumMarginBeginEnd"
                         >
-                            
-                            <Label text="Address Line 1" />
-                            <Input value="{custAddModel>/OtherAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="Address Line 2" />
-                            <Input value="{custAddModel>/OtherAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom" />
-                            <Label text="Street / PO Box" />
-                            <Input value="{custAddModel>/OtherStreet}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="City" />
-                            <Input value="{custAddModel>/OtherCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-                            <Label text="Country" />
-                            <ComboBox
+                                    <Label text="Address Line 1" />
+                                    <Input value="{custAddModel>/OtherAddressLine1}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="Address Line 2" />
+                                    <Input value="{custAddModel>/OtherAddressLine2}" class="inputStyle customInputHeight sapUiSmallMarginBottom" />
+                                    <Label text="Street / PO Box" />
+                                    <Input value="{custAddModel>/OtherStreet}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="City" />
+                                    <Input value="{custAddModel>/OtherCity}" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    <Label text="Country" />
+                                    <ComboBox
                                 class="customInputHeight inputStyle"
                                 showSecondaryValues="true"
                                 filterSecondaryValues="true"
                                 selectedKey="{custAddModel>/OtherCountry}"
                                 items="{ path: '/CountryCodesSet', length:500, sorter: { path: 'Country' } }"
                             >
-                                <core:ListItem
+                                        <core:ListItem
                                     key="{Country}"
                                     text="{CountryName}"
                                     additionalText="{Country}"
                                 />
-                            </ComboBox>
-                        </VBox>
-							</HBox>
-								
-							
-						</content>
-					</Panel>
-					<Panel visible="{= ${ShowSection>/selectedMode} === 'Shipping Instruction' }">
-						<content>
-							<VBox >
-                            	<DatePicker value="{custAddModel>/shippingDate}" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
-								<!-- <DatePicker value="{'path':'custAddModel>/shippingDate','type':'sap.ui.model.type.Date','formatOptions': {'pattern': 'yyyy-MM-dd'}}" placeholder="Enter Delivery Date"/> -->
-								<TextArea value="{custAddModel>/ShippingInst}" width="550px" placeholder="Enter Delivery Instruction" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                    </ComboBox>
+                                </VBox>
+                            </HBox>
+                        </content>
+                    </Panel>
+                    <Panel visible="{= ${ShowSection>/selectedMode} === 'Shipping Instruction' }">
+                        <content>
+                            <VBox >
+                                <DatePicker value="{custAddModel>/shippingDate}" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                <!-- <DatePicker value="{'path':'custAddModel>/shippingDate','type':'sap.ui.model.type.Date','formatOptions': {'pattern': 'yyyy-MM-dd'}}" placeholder="Enter Delivery Date"/> -->
+                                <TextArea value="{custAddModel>/ShippingInst}" width="550px" placeholder="Enter Delivery Instruction" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                                 <Label text="Shipping Method :" design="Bold"/>
-                            
-                            	<RadioButtonGroup  columns="5"   selectedIndex="{custAddModel>/ShippingMethod}">
-			                            <RadioButton  text="HOME DELIVERY" />  
-			                            <RadioButton  text="HD Install HA" />
-			                            <RadioButton  text="HD Install panels" /> 
-		                        </RadioButtonGroup>
-							
-							</VBox>
-						</content>
-					</Panel>
-                    <!-- <Panel visible="{= ${ShowSection>/selectedMode} === 'Shipping Method' }">
-						<content>
-							<VBox >
-                            	<RadioButtonGroup  columns="5"   selectedIndex="{custAddModel>/ShippingMethod}">
-			                            <RadioButton  text="HOME DELIVERY" />  
-			                            <RadioButton  text="HD Install HA" />
-			                            <RadioButton  text="HD Install panels" /> 
-		                        </RadioButtonGroup>
-							</VBox>
-						</content>
-					</Panel> -->
-				</VBox>
-			</HBox>
-		</content>
-		<beginButton>
-			<Button text="Save" press="onPressCustSaveClose" class="cstmBtn"/>
-		</beginButton>
-		<endButton>
-			<Button text="Close" press="onPressCustClose" class="cstmBtn"/>
-		</endButton>
-	</Dialog>
+                                <FlexBox wrap="Wrap" justifyContent="Start">
+                                    <items>
+                                        <RadioButtonGroup  columns="2"   selectedIndex="{custAddModel>/ShippingMethod}">
+                                            <RadioButton  text="HOME DELIVERY" />
+                                            <RadioButton  text="HD Install panels" />
+                                            <RadioButton text="PARTY TO COLLECT" />
+                                            <RadioButton text="MARKET DELIVERY" />
+                                            <RadioButton text="HD Install HA WASHING MACHINE" />
+                                            <RadioButton  text="HD Install HA DISHWASHER" />
+                                            <RadioButton  text="HD Install HA COOKER" />
+                                            <RadioButton  text="HD Install HA AC" />
+                                        </RadioButtonGroup>
+                                    </items>
+                                </FlexBox>
+                                <Panel id="wm" headerText="Washing Machine Options" visible="{= ${custAddModel>/ShippingMethod} === 4 }" class="panelheader sapUiLargeMarginBottom">
+                                    <VBox>
+                                        <Label text="3Pin Power Socket"/>
+                                        <RadioButtonGroup id="idwashSocketGroup" columns="3">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                                <RadioButton text="N/A"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                        <Label text="Inlet Drain Faucet Connection"/>
+                                        <RadioButtonGroup id="idwashDrainGroup" columns="3">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                                <RadioButton text="N/A"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                    </VBox>
+                                </Panel>
+                                <Panel id="dw" headerText=" Dish Washer Options" visible="{= ${custAddModel>/ShippingMethod} === 5 }" class="panelheader">
+                                    <VBox >
+                                        <Label text="3Pin Power Socket"/>
+                                        <RadioButtonGroup id="idDishsocketgroup" columns="3">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                                <RadioButton text="N/A"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                        <Label text="Inlet Drain Faucet Connection"/>
+                                        <RadioButtonGroup id="idDishDrainGroup" columns="3">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                                <RadioButton text="N/A"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                    </VBox>
+                                </Panel>
+                                <Panel id="hc" headerText="Cooker Options" visible="{= ${custAddModel>/ShippingMethod} === 6 }" class="panelheader">
+                                    <VBox >
+                                        <Label text="16Amp Power Socket"/>
+                                        <RadioButtonGroup id="idcookcsocket" columns="2">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                            </buttons>
+                                            <RadioButton text="No"/>
+                                        </RadioButtonGroup>
+                                        <Label text="Gas Connection Type"/>
+                                        <RadioButtonGroup id="idCookGas" columns="2">
+                                            <buttons>
+                                                <RadioButton text="Centralized"/>
+                                                <RadioButton text="LPG"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                    </VBox>
+                                </Panel>
+                                <Panel id="ai" headerText="AC Options" visible="{= ${custAddModel>/ShippingMethod} === 7 }" class="panelheader">
+                                    <VBox >
+                                        <Label text="32MP Power Socket"/>
+                                        <RadioButtonGroup id="idACsocket" columns="2">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                        <Label text="Drainage Connection Provision"/>
+                                        <RadioButtonGroup id="idACdrainage" columns="2">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                    </VBox>
+                                </Panel>
+                                <Panel id="hp" headerText="HD Install panels" visible="{= ${custAddModel>/ShippingMethod} === 1 }" class="panelheader">
+                                    <VBox >
+                                        <Label text="Table TOP" design="Bold" class="sectionHeader" />
+                                        <RadioButtonGroup id="idHDTable" columns="2">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                        <Label text="Wall Mount" design="Bold" class="sectionHeader"/>
+                                        <RadioButtonGroup id="idHDWallMount" columns="2">
+                                            <buttons>
+                                                <RadioButton text="Yes"/>
+                                                <RadioButton text="No"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                        <Label text="Wall Type" design="Bold" class="sectionHeader"/>
+                                        <RadioButtonGroup id="idHDWallType" columns="2">
+                                            <buttons>
+                                                <RadioButton text="Concrete"/>
+                                                <RadioButton text="Gypsum"/>
+                                                <RadioButton text="MDF"/>
+                                                <RadioButton text="Other"/>
+                                            </buttons>
+                                        </RadioButtonGroup>
+                                        <Label text="Connection Required" design="Bold" class="sectionHeader"/>
+                                        <CheckBox id="idHDTVHome" text="TV/Home Theatre"/>
+                                        <CheckBox id="idHDDVD" text="DVD"/>
+                                        <CheckBox id="idHDBDI" text="BDI"/>
+                                        <CheckBox id="idHDOthers" text="Others"/>
+                                        <Label text="DEMO REQUIRED" design="Bold" class="sectionHeader"/>
+                                        <CheckBox id="idHDAllShare" text="ALL SHARE"/>
+                                        <CheckBox id="idHDSmartHub" text="SMART HUB"/>
+                                        <CheckBox id="idHD3D" text="3D"/>
+                                        <CheckBox id="idHDCompleteSmart" text="COMPLETE SMART TV DEMO"/>
+                                    </VBox>
+                                </Panel>
+                            </VBox>
+                        </content>
+                    </Panel>
+                </VBox>
+            </HBox>
+        </content>
+        <beginButton>
+            <Button text="Save" press="onPressCustSaveClose" class="cstmBtn"/>
+        </beginButton>
+        <endButton>
+            <Button text="Close" press="onPressCustClose" class="cstmBtn"/>
+        </endButton>
+    </Dialog>
 </core:FragmentDefinition>

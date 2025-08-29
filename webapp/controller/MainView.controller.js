@@ -1507,6 +1507,7 @@ sap.ui.define([
                 this.shippingAddress = "";
                 this.shippingDate = "";
                 this.shippingInst = "";
+                this.deliveryInstruction = "";
 
                 var custData = this.getView().getModel("custAddModel").getData();
                 var bFlag = this.validateCustomer();
@@ -1516,9 +1517,24 @@ sap.ui.define([
                 if (custData.ShippingMethod === 0) {
                     this.shippingMethod = "HD";
                 } else if (custData.ShippingMethod === 1) {
-                    this.shippingMethod = "HA";
-                } else if (custData.ShippingMethod === 2) {
                     this.shippingMethod = "HP";
+                } else if (custData.ShippingMethod === 2) {
+                    this.shippingMethod = "PC";
+                }
+                else if (custData.ShippingMethod === 3) {
+                    this.shippingMethod = "MD";
+                }
+                else if (custData.ShippingMethod === 4) {
+                    this.shippingMethod = "WM";
+                }
+                else if (custData.ShippingMethod === 5) {
+                    this.shippingMethod = "DW";
+                }
+                else if (custData.ShippingMethod === 6) {
+                    this.shippingMethod = "HC";
+                }
+                else if (custData.ShippingMethod === 7) {
+                    this.shippingMethod = "AI";
                 }
 
                 if (custData.FirstName) {
@@ -1605,7 +1621,7 @@ sap.ui.define([
                     this.shippingInst = custData.ShippingInst;
                 }
 
-
+                this.deliveryInstruction = this.capturePanelData();
 
                 if (bFlag) {
                     this.updateCustomer();
@@ -1614,6 +1630,86 @@ sap.ui.define([
                 // this._oDialogCust.close();
 
             },
+            capturePanelData: function () {
+
+                var sResult = "";
+
+                // get all panels
+                var aPanels = [
+                    sap.ui.getCore().byId("wm"),
+                    sap.ui.getCore().byId("dw"),
+                    sap.ui.getCore().byId("hc"),
+                    sap.ui.getCore().byId("ai"),
+                    sap.ui.getCore().byId("hp")
+                ];
+
+                // find the visible panel
+                var oActivePanel = aPanels.find(function (oPanel) {
+                    return oPanel.getVisible();
+                });
+
+                if (!oActivePanel) {
+                    return;
+                }
+
+                // get all items inside the VBox of that panel
+                var aItems = oActivePanel.getContent()[0].getItems();
+
+                var sLabel = "";
+                var aCheckboxGroup = [];         // store checkboxes under the same label
+
+                // helper function to save collected checkboxes
+                var flushCheckboxGroup = function () {
+                    if (sLabel && aCheckboxGroup.length > 0) {
+                        sResult += sLabel + ": " + aCheckboxGroup.join(", ") + ", ";
+                        aCheckboxGroup = []; // reset for next group
+                    }
+                };
+                aItems.forEach(function (oItem) {
+                    // Label
+                    if (oItem.isA("sap.m.Label")) {
+                        flushCheckboxGroup();
+                        sLabel = oItem.getText();
+                    }
+
+                    // RadioButtonGroup
+                    else if (oItem.isA("sap.m.RadioButtonGroup")) {
+                        flushCheckboxGroup();
+                        var iIndex = oItem.getSelectedIndex();
+                        if (iIndex > -1) {
+                            var sSelected = oItem.getButtons()[iIndex].getText();
+                            sResult += sLabel + ": " + sSelected + ", ";
+                        }
+                    }
+
+                    // Input
+                    else if (oItem.isA("sap.m.Input")) {
+                        flushCheckboxGroup();
+                        sResult += sLabel + ": " + oItem.getValue() + ", ";
+                    }
+
+                    // CheckBox
+                    else if (oItem.isA("sap.m.CheckBox")) {
+                        
+                        if (oItem.getSelected()) {
+                            aCheckboxGroup.push(oItem.getText());
+                        }
+                    }
+                });
+
+                 // flush at end in case last control was a checkbox
+                flushCheckboxGroup();
+
+                // remove last comma
+                if (sResult.endsWith(", ")) {
+                    sResult = sResult.slice(0, -2);
+                }
+
+                console.log("Final Captured Data:", sResult);
+
+                return sResult; // you can store this in your model or backend
+            },
+
             validateCustomer: function () {
                 var bFlag;
                 var checkDelivery = this.checkHomeDelivery();
@@ -3077,6 +3173,7 @@ sap.ui.define([
                     "EMail": this.getView().getModel("custAddModel").getData().Email,
                     "Address": this.shippingAddress,
                     "ShippingInstruction": this.shippingInst,
+                    "DeliveryInstruction": this.deliveryInstruction,
                     "DeliveryDate": this.resolveTimeDifference(delDate),
                     "ToItems": { "results": this.oPayloadTableItems() },
                     "ToDiscounts": { "results": this.oPayloadTableDiscountItems() },
@@ -3114,7 +3211,9 @@ sap.ui.define([
 
                                     MessageBox.success("Transaction Posted Successfully.", {
                                         onClose: function (sAction) {
-                                            that.getPDFBase64();
+                                            for (var count = 1; count <= 2; count++) {
+                                                that.getPDFBase64(count);
+                                            }
                                             // window.location.reload(true);
 
                                         }
@@ -3136,10 +3235,10 @@ sap.ui.define([
                 });
 
             },
-            getPDFBase64: function () {
+            getPDFBase64: function (count) {
                 var that = this;
                 var tranNumber = this.getView().byId("tranNumber").getCount().toString();
-                var sUrl = "/sap/opu/odata/SAP/ZEROS_RETAIL_PROJECT_SRV/TransactionPDFSet(TransactionId='" + tranNumber + "',TransactionCopy='1')/$value";
+                var sUrl = "/sap/opu/odata/SAP/ZEROS_RETAIL_PROJECT_SRV/TransactionPDFSet(TransactionId='" + tranNumber + "',TransactionCopy='" + count + "')/$value";
 
                 // Create XMLHttpRequest
                 var xhr = new XMLHttpRequest();
@@ -3424,7 +3523,10 @@ sap.ui.define([
 
                         MessageBox.success("Transaction Posted Successfully.", {
                             onClose: function (sAction) {
-                                that.getPDFBase64();
+                                for (var count = 1; count <= 2; count++) {
+                                    that.getPDFBase64(count);
+                                }
+
                                 // window.location.reload(true);
                             }
                         });
@@ -4500,12 +4602,12 @@ sap.ui.define([
                     if (parseFloat(this._oAmountCardInput.getValue()) <= parseFloat(sap.ui.getCore().byId("totalSaleBalText").getText())) {
                         this._oAmountCardInput.setValueState("None");
                     }
-                    else{
+                    else {
                         isValid = false;
                         this._oAmountCardInput.setValueState("Error");
                         sap.m.MessageBox.error("Entered Amount is more than Sale Amount");
                     }
-                    
+
                 }
 
                 // Card Label
@@ -4543,7 +4645,7 @@ sap.ui.define([
                     sap.m.MessageToast.show("Entered Value is more than Sale Balance");
                     oEvent.getSource().setValue("");
                 }
-                
+
             },
             onSubmitCardType: function () {
                 var that = this;
@@ -5325,7 +5427,7 @@ sap.ui.define([
 
 
                 }
-                if (parseInt(itemData.BalanceAmount) < parseInt(balanceAmt)) {
+                if (parseFloat(itemData.BalanceAmount) < parseFloat(balanceAmt)) {
                     oPayload.ToBeRedeemedAmount = itemData.BalanceAmount;
                 }
 
