@@ -84,6 +84,8 @@ sap.ui.define([
                 this.aPaymentEntries = [];
                 this.serialNumbers = [];
                 this.masterSerialNumber = [];
+                this.emiList = []
+                this.emiID = 0;
                 this.paymentId = 0;
                 this.sourceIdCounter = 0;
                 this.paymentEntSourceCounter = 0;
@@ -120,7 +122,7 @@ sap.ui.define([
             getManualMatDetail: function (oEvent) {
                 this.getMaterialDetail(true, oEvent.getParameter("value"));
             },
-            getMaterialDetail: function (flag, matCode, data, promo) {
+            getMaterialDetail: function (flag, matCode, data, promo, promoData) {
                 var aFilters = [];
 
                 aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, matCode));
@@ -143,7 +145,7 @@ sap.ui.define([
                             oData.results[0].Seq = "";
                             oData.results[0].SalesmanId = "";
                             oData.results[0].SalesmanName = "";
-                            that.reservedItemOwnLocation(oData.results, promo);
+                            that.reservedItemOwnLocation(oData.results, promo, promoData);
 
 
                         }
@@ -892,7 +894,7 @@ sap.ui.define([
 
 
             },
-            updateProductTable: function (count, productTblData, discountTblData) {
+            updateProductTable: function (count, productTblData, discountTblData, promo) {
                 var that = this;
                 var selIndex = count;
                 var updatedNetAmount = "";
@@ -905,7 +907,7 @@ sap.ui.define([
                     updateDiscount = parseFloat(parseFloat(productTblData.Discount).toFixed(2) - parseFloat(discountTblData.Amount).toFixed(2)).toFixed(2);
                 }
 
-                if (that.bPromoItem) {
+                if (promo) {
                     updateDiscount = parseFloat(parseFloat(productTblData.Discount) + parseFloat(discountTblData.Amount)).toFixed(2);
                 }
                 that.bPromoItem = false;
@@ -1690,14 +1692,14 @@ sap.ui.define([
 
                     // CheckBox
                     else if (oItem.isA("sap.m.CheckBox")) {
-                        
+
                         if (oItem.getSelected()) {
                             aCheckboxGroup.push(oItem.getText());
                         }
                     }
                 });
 
-                 // flush at end in case last control was a checkbox
+                // flush at end in case last control was a checkbox
                 flushCheckboxGroup();
 
                 // remove last comma
@@ -2597,7 +2599,7 @@ sap.ui.define([
 
                 }
             },
-            reservedItemOwnLocation: function (data, promo) {
+            reservedItemOwnLocation: function (data, promo, promoData) {
                 var that = this;
                 var oPayload = {
                     "TransactionId": this.getView().byId("tranNumber").getCount(),
@@ -2659,7 +2661,7 @@ sap.ui.define([
                             aProducts.push(...data);
                             if (promo) {
 
-                                that.updateProductTable(aProducts.length - 1, data[0], that.promoEntries);
+                                that.updateProductTable(aProducts.length - 1, data[0], promoData, promo);
                             }
                             that.updateSeq(aProducts);
                             that.checkEnableDisableTile(true);
@@ -3180,7 +3182,8 @@ sap.ui.define([
                     "ToPayments": { "results": this.oPayloadPayments(this.aPaymentEntries) },
                     "ToSerials": { "results": this.oPayloadSerialNumber() },
                     "ToSignature": { "results": this.oPaySignatureload ? this.oPaySignatureload : [] },
-                    "Remarks": this.suspendComments
+                    "Remarks": this.suspendComments,
+                    "ToBankEMI":{ "results": this.emiList}
                     // "ToPayments" : {"results" : this.oPayloadTablePayments()}
                 }
                 this.getView().setBusy(true);
@@ -3736,6 +3739,21 @@ sap.ui.define([
 
 
                         sap.m.MessageToast.show("Card Payment Successful");
+                        sap.m.MessageBox.show(
+                            "Do you want to convert the transaction into EMI ?", {
+                            icon: sap.m.MessageBox.Icon.INFORMATION,
+                            title: "Custom Message Box",
+                            actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
+                            onClose: function (sAction) {
+                                if (sAction === sap.m.MessageBox.Action.OK) {
+                                    that.openEMIDialog(oData.Amount);
+                                } else if (sAction === sap.m.MessageBox.Action.CANCEL) {
+                                    // Cancel button was pressed
+                                    sap.m.MessageToast.show("You pressed Cancel");
+                                }
+                            }
+                        }
+                        );
 
                     },
                     error: function (oError) {
@@ -3761,6 +3779,113 @@ sap.ui.define([
 
                     }
                 });
+            },
+            openEMIDialog: function (amt) {
+                var that = this;
+                var oView = this.getView();
+                this.oModel.read("/BankEMISet", {
+                    success: function (oData) {
+
+                        if (oData.results.length > 0) {
+                            var aResults = oData.results;
+                            var aBankNames = [...new Set(aResults.map(item => item.BankName))]
+                                .map(bank => ({ BankName: bank }));
+                            var emiModel = new sap.ui.model.json.JSONModel({
+                                bankList: aBankNames,
+                                monthList: [],
+                                selectedBank: "",
+                                selectedMonths: "",
+                                interestRate: "",
+                                amount: amt
+                            });
+                            that.getView().setModel(emiModel, "emiModel");
+                            var oRawDataModel = new sap.ui.model.json.JSONModel({ results: aResults });
+                            that.getView().setModel(oRawDataModel, "rawModel");
+
+                            if (!that._oBankEMIDialog) {
+                                that._oBankEMIDialog = sap.ui.xmlfragment(
+                                    oView.getId(),
+                                    "com.eros.salesprocess.fragment.BankEMIDialog",
+                                    that
+                                );
+                                oView.addDependent(that._oBankEMIDialog);
+                            }
+
+
+
+                            that._oBankEMIDialog.open();
+
+
+                        }
+                    }
+                    ,
+                    error: function (oError) {
+                        sap.m.MessageBox.show(
+                            JSON.parse(oError.responseText).error.message.value, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: ["OK", "CANCEL"],
+                            onClose: function (oAction) {
+
+                            }
+                        }
+                        );
+
+
+                    }
+                });
+
+            },
+            onBankChange: function (oEvent) {
+                var sSelectedBank = oEvent.getParameter("selectedItem").getKey();
+                var oRawData = this.getView().getModel("rawModel").getData().results;
+
+                var aFilteredMonths = oRawData.filter(item => item.BankName === sSelectedBank)
+                    .map(item => ({ NoOfMonths: item.NoOfMonths }));
+
+                // Remove duplicates
+                aFilteredMonths = [...new Map(aFilteredMonths.map(item => [item.NoOfMonths, item])).values()];
+
+                var oViewModel = this.getView().getModel("emiModel");
+                oViewModel.setProperty("/monthList", aFilteredMonths);
+                oViewModel.setProperty("/selectedMonths", "");
+                oViewModel.setProperty("/interestRate", "");
+            },
+            onMonthChange: function (oEvent) {
+                var sSelectedBank = this.getView().getModel("emiModel").getProperty("/selectedBank");
+                var sSelectedMonth = oEvent.getParameter("selectedItem").getKey();
+                var oRawData = this.getView().getModel("rawModel").getData().results;
+
+                var oRecord = oRawData.find(item => item.BankName === sSelectedBank && item.NoOfMonths === sSelectedMonth);
+
+                var sInterestRate = oRecord ? oRecord.InterestRate : "";
+
+                this.getView().getModel("emiModel").setProperty("/interestRate", sInterestRate);
+            },
+            onSubmitEMIDialog: function () {
+                var oViewModel = this.getView().getModel("emiModel");
+                var sBank = oViewModel.getProperty("/selectedBank");
+                var sMonths = oViewModel.getProperty("/selectedMonths");
+                var sRate = oViewModel.getProperty("/interestRate");
+                var amount = oViewModel.getProperty("/amount");
+
+                if (!sBank || !sMonths) {
+                    sap.m.MessageBox.error("Please select both Bank Name and No. of Months.");
+                    return;
+                }
+                this.emiID = this.emiID + 1 ;
+                this.emiList.push({
+                    "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
+                    "EmiId": this.emiID,
+                    "Amount":amount,
+                    "Currency": "AED",
+                    "BankName":sBank,
+                    "NoOfMonths":sMonths ,
+                    "InterestRate": sRate
+                });
+            },
+            onCloseEMIDialog: function () {
+                that._oBankEMIDialog.close();
             },
             checkEnableDisableTile: function (bflag) {
                 this.getView().byId("customergt").setPressEnabled(true);
@@ -4164,7 +4289,7 @@ sap.ui.define([
                         "Material": oData.Material
                     };
 
-                    this.getMaterialDetail(true, oData.Material, "", this.bPromoItem);
+                    this.getMaterialDetail(true, oData.Material, "", this.bPromoItem, this.promoEntries);
                     this._oPromotionFragment.close();
 
                     return;
@@ -4191,7 +4316,7 @@ sap.ui.define([
                         this.promoAmount = oRow.Promotion;
                         this.promoEntries = {};
                         this.promoEntries = { "Type": this.promoCondType, "Amount": this.promoAmount };
-                        this.getMaterialDetail(true, oRow.Material, "", this.bPromoItem);
+                        this.getMaterialDetail(true, oRow.Material, "", this.bPromoItem, this.promoEntries);
 
                     }.bind(this));
                     this._oPromotionFragment.close();
@@ -5406,7 +5531,13 @@ sap.ui.define([
                 var itemData = this.getView().getModel(model).getData();
                 var balanceAmt = 0;
                 if (itemData.RedemptionType === "E") {
-                    balanceAmt = itemData.BalanceAmount;
+                    if (parseFloat(balanceAmount) > parseFloat(itemData.BalanceAmount)) {
+                        balanceAmt = itemData.BalanceAmount;
+                    }
+                    else {
+                        balanceAmt = balanceAmount;
+                    }
+
                 }
                 else {
                     balanceAmt = balanceAmount;

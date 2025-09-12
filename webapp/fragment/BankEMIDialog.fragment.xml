@@ -1,0 +1,49 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <Dialog
+        id="bankEMIDialog"
+        title="Bank EMI Details"
+        class="cashierLogin"
+        draggable="true"
+        resizable="true">
+
+        <VBox class="sapUiSmallMargin">
+        <Label text="Amount" class="sapUiSmallMarginTop"/>
+            <Input value="{emiModel>/amount}" enabled="false"/>
+            
+            <Label text="Bank Name"/>
+            <ComboBox
+                items="{
+                    path: 'emiModel>/bankList'
+                }"
+                selectionChange=".onBankChange"
+                selectedKey="{emiModel>/selectedBank}">
+                <core:Item key="{emiModel>BankName}" text="{emiModel>BankName}" />
+            </ComboBox>
+
+            <Label text="No. of Months" class="sapUiSmallMarginTop"/>
+            <ComboBox
+                items="{
+                    path: 'emiModel>/monthList'
+                }"
+                selectionChange=".onMonthChange"
+                selectedKey="{emiModel>/selectedMonths}">
+                <core:Item key="{emiModel>NoOfMonths}" text="{emiModel>NoOfMonths}" />
+            </ComboBox>
+
+            <Label text="Interest Rate" class="sapUiSmallMarginTop"/>
+            <Input value="{emiModel>/interestRate}" enabled="false"/>
+            
+        </VBox>
+        <beginButton>
+			<Button text="Submit" press="onSubmitEMIDialog" class="cstmBtn"/>
+		</beginButton>
+        <endButton>
+            <Button text="Close" press="onCloseEMIDialog" class="cstmBtn"/>
+        </endButton>
+
+    </Dialog>
+
+</core:FragmentDefinition>
