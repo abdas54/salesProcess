@@ -280,7 +280,7 @@
                                 </VBox>
                             </content>
                         </Panel>
-                        <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Bounze' }">
+                        <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'BOUNZ' }">
                             <content>
                                 <VBox class="sapUiSmallMargin">
                                     <HBox>
@@ -311,8 +311,12 @@
                                                 </l:Grid>
                                                 <l:Grid defaultSpan="XL4 L4 M6 S12" class="sapUiSizeCompact sapUiSmallMarginBegin sapUiTinyMarginTop">
                                                     <VBox alignItems="Start">
-                                                         <Label text="Points Available:" class=" sapUiTinyMarginTop boldText"/>
+                                                         <Label text="Bounz Balance:" class=" sapUiTinyMarginTop boldText"/>
                                                         <Label text="{BounzeModel>/PointBalance}" class=" sapUiTinyMarginTop"/>
+                                                    </VBox>
+                                                     <VBox alignItems="Start">
+                                                         <Label text="Bounz Amount:" class=" sapUiTinyMarginTop boldText"/>
+                                                        <Label text="{BounzeModel>/Amount}" class=" sapUiTinyMarginTop"/>
                                                     </VBox>
                                                     <VBox alignItems="Start">
                                                         <Label text="Account Status:" class=" sapUiTinyMarginTop boldText"/>

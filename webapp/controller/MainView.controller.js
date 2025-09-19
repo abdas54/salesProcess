@@ -1175,7 +1175,7 @@ sap.ui.define([
                             icon: "sap-icon://money-bills"
                         },
                         {
-                            option: "Bounze",
+                            option: "BOUNZ",
                             icon: "sap-icon://chain-link"
                         },
                         {
@@ -1435,7 +1435,7 @@ sap.ui.define([
                 if (sSelectedOption === "View All Records") {
                     this.getView().getModel("ShowPaymentSection").setProperty("/allEntries", this.aPaymentEntries)
                 }
-                if (sSelectedOption === "Bounze") {
+                if (sSelectedOption === "BOUNZ") {
                     that.bcode = this.getView().getModel("custAddModel").getData().Code;
                     that.bphnNumber = this.getView().getModel("custAddModel").getData().Mobile;
                     sap.ui.getCore().byId("bounzeCustNumber").setValue(that.bcode + " - " + that.bphnNumber);
@@ -2982,9 +2982,9 @@ sap.ui.define([
                         "Quantity": tableData[count].SaleQuantity.toString(),
                         "Unit": tableData[count].Unit,
                         "UnitPrice": tableData[count].UnitPrice,
-                        "UnitDiscount": tableData[count].Discount.toString().replace("-", ""),
+                        "UnitDiscount": tableData[count].Discount.toString(),
                         "GrossAmount": tableData[count].NetAmount.toString(),
-                        "Discount": tableData[count].NetDiscount.toString().replace("-", ""),
+                        "Discount": tableData[count].NetDiscount.toString(),
                         "NetAmount": parseFloat(parseFloat(tableData[count].NetAmount) + parseFloat(tableData[count].NetDiscount)).toFixed(2),
                         "VatAmount": tableData[count].VatAmount,
                         "SaleAmount": tableData[count].SaleAmount.toString(),
@@ -3162,12 +3162,13 @@ sap.ui.define([
                     "TransactionType": "1",
                     "ShippingMethod": this.shippingMethod,
                     "GrossAmount": this.getView().byId("gross").getCount().toString(),
-                    "Discount": this.getView().byId("discount").getCount().toString().replace("-", ""),
+                    "Discount": this.getView().byId("discount").getCount().toString(),
                     "VatAmount": this.getView().byId("vat").getCount().toString(),
                     "SaleAmount": this.getView().byId("saleAmount").getCount().toString(),
                     "Currency": "AED",
                     "OriginalTransactionId": "", // Required for Return Sales
                     "CustomerType": this.getView().getModel("custAddModel").getData().CustomerType,
+                    "TrnNumber" : this.getView().getModel("custAddModel").getData().TrnNumber,
                     "CustomerName": this.getView().byId("customer").getCount(),
                     "ContactNo": contactNumber,
                     "CountryCode": this.getView().getModel("custAddModel").getData().Code,
@@ -3271,7 +3272,7 @@ sap.ui.define([
                         var base64 = btoa(binary);
                         console.log("Base64 PDF Content:", base64);
 
-                        that.onShowPDFSEPP(base64);
+                        that.onShowPDFSEPP(base64,count);
 
                     } else {
                         console.error("Failed to fetch PDF. Status: ", xhr.status);
@@ -3282,7 +3283,7 @@ sap.ui.define([
             },
 
 
-            onShowPDFSEPP: async function (base64Content) {
+            onShowPDFSEPP: async function (base64Content,count) {
 
                 var byteCharacters = atob(base64Content);
                 var byteNumbers = new Array(byteCharacters.length);
@@ -3308,7 +3309,7 @@ sap.ui.define([
                     this.canvasp = canvas;
                     this.printerIP = printerIp;
 
-                    this.sendToEpsonPrinter(canvas, printerIp);
+                    this.sendToEpsonPrinter(canvas, printerIp,count);
                 } catch (err) {
                     MessageBox.error("Error rendering or printing PDF: " + err.message);
                 }
@@ -3460,7 +3461,7 @@ sap.ui.define([
                 }
             },
 
-            sendToEpsonPrinter: function (canvases, printerIp) {
+            sendToEpsonPrinter: function (canvases, printerIp,count) {
                 var ePosDev = new epson.ePOSDevice();
                 //var ip = this.getView().byId("ipaddr").getValue();
                 // var wdth = this.getView().byId("wdth").getValue();
@@ -3485,6 +3486,9 @@ sap.ui.define([
 
                                     printer.addCut(printer.CUT_FEED);
                                     printer.send();
+                                    if(count == 2){
+                                    window.location.reload(true);
+                                    }
                                     // printer.send(function (resultSend) {
                                     //     if (resultSend === "OK") {
                                     //         sap.m.MessageToast.show("Printed successfully!");
@@ -3727,7 +3731,17 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                            that.onOpenSignaturePad();
+                            if(balanceAmount !== 0 ){
+                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
+                            icon: sap.m.MessageBox.Icon.INFORMATION,
+                            title: "Tender Balance",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                that.onOpenSignaturePad();
+                            }
+                        });
+                        }
+                            //that.onOpenSignaturePad();
                             //that.OnSignaturePress();
                             // that.onPressPaymentTest();
                         }
@@ -3876,13 +3890,14 @@ sap.ui.define([
                 this.emiID = this.emiID + 1 ;
                 this.emiList.push({
                     "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
-                    "EmiId": this.emiID,
+                    "EmiId": this.emiID.toString(),
                     "Amount":amount,
                     "Currency": "AED",
                     "BankName":sBank,
                     "NoOfMonths":sMonths ,
                     "InterestRate": sRate
                 });
+                  this._oBankEMIDialog.close();
             },
             onCloseEMIDialog: function () {
                 that._oBankEMIDialog.close();
@@ -3939,11 +3954,15 @@ sap.ui.define([
                 var itemUnitPrice = this.getView().getModel("DiscountValue").getProperty("/ItemUnitPrice");
                 var conditionType = this.getView().getModel("DiscountValue").getProperty("/ConditionType");
                 var itemCode = this.getView().getModel("DiscountValue").getProperty("/ItemCode");
+                var aProducts = this.getView().getModel("ProductModel").getProperty("/Product");
+                var oResult = aProducts.find(function(oItem) {
+    return oItem.Itemcode === itemCode;
+});
                 if (this.checkPercentage === "X") {
                     discAmount = parseFloat(itemUnitPrice * (discAmount) / 100).toFixed(2);
                 }
                 if (conditionType !== "ZSUS") {
-                    if (parseFloat(discAmount).toFixed(2) <= parseFloat(itemUnitPrice).toFixed(2)) {
+                    if ((parseFloat(discAmount) - parseFloat(oResult.NetDiscount)) <= parseFloat(oResult.NetAmount)) {
                         this.getView().getModel("DiscountValue").setProperty("/DiscAmount", discAmount);
                         this.addDiscount();
                         this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "View All Records");
@@ -3962,7 +3981,7 @@ sap.ui.define([
                                 if (parseFloat(discAmount).toFixed(2) <= parseFloat(itemPrice)) {
                                     this.getView().getModel("DiscountValue").setProperty("/DiscAmount", discAmount);
                                     this.addDiscount();
-                                    this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "View All Records");
+                                    this.getView().getModel("ShowDiscountSenpm run deployction").setProperty("/selectedMode", "View All Records");
                                     sap.ui.getCore().byId("discountAmount").setValue("");
                                 }
                                 else {
@@ -4424,7 +4443,17 @@ sap.ui.define([
                         }
                         oEvent.getSource().setEnabled(false);
                         sap.m.MessageToast.show("Cash Payment Successful");
-                        that.onOpenSignaturePad();
+                        if(balanceAmount !== 0 ){
+                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
+                            icon: sap.m.MessageBox.Icon.INFORMATION,
+                            title: "Tender Balance",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                that.onOpenSignaturePad();
+                            }
+                        });
+                        }
+                       
                         //that.OnSignaturePress();
                         //that.onPressPaymentTest();
                     }
@@ -4834,7 +4863,17 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Manual Card Payment Successful");
-                    that.onOpenSignaturePad();
+                    if(balanceAmount !== 0 ){
+                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
+                            icon: sap.m.MessageBox.Icon.INFORMATION,
+                            title: "Tender Balance",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                that.onOpenSignaturePad();
+                            }
+                        });
+                        }
+                    //that.onOpenSignaturePad();
                     // that.OnSignaturePress();
                     //that.onPressPaymentTest();
                 }
@@ -4858,10 +4897,11 @@ sap.ui.define([
                 }
             },
             onOpenRedeemDialog: function () {
+                
                 if (!this._oRedeemDialog) {
                     // Create the dialog only once
                     this._oRedeemDialog = new sap.m.Dialog({
-                        title: "Redeem Points",
+                        title: "Redeem Amount",
                         contentWidth: "300px",
                         contentHeight: "300px",
                         content: [
@@ -4871,11 +4911,13 @@ sap.ui.define([
                                     new sap.m.Input("idPointsInput", {
                                         type: sap.m.InputType.Number,
                                         width: "80%",
-                                        placeholder: "Enter Points to Redeem",
-                                        liveChange: this.onPointsLiveChange.bind(this)
+                                        placeholder: "Enter Amount to Redeem",
+                                        liveChange: this.onPointsLiveChange.bind(this),
+                                        change : this.convertToDecimal.bind(this)
+                                
                                     }).addStyleClass("sapUiSmallMarginBegin  sapUiSmallMarginTop sapUiSmallMarginBottom inputStyle"),
 
-                                    new sap.m.Label("lblRedeemedAmt", { text: "Redeemed Amount", visible: false, design: "Bold" }).addStyleClass("sapUiSmallMarginBegin cashierLogin sapUiSmallMarginTop "),
+                                    new sap.m.Label("lblRedeemedAmt", { text: "Redeemed Bounz", visible: false, design: "Bold" }).addStyleClass("sapUiSmallMarginBegin cashierLogin sapUiSmallMarginTop "),
                                     new sap.m.Input("inpRedeemedAmt", {
                                         visible: false,
                                         editable: false,
@@ -4915,8 +4957,26 @@ sap.ui.define([
 
                     this.getView().addDependent(this._oRedeemDialog);
                 }
+               sap.ui.getCore().byId("idPointsInput").setValue("");
+               sap.ui.getCore().byId("idOTPInput").setValue("");
+               sap.ui.getCore().byId("idOTPInput").setVisible(false);
+               sap.ui.getCore().byId("idOTPLabel").setVisible(false);
+               sap.ui.getCore().byId("inpRedeemedAmt").setValue("");
+               sap.ui.getCore().byId("inpRedeemedAmt").setVisible(false);
+               sap.ui.getCore().byId("lblRedeemedAmt").setVisible(false);
+               sap.ui.getCore().byId("redeemBtn").setVisible(true);
+               this._oRedeemDialog.open();
+            },
+            convertToDecimal: function(oEvent){    
+                let value = oEvent.getSource().getValue();
+                let floatValue = parseFloat(value);
 
-                this._oRedeemDialog.open();
+                if(Number.isInteger(floatValue)){
+                    value = floatValue.toFixed(2);
+                }
+
+                oEvent.getSource().setValue(value);
+
             },
             onPointsLiveChange: function (oEvent) {
                 var sValue = oEvent.getParameter("value");
@@ -4925,6 +4985,11 @@ sap.ui.define([
                 // Check if value is a positive number
                 var bEnable = /^\d+$/.test(sValue) && parseInt(sValue) > 0;
                 oRedeemBtn.setEnabled(bEnable);
+                
+            },
+            convertIntoDecimal: function(oEvent){
+                oEvent.getSource().setValue(parseFloat(oEvent.getSource().getValue()).toFixed(2));
+
             },
             onEnableSubmitBtn: function (oEvent) {
                 sap.ui.getCore().byId("idSubmitBtn").setVisible(true);
@@ -5034,8 +5099,18 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                            if(balanceAmount !== 0 ){
+                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
+                            icon: sap.m.MessageBox.Icon.INFORMATION,
+                            title: "Tender Balance",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                that.onOpenSignaturePad();
+                            }
+                        });
+                        }
 
-                            that.onOpenSignaturePad();
+                            //that.onOpenSignaturePad();
                             //that.OnSignaturePress();
                             // that.onPressPaymentTest();
                         }
@@ -5189,7 +5264,17 @@ sap.ui.define([
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                         sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                         sap.m.MessageToast.show("Non EGV Payment Successful");
-                        that.onOpenSignaturePad();
+                        if(balanceAmount !== 0 ){
+                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
+                            icon: sap.m.MessageBox.Icon.INFORMATION,
+                            title: "Tender Balance",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                that.onOpenSignaturePad();
+                            }
+                        });
+                        }
+                       // that.onOpenSignaturePad();
                         //that.OnSignaturePress();
                         //that.onPressPaymentTest();
                     }
@@ -5363,6 +5448,7 @@ sap.ui.define([
                         oModel.setData(oData);
                         that.getView().setModel(oModel, "BounzeModel");
                         sap.ui.getCore().byId("bounzeDetails").setVisible(true);
+                         sap.ui.getCore().byId("registerBounz").setEnabled(false);
 
 
 
@@ -5407,6 +5493,7 @@ sap.ui.define([
                     success: function (oData, response) {
 
                         sap.m.MessageBox.success("Member Registered Successfully");
+                        sap.ui.getCore().byId("registerBounz").setEnabled(false);
                     },
                     error: function (oError) {
                         sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
@@ -5651,7 +5738,17 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
-                    that.onOpenSignaturePad();
+                    if(balanceAmount !== 0 ){
+                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
+                            icon: sap.m.MessageBox.Icon.INFORMATION,
+                            title: "Tender Balance",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+                                that.onOpenSignaturePad();
+                            }
+                        });
+                        }
+                    //that.onOpenSignaturePad();
                     //that.OnSignaturePress();
                     //that.onPressPaymentTest();
                 }
