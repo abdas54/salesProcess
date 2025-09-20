@@ -3731,17 +3731,8 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                            if(balanceAmount !== 0 ){
-                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
-                            icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "Tender Balance",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                that.onOpenSignaturePad();
-                            }
-                        });
-                        }
-                            //that.onOpenSignaturePad();
+                           
+                            that.onOpenSignaturePad();
                             //that.OnSignaturePress();
                             // that.onPressPaymentTest();
                         }
@@ -4443,7 +4434,7 @@ sap.ui.define([
                         }
                         oEvent.getSource().setEnabled(false);
                         sap.m.MessageToast.show("Cash Payment Successful");
-                        if(balanceAmount !== 0 ){
+                        if(balanceAmount !== "0.00"){
                             sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
                             icon: sap.m.MessageBox.Icon.INFORMATION,
                             title: "Tender Balance",
@@ -4863,17 +4854,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Manual Card Payment Successful");
-                    if(balanceAmount !== 0 ){
-                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
-                            icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "Tender Balance",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                that.onOpenSignaturePad();
-                            }
-                        });
-                        }
-                    //that.onOpenSignaturePad();
+                    
+                    that.onOpenSignaturePad();
                     // that.OnSignaturePress();
                     //that.onPressPaymentTest();
                 }
@@ -4997,6 +4979,7 @@ sap.ui.define([
             onRedeemPoints: function () {
                 var that = this;
                 let sPoints = sap.ui.getCore().byId("idPointsInput").getValue();
+                var sAmount = sap.ui.getCore().byId("idPointsInput").getValue();
                 var oSelectedItem = that.getView().getModel("BounzeModel").getData();
 
                 if (parseInt(sPoints) > parseInt(oSelectedItem.PointBalance)) {
@@ -5008,8 +4991,8 @@ sap.ui.define([
                     "MobileNumber": this.getView().getModel("custAddModel").getData().Mobile,
                     "CountryCode": this.getView().getModel("custAddModel").getData().Code,
                     "StoreId": that.storeID,
-                    "Points": parseInt(sPoints).toString(),
-                    "Amount": "0.00",
+                    "Points": "",
+                    "Amount": sAmount.toString(),
                     "LockPointId": ""
                 }
 
@@ -5018,11 +5001,13 @@ sap.ui.define([
                         that.point = oData.Points;
                         that.lockId = oData.LockPointId;
                         that.redeemAmount = oData.Amount;
+                                  
+
                         sap.ui.getCore().byId("idOTPInput").setVisible(true);
                         sap.ui.getCore().byId("idOTPLabel").setVisible(true);
                         sap.ui.getCore().byId("redeemBtn").setVisible(false);
                         sap.ui.getCore().byId("lblRedeemedAmt").setVisible(true);
-                        sap.ui.getCore().byId("inpRedeemedAmt").setValue(that.redeemAmount);
+                        sap.ui.getCore().byId("inpRedeemedAmt").setValue(that.point);
                         sap.ui.getCore().byId("inpRedeemedAmt").setVisible(true);
 
 
@@ -5099,18 +5084,8 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                            if(balanceAmount !== 0 ){
-                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
-                            icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "Tender Balance",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                that.onOpenSignaturePad();
-                            }
-                        });
-                        }
-
-                            //that.onOpenSignaturePad();
+                            
+                            that.onOpenSignaturePad();
                             //that.OnSignaturePress();
                             // that.onPressPaymentTest();
                         }
@@ -5264,17 +5239,8 @@ sap.ui.define([
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                         sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                         sap.m.MessageToast.show("Non EGV Payment Successful");
-                        if(balanceAmount !== 0 ){
-                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
-                            icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "Tender Balance",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                that.onOpenSignaturePad();
-                            }
-                        });
-                        }
-                       // that.onOpenSignaturePad();
+                        
+                        that.onOpenSignaturePad();
                         //that.OnSignaturePress();
                         //that.onPressPaymentTest();
                     }
@@ -5738,17 +5704,8 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
-                    if(balanceAmount !== 0 ){
-                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
-                            icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "Tender Balance",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                that.onOpenSignaturePad();
-                            }
-                        });
-                        }
-                    //that.onOpenSignaturePad();
+                    
+                    that.onOpenSignaturePad();
                     //that.OnSignaturePress();
                     //that.onPressPaymentTest();
                 }
