@@ -3467,7 +3467,7 @@ sap.ui.define([
                 // var wdth = this.getView().byId("wdth").getValue();
                 // var ht = this.getView().byId("heht").getValue();
 
-                ePosDev.connect(printerIp, 8008, function (resultConnect) {
+                ePosDev.connect(printerIp, 8043, function (resultConnect) {
                     if (resultConnect === "OK" || resultConnect == "SSL_CONNECT_OK") {
                         ePosDev.createDevice("local_printer", ePosDev.DEVICE_TYPE_PRINTER,
                             { crypto: false, buffer: false },
@@ -4444,8 +4444,10 @@ sap.ui.define([
                             }
                         });
                         }
+                        else{
                        
-                        //that.OnSignaturePress();
+                        that.onOpenSignaturePad();
+                        }
                         //that.onPressPaymentTest();
                     }
                     else {
