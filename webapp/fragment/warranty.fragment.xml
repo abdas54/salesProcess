@@ -1,0 +1,72 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:form="sap.ui.layout.form"
+    xmlns:f="sap.f.cards"
+    xmlns:l="sap.ui.layout"
+    xmlns:g="sap.f">
+    <Dialog title="Warranty" contentHeight="1000px" contentWidth="1000px" class="sapUiSizeCompact discountDialog">
+        <content>
+            <VBox width="700px">
+                <Panel>
+                    <content>
+                        <VBox >
+                            <g:GridList items="{ProductModel>/Product}"   itemPress="holdWarrantyItem">
+                                <g:items>
+                                    <g:GridListItem type="Active" >
+                                        <VBox class="sapUiSmallMargin">
+                                            <Title text="{ProductModel>Itemcode}" class="boldText" />
+                                            <Text text="{ProductModel>Description}" />
+                                        </VBox>
+                                    </g:GridListItem>
+                                </g:items>
+                            </g:GridList>
+                        </VBox>
+                    </content>
+                </Panel>
+            </VBox>
+            <Panel id="warrantPanel" visible="false">
+                <content>
+                    <form:SimpleForm   layout="ResponsiveGridLayout"
+            labelSpanXL="3" labelSpanL="3" labelSpanM="4" labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="4" emptySpanL="4" emptySpanM="0" emptySpanS="0"
+            columnsXL="1" columnsL="1" columnsM="1" >
+                        <form:content>
+                            <Label text="Material" />
+                            <Text id="idMaterial" />
+                            <!-- Warranty Type -->
+                            <Label text="Warranty Type" class="sapUiTinySmallMarginTop"/>
+                            <SegmentedButton id="idWarrantyType" selectionChange="onWarrantyTypeSelect" width="60%" selectedItem="None">
+                                <items>
+                                    <SegmentedButtonItem key="E" text="Extended Warranty" />
+                                    <SegmentedButtonItem key="A" text="Accidental Warranty" />
+                                </items>
+                            </SegmentedButton>
+                            <Label text="No. of Years" visible="false" id="lblYears" class="sapUiSmallMarginTop" />
+                            <ComboBox id="idYearsSelect" visible="false"
+                                          change="onYearSelect"
+                                          class="inputStyle customInputHeight"
+                                        items="{ path: 'yearsModel>/years' }">
+                                <core:ListItem key="{yearsModel>WarrantyYears}" text="{yearsModel>WarrantyYears}"  />
+                            </ComboBox>
+                            <Label text="Warranty Material" visible="false" id="lblMat" />
+                            <Text id="idWarrantyMaterial" visible="false" />
+                            <!-- Warranty Description -->
+                            <Label text="Description" visible="false" id="lblDesc" />
+                            <Text id="idWarrantyDescription" visible="false" />
+                            <!-- Warranty Percent -->
+                            <Label text="Warranty Percent" visible="false" id="lblPercent" />
+                            <Text id="idWarrantyPercent" visible="false" />
+                        </form:content>
+                    </form:SimpleForm>
+                </content>
+            </Panel>
+            <VBox></VBox>
+        </content>
+        <buttons>
+            <Button id="addWaranty" text="Add Waranty" type="Emphasized" enabled="false" press="onAdditionWarranty" class="cstmBtn"/>
+            <Button text="Close" type="Emphasized" press="onCloseWarranty" class="cstmBtn"/>
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

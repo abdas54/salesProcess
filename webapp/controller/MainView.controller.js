@@ -79,6 +79,7 @@ sap.ui.define([
 
                 //this._openSalesmanDialog();
                 this.validateLoggedInUser();
+                this.fetchWarrantyData();
                 this.aEntries = [];
                 this.aEntries1 = [];
                 this.aPaymentEntries = [];
@@ -96,7 +97,81 @@ sap.ui.define([
                 this.CashierPwd = "";
 
             },
+            fetchWarrantyData: function () {
+                var that = this;
+                this.oModel.read("/WarrantyMaterialsSet", {
+                    success: function (oData) {
+                        var oJSON = new JSONModel();
+                        oJSON.setData({});
+                        oJSON.setData(oData.results);
+                        that.getView().setModel(oJSON, "warrantyData");
+                    },
+                    error: function () {
+                        console.error("Unable to fetch Warranty Data");
+                    }
+                });
+            },
+            onWarrantyTypeSelect: function (oEvent) {
+                var sKey = oEvent.getParameter("item").getKey();
+                var oView = sap.ui.getCore();
 
+                var aData = this.getView().getModel("warrantyData").getData();
+                var aFiltered = aData.filter(function (item) {
+                    return item.WarrantyType === sKey;
+                });
+
+                var oYearsModel = new JSONModel();
+                oYearsModel.setData({});
+                oYearsModel.setData({ "years": aFiltered });
+                oView.setModel(oYearsModel, "yearsModel");
+                this._oDialogWarranty.setModel(oYearsModel, "yearsModel");
+                oView.byId("idYearsSelect").setVisible(true);
+                oView.byId("lblYears").setVisible(true);
+                if(aFiltered.length > 0){
+                    oView.byId("idYearsSelect").setSelectedKey(aFiltered[0].WarrantyYears);
+                    var aYearsData = sap.ui.getCore().getModel("yearsModel").getData();
+
+                var oMatch = aYearsData.years.find(function (item) {
+                    return item.WarrantyYears === aFiltered[0].WarrantyYears;
+                });
+                if (oMatch) {
+                    oView.byId("idWarrantyMaterial").setText(oMatch.WarrantyMaterial);
+                    oView.byId("idWarrantyDescription").setText(oMatch.Description);
+                    oView.byId("idWarrantyPercent").setText(oMatch.WarrantyPercent);
+
+                    oView.byId("idWarrantyMaterial").setVisible(true);
+                    oView.byId("idWarrantyDescription").setVisible(true);
+                    oView.byId("idWarrantyPercent").setVisible(true);
+
+                    oView.byId("lblMat").setVisible(true);
+                    oView.byId("lblDesc").setVisible(true);
+                    oView.byId("lblPercent").setVisible(true);
+                }
+                }
+
+            },
+            onYearSelect: function (oEvent) {
+                var sSelectedYear = oEvent.getParameter("value");
+                var oView = sap.ui.getCore();
+                var aData = sap.ui.getCore().getModel("yearsModel").getData();
+
+                var oMatch = aData.years.find(function (item) {
+                    return item.WarrantyYears === sSelectedYear;
+                });
+                if (oMatch) {
+                    oView.byId("idWarrantyMaterial").setText(oMatch.WarrantyMaterial);
+                    oView.byId("idWarrantyDescription").setText(oMatch.Description);
+                    oView.byId("idWarrantyPercent").setText(oMatch.WarrantyPercent);
+
+                    oView.byId("idWarrantyMaterial").setVisible(true);
+                    oView.byId("idWarrantyDescription").setVisible(true);
+                    oView.byId("idWarrantyPercent").setVisible(true);
+
+                    oView.byId("lblMat").setVisible(true);
+                    oView.byId("lblDesc").setVisible(true);
+                    oView.byId("lblPercent").setVisible(true);
+                }
+            },
             validateLoggedInUser: function () {
                 var that = this;
                 this.oModel.read("/StoreIDSet", {
@@ -1325,6 +1400,31 @@ sap.ui.define([
                     this._oDialogDiscoun1.open();
 
                 }
+            },
+            onPressWaranty: function () {
+                if (!this._oDialogWarranty) {
+                    Fragment.load({
+                        name: "com.eros.salesprocess.fragment.warranty",
+                        controller: this
+                    }).then(function (oFragment) {
+                        this._oDialogWarranty = oFragment;
+                        this.getView().addDependent(this._oDialogWarranty);
+                        sap.ui.getCore().byId("warrantPanel").setVisible(false);
+                        this._oDialogWarranty.open();
+
+                    }.bind(this));
+                } else {
+                    sap.ui.getCore().byId("warrantPanel").setVisible(false);
+                    this._oDialogWarranty.open();
+
+                }
+
+            },
+            onAdditionWarranty: function () {
+
+            },
+            onCloseWarranty: function () {
+                this._oDialogWarranty.close();
             },
             onAddRow: function () {
                 var oModel = this.getView().getModel("CashModel");
@@ -3168,7 +3268,7 @@ sap.ui.define([
                     "Currency": "AED",
                     "OriginalTransactionId": "", // Required for Return Sales
                     "CustomerType": this.getView().getModel("custAddModel").getData().CustomerType,
-                    "TrnNumber" : this.getView().getModel("custAddModel").getData().TrnNumber,
+                    "TrnNumber": this.getView().getModel("custAddModel").getData().TrnNumber,
                     "CustomerName": this.getView().byId("customer").getCount(),
                     "ContactNo": contactNumber,
                     "CountryCode": this.getView().getModel("custAddModel").getData().Code,
@@ -3184,7 +3284,7 @@ sap.ui.define([
                     "ToSerials": { "results": this.oPayloadSerialNumber() },
                     "ToSignature": { "results": this.oPaySignatureload ? this.oPaySignatureload : [] },
                     "Remarks": this.suspendComments,
-                    "ToBankEMI":{ "results": this.emiList}
+                    "ToBankEMI": { "results": this.emiList }
                     // "ToPayments" : {"results" : this.oPayloadTablePayments()}
                 }
                 this.getView().setBusy(true);
@@ -3272,7 +3372,7 @@ sap.ui.define([
                         var base64 = btoa(binary);
                         console.log("Base64 PDF Content:", base64);
 
-                        that.onShowPDFSEPP(base64,count);
+                        that.onShowPDFSEPP(base64, count);
 
                     } else {
                         console.error("Failed to fetch PDF. Status: ", xhr.status);
@@ -3283,7 +3383,7 @@ sap.ui.define([
             },
 
 
-            onShowPDFSEPP: async function (base64Content,count) {
+            onShowPDFSEPP: async function (base64Content, count) {
 
                 var byteCharacters = atob(base64Content);
                 var byteNumbers = new Array(byteCharacters.length);
@@ -3309,7 +3409,7 @@ sap.ui.define([
                     this.canvasp = canvas;
                     this.printerIP = printerIp;
 
-                    this.sendToEpsonPrinter(canvas, printerIp,count);
+                    this.sendToEpsonPrinter(canvas, printerIp, count);
                 } catch (err) {
                     MessageBox.error("Error rendering or printing PDF: " + err.message);
                 }
@@ -3461,7 +3561,7 @@ sap.ui.define([
                 }
             },
 
-            sendToEpsonPrinter: function (canvases, printerIp,count) {
+            sendToEpsonPrinter: function (canvases, printerIp, count) {
                 var ePosDev = new epson.ePOSDevice();
                 //var ip = this.getView().byId("ipaddr").getValue();
                 // var wdth = this.getView().byId("wdth").getValue();
@@ -3486,8 +3586,8 @@ sap.ui.define([
 
                                     printer.addCut(printer.CUT_FEED);
                                     printer.send();
-                                    if(count == 2){
-                                    window.location.reload(true);
+                                    if (count == 2) {
+                                        window.location.reload(true);
                                     }
                                     // printer.send(function (resultSend) {
                                     //     if (resultSend === "OK") {
@@ -3731,7 +3831,7 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                           
+
                             that.onOpenSignaturePad();
                             //that.OnSignaturePress();
                             // that.onPressPaymentTest();
@@ -3878,17 +3978,17 @@ sap.ui.define([
                     sap.m.MessageBox.error("Please select both Bank Name and No. of Months.");
                     return;
                 }
-                this.emiID = this.emiID + 1 ;
+                this.emiID = this.emiID + 1;
                 this.emiList.push({
                     "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
                     "EmiId": this.emiID.toString(),
-                    "Amount":amount,
+                    "Amount": amount,
                     "Currency": "AED",
-                    "BankName":sBank,
-                    "NoOfMonths":sMonths ,
+                    "BankName": sBank,
+                    "NoOfMonths": sMonths,
                     "InterestRate": sRate
                 });
-                  this._oBankEMIDialog.close();
+                this._oBankEMIDialog.close();
             },
             onCloseEMIDialog: function () {
                 that._oBankEMIDialog.close();
@@ -3898,6 +3998,7 @@ sap.ui.define([
                 this.getView().byId("discountgt").setPressEnabled(bflag);
                 this.getView().byId("paymentsgt").setPressEnabled(bflag);
                 this.getView().byId("suspendgt").setPressEnabled(bflag);
+                this.getView().byId("warrantygt").setPressEnabled(bflag);
 
             },
             holdDiscountItem: function (oEvent) {
@@ -3908,6 +4009,15 @@ sap.ui.define([
                 this.getView().getModel("DiscountValue").setProperty("/ItemDesc", itemDesc);
                 this.getView().getModel("DiscountValue").setProperty("/ItemUnitPrice", itemUnitPrice);
                 this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "Discounts Condition");
+            },
+            holdWarrantyItem: function (oEvent) {
+                var itemCode = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Itemcode;
+                var itemDesc = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Description;
+                this.warrantyItemCode = itemCode;
+                this.warrantyItemDesc = itemDesc;
+                sap.ui.getCore().byId("idMaterial").setText(itemCode + " ( " + itemDesc + " )");
+                sap.ui.getCore().byId("warrantPanel").setVisible(true);
+                sap.ui.getCore().byId("addWaranty").setEnabled(true);
             },
             selectSuspendReason: function (oEvent) {
                 this.suspendComments = oEvent.getParameter("listItem").getBindingContext().getObject().Reason;
@@ -3946,9 +4056,9 @@ sap.ui.define([
                 var conditionType = this.getView().getModel("DiscountValue").getProperty("/ConditionType");
                 var itemCode = this.getView().getModel("DiscountValue").getProperty("/ItemCode");
                 var aProducts = this.getView().getModel("ProductModel").getProperty("/Product");
-                var oResult = aProducts.find(function(oItem) {
-    return oItem.Itemcode === itemCode;
-});
+                var oResult = aProducts.find(function (oItem) {
+                    return oItem.Itemcode === itemCode;
+                });
                 if (this.checkPercentage === "X") {
                     discAmount = parseFloat(itemUnitPrice * (discAmount) / 100).toFixed(2);
                 }
@@ -4434,19 +4544,19 @@ sap.ui.define([
                         }
                         oEvent.getSource().setEnabled(false);
                         sap.m.MessageToast.show("Cash Payment Successful");
-                        if(balanceAmount !== "0.00"){
+                        if (balanceAmount !== "0.00") {
                             sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
-                            icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "Tender Balance",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                that.onOpenSignaturePad();
-                            }
-                        });
+                                icon: sap.m.MessageBox.Icon.INFORMATION,
+                                title: "Tender Balance",
+                                actions: [MessageBox.Action.OK],
+                                onClose: function (oAction) {
+                                    that.onOpenSignaturePad();
+                                }
+                            });
                         }
-                        else{
-                       
-                        that.onOpenSignaturePad();
+                        else {
+
+                            that.onOpenSignaturePad();
                         }
                         //that.onPressPaymentTest();
                     }
@@ -4856,7 +4966,7 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Manual Card Payment Successful");
-                    
+
                     that.onOpenSignaturePad();
                     // that.OnSignaturePress();
                     //that.onPressPaymentTest();
@@ -4881,7 +4991,7 @@ sap.ui.define([
                 }
             },
             onOpenRedeemDialog: function () {
-                
+
                 if (!this._oRedeemDialog) {
                     // Create the dialog only once
                     this._oRedeemDialog = new sap.m.Dialog({
@@ -4897,8 +5007,8 @@ sap.ui.define([
                                         width: "80%",
                                         placeholder: "Enter Amount to Redeem",
                                         liveChange: this.onPointsLiveChange.bind(this),
-                                        change : this.convertToDecimal.bind(this)
-                                
+                                        change: this.convertToDecimal.bind(this)
+
                                     }).addStyleClass("sapUiSmallMarginBegin  sapUiSmallMarginTop sapUiSmallMarginBottom inputStyle"),
 
                                     new sap.m.Label("lblRedeemedAmt", { text: "Redeemed Bounz", visible: false, design: "Bold" }).addStyleClass("sapUiSmallMarginBegin cashierLogin sapUiSmallMarginTop "),
@@ -4941,21 +5051,21 @@ sap.ui.define([
 
                     this.getView().addDependent(this._oRedeemDialog);
                 }
-               sap.ui.getCore().byId("idPointsInput").setValue("");
-               sap.ui.getCore().byId("idOTPInput").setValue("");
-               sap.ui.getCore().byId("idOTPInput").setVisible(false);
-               sap.ui.getCore().byId("idOTPLabel").setVisible(false);
-               sap.ui.getCore().byId("inpRedeemedAmt").setValue("");
-               sap.ui.getCore().byId("inpRedeemedAmt").setVisible(false);
-               sap.ui.getCore().byId("lblRedeemedAmt").setVisible(false);
-               sap.ui.getCore().byId("redeemBtn").setVisible(true);
-               this._oRedeemDialog.open();
+                sap.ui.getCore().byId("idPointsInput").setValue("");
+                sap.ui.getCore().byId("idOTPInput").setValue("");
+                sap.ui.getCore().byId("idOTPInput").setVisible(false);
+                sap.ui.getCore().byId("idOTPLabel").setVisible(false);
+                sap.ui.getCore().byId("inpRedeemedAmt").setValue("");
+                sap.ui.getCore().byId("inpRedeemedAmt").setVisible(false);
+                sap.ui.getCore().byId("lblRedeemedAmt").setVisible(false);
+                sap.ui.getCore().byId("redeemBtn").setVisible(true);
+                this._oRedeemDialog.open();
             },
-            convertToDecimal: function(oEvent){    
+            convertToDecimal: function (oEvent) {
                 let value = oEvent.getSource().getValue();
                 let floatValue = parseFloat(value);
 
-                if(Number.isInteger(floatValue)){
+                if (Number.isInteger(floatValue)) {
                     value = floatValue.toFixed(2);
                 }
 
@@ -4969,9 +5079,9 @@ sap.ui.define([
                 // Check if value is a positive number
                 var bEnable = /^\d+$/.test(sValue) && parseInt(sValue) > 0;
                 oRedeemBtn.setEnabled(bEnable);
-                
+
             },
-            convertIntoDecimal: function(oEvent){
+            convertIntoDecimal: function (oEvent) {
                 oEvent.getSource().setValue(parseFloat(oEvent.getSource().getValue()).toFixed(2));
 
             },
@@ -5003,7 +5113,7 @@ sap.ui.define([
                         that.point = oData.Points;
                         that.lockId = oData.LockPointId;
                         that.redeemAmount = oData.Amount;
-                                  
+
 
                         sap.ui.getCore().byId("idOTPInput").setVisible(true);
                         sap.ui.getCore().byId("idOTPLabel").setVisible(true);
@@ -5086,7 +5196,7 @@ sap.ui.define([
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                             sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                            
+
                             that.onOpenSignaturePad();
                             //that.OnSignaturePress();
                             // that.onPressPaymentTest();
@@ -5241,7 +5351,7 @@ sap.ui.define([
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                         sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                         sap.m.MessageToast.show("Non EGV Payment Successful");
-                        
+
                         that.onOpenSignaturePad();
                         //that.OnSignaturePress();
                         //that.onPressPaymentTest();
@@ -5416,7 +5526,7 @@ sap.ui.define([
                         oModel.setData(oData);
                         that.getView().setModel(oModel, "BounzeModel");
                         sap.ui.getCore().byId("bounzeDetails").setVisible(true);
-                         sap.ui.getCore().byId("registerBounz").setEnabled(false);
+                        sap.ui.getCore().byId("registerBounz").setEnabled(false);
 
 
 
@@ -5706,7 +5816,7 @@ sap.ui.define([
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
                     sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
-                    
+
                     that.onOpenSignaturePad();
                     //that.OnSignaturePress();
                     //that.onPressPaymentTest();

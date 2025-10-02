@@ -187,6 +187,11 @@
                                 <!-- <Button type="Transparent" icon="sap-icon://activate"/> -->
                             </TileContent>
                         </GenericTile>
+                        <GenericTile id="warrantygt" header="WARRANTY" frameType="OneByHalf" press="onPressWaranty" class="customTile" pressEnabled="false" headerImage="sap-icon://badge">
+                            <TileContent>
+                                <!-- <Button type="Transparent" icon="sap-icon://activate"/> -->
+                            </TileContent>
+                        </GenericTile>
                         <!-- <GenericTile id="testDiscount" visible="false" header="DISCOUNT" frameType="OneByHalf" press="onPressDiscount" class="customTile" pressEnabled="false"><TileContent><Button type="Transparent" icon="sap-icon://activate"/></TileContent></GenericTile> -->
                         <GenericTile id="paymentsgt" header="PAYMENTS" frameType="OneByHalf" press="onPressPayments1" class="customTile" pressEnabled="false" headerImage="sap-icon://money-bills">
                             <TileContent>
@@ -203,11 +208,7 @@
                                 <!-- <Button type="Transparent" text="OpenEMI" press="openEMIDialog"/> -->
                             </TileContent>
                         </GenericTile>
-                        <GenericTile  header="" frameType="OneByHalf" press="" class="customTile" pressEnabled="false" headerImage="">
-                            <TileContent>
-                                <!-- <Button type="Transparent" icon="sap-icon://reset"/> -->
-                            </TileContent>
-                        </GenericTile>
+                      
                     </l:VerticalLayout>
                 </VBox>
             </HBox>
