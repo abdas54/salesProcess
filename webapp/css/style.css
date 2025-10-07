@@ -454,5 +454,13 @@ margin-top: 15px !important;
     overflow-y: scroll !important;
     -webkit-overflow-scrolling: touch !important;
 }
+.noPanelPadding .sapMPanelContent {
+   padding-left: 0 !important;
+   padding-right: 0 !important;
+}
+.sapMPanelBGTranslucent {
+    background-color: #c8d9e6 !important; 
+
+}
 
 

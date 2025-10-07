@@ -11,7 +11,7 @@
                 <Panel>
                     <content>
                         <VBox >
-                            <g:GridList items="{ProductModel>/Product}"   itemPress="holdWarrantyItem">
+                            <g:GridList id="warrantyGridList" items="{ProductModel>/Product}"   itemPress="holdWarrantyItem">
                                 <g:items>
                                     <g:GridListItem type="Active" >
                                         <VBox class="sapUiSmallMargin">
@@ -25,19 +25,21 @@
                     </content>
                 </Panel>
             </VBox>
-            <Panel id="warrantPanel" visible="false">
-                <content>
+            
+               
+                <Panel id="warrantPanel" width="700px" class="noPanelPadding">
+                    <content>
                     <form:SimpleForm   layout="ResponsiveGridLayout"
             labelSpanXL="3" labelSpanL="3" labelSpanM="4" labelSpanS="12"
             adjustLabelSpan="false"
             emptySpanXL="4" emptySpanL="4" emptySpanM="0" emptySpanS="0"
-            columnsXL="1" columnsL="1" columnsM="1" >
+            columnsXL="1" columnsL="1" columnsM="1"  >
                         <form:content>
                             <Label text="Material" />
                             <Text id="idMaterial" />
                             <!-- Warranty Type -->
                             <Label text="Warranty Type" class="sapUiTinySmallMarginTop"/>
-                            <SegmentedButton id="idWarrantyType" selectionChange="onWarrantyTypeSelect" width="60%" selectedItem="None">
+                            <SegmentedButton id="idWarrantyType" selectionChange="onWarrantyTypeSelect" width="350px" selectedItem="None">
                                 <items>
                                     <SegmentedButtonItem key="E" text="Extended Warranty" />
                                     <SegmentedButtonItem key="A" text="Accidental Warranty" />
@@ -50,6 +52,11 @@
                                         items="{ path: 'yearsModel>/years' }">
                                 <core:ListItem key="{yearsModel>WarrantyYears}" text="{yearsModel>WarrantyYears}"  />
                             </ComboBox>
+                            <Label text="Serial Number" visible="false" id="lblSrNumber" class="sapUiSmallMarginTop" />
+                            <ComboBox id="idSrNumber" visible="false" class="inputStyle customInputHeight"
+                                        items="{ path: 'WarrantySrlNumber>/serialNumbers' }">
+                                <core:ListItem key="{WarrantySrlNumber>serialNumber}" text="{WarrantySrlNumber>serialNumber}"  />
+                            </ComboBox>
                             <Label text="Warranty Material" visible="false" id="lblMat" />
                             <Text id="idWarrantyMaterial" visible="false" />
                             <!-- Warranty Description -->
@@ -58,10 +65,14 @@
                             <!-- Warranty Percent -->
                             <Label text="Warranty Percent" visible="false" id="lblPercent" />
                             <Text id="idWarrantyPercent" visible="false" />
+                            <Label text="Warranty Price" visible="false" id="lblWarrantyPrice" />
+                            <Text id="idWarrantyPrice" visible="false" />
                         </form:content>
                     </form:SimpleForm>
-                </content>
-            </Panel>
+                    </content>
+                </Panel>
+                
+           
             <VBox></VBox>
         </content>
         <buttons>

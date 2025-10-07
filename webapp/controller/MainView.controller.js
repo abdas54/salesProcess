@@ -114,17 +114,30 @@ sap.ui.define([
             onWarrantyTypeSelect: function (oEvent) {
                 var sKey = oEvent.getParameter("item").getKey();
                 var oView = sap.ui.getCore();
-
+                var that = this;
                 var aData = this.getView().getModel("warrantyData").getData();
+                var aProducts = this.getView().getModel("ProductModel").getProperty("/Product");
+                var oProduct = aProducts.find(function(oItem) {
+                           return oItem.Itemcode === that.warrantyItemCode;;
+                    });
                 var aFiltered = aData.filter(function (item) {
                     return item.WarrantyType === sKey;
                 });
-
+                var filteredSrNumber = this.serialNumbers.filter(function(item){
+                    return item.itemCode === that.warrantyItemCode;
+                })
+                var oSrlNumModel = new JSONModel();
+                oSrlNumModel.setData({});
+                oSrlNumModel.setData({ "serialNumbers": filteredSrNumber });
+                oView.setModel(oSrlNumModel, "WarrantySrlNumber");
                 var oYearsModel = new JSONModel();
                 oYearsModel.setData({});
                 oYearsModel.setData({ "years": aFiltered });
                 oView.setModel(oYearsModel, "yearsModel");
                 this._oDialogWarranty.setModel(oYearsModel, "yearsModel");
+                this._oDialogWarranty.setModel(oSrlNumModel, "WarrantySrlNumber");
+                oView.byId("lblSrNumber").setVisible(true);
+                oView.byId("idSrNumber").setVisible(true);
                 oView.byId("idYearsSelect").setVisible(true);
                 oView.byId("lblYears").setVisible(true);
                 if(aFiltered.length > 0){
@@ -146,6 +159,11 @@ sap.ui.define([
                     oView.byId("lblMat").setVisible(true);
                     oView.byId("lblDesc").setVisible(true);
                     oView.byId("lblPercent").setVisible(true);
+                    oView.byId("lblWarrantyPrice").setVisible(true);
+                    oView.byId("idWarrantyPrice").setVisible(true);
+                    var warrantyAmount = parseFloat(parseFloat(oProduct.UnitPrice) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
+                    oView.byId("idWarrantyPrice").setText(warrantyAmount);
+                    
                 }
                 }
 
@@ -154,6 +172,10 @@ sap.ui.define([
                 var sSelectedYear = oEvent.getParameter("value");
                 var oView = sap.ui.getCore();
                 var aData = sap.ui.getCore().getModel("yearsModel").getData();
+                var aProducts = this.getView().getModel("ProductModel").getProperty("/Product");
+                var oProduct = aProducts.find(function(oItem) {
+                           return oItem.Itemcode === that.warrantyItemCode;;
+                    });
 
                 var oMatch = aData.years.find(function (item) {
                     return item.WarrantyYears === sSelectedYear;
@@ -170,6 +192,10 @@ sap.ui.define([
                     oView.byId("lblMat").setVisible(true);
                     oView.byId("lblDesc").setVisible(true);
                     oView.byId("lblPercent").setVisible(true);
+                    oView.byId("lblWarrantyPrice").setVisible(true);
+                    oView.byId("idWarrantyPrice").setVisible(true);
+                    var warrantyAmount = parseFloat(parseFloat(oProduct.UnitPrice) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
+                    oView.byId("idWarrantyPrice").setText(warrantyAmount);
                 }
             },
             validateLoggedInUser: function () {
@@ -1410,17 +1436,119 @@ sap.ui.define([
                         this._oDialogWarranty = oFragment;
                         this.getView().addDependent(this._oDialogWarranty);
                         sap.ui.getCore().byId("warrantPanel").setVisible(false);
+                        var oGridList = sap.ui.getCore().byId("warrantyGridList");
+                        var oBinding = oGridList.getBinding("items");
+                        if (oBinding) {
+                                var aFilters = [
+                                       new sap.ui.model.Filter({
+                                                 path: "Itemcode",
+                                                 test: function (sValue) {
+                                                       // exclude any item containing "year" (case insensitive)
+                                                       return !sValue.toLowerCase().includes("year");
+                                                    }
+                                                })
+                                               ];
+                                    oBinding.filter(aFilters);
+                        }
                         this._oDialogWarranty.open();
 
                     }.bind(this));
                 } else {
                     sap.ui.getCore().byId("warrantPanel").setVisible(false);
+                    var oGridList1 = sap.ui.getCore().byId("warrantyGridList");
+                    var oBinding1 = oGridList1.getBinding("items");
+                        if (oBinding1) {
+                                var aFilters = [
+                                       new sap.ui.model.Filter({
+                                                 path: "Itemcode",
+                                                 test: function (sValue) {
+                                                       // exclude any item containing "year" (case insensitive)
+                                                       return !sValue.toLowerCase().includes("year");
+                                                    }
+                                                })
+                                               ];
+                                    oBinding1.filter(aFilters);
+                        }
                     this._oDialogWarranty.open();
 
                 }
 
             },
             onAdditionWarranty: function () {
+                var oView = sap.ui.getCore();
+                var that = this;
+                var warrantyMatId = oView.byId("idWarrantyMaterial").getText();
+                var warrantyPrice = oView.byId("idWarrantyPrice").getText();
+                var mainMatId = oView.byId("idMaterial").getText().split("(")[0].trim();
+                var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
+                var aFilters = [];
+
+                aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, warrantyMatId));
+                
+
+                this.oModel.read("/MaterialSet", {
+                    urlParameters: {
+                        "$expand": "ToDiscounts"
+                    },
+                    filters: aFilters,
+                    success: function (oData) {
+                        if (oData.results.length > 0) {
+                            oData.results[0].SaleQuantity = 1;
+                            oData.results[0].HomeDelivery = false;
+                            oData.results[0].NetPrice = warrantyPrice;
+                            oData.results[0].NetAmount = warrantyPrice;
+                            oData.results[0].Seq = "";
+                            oData.results[0].SalesmanId = "";
+                            oData.results[0].SalesmanName = "";
+                            oData.results[0].UnitPrice = warrantyPrice;
+                            oData.results[0].Description = "Warranty for " + mainMatId;
+                            var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
+                           var bFlag = false;
+                            for (var count = 0; count < tableData.length; count++) {
+
+                            if ((tableData[count].Itemcode === warrantyMatId) && (tableData[count].Description.indexOf(mainMatId) >= 0)) {
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].Discount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
+
+                                var netAmount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetAmount");
+                                var netDiscount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetDiscount");
+                                var vatPercent = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/VatPercent");
+                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, count);
+                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, count);
+                                bFlag = true;
+                            }
+                        }
+                         if(bFlag === false){
+                            aProducts.push(...oData.results);
+                         }
+                            that.updateSeq(aProducts);
+                            that.getView().getModel("ProductModel").refresh(true);
+                            that._oDialogWarranty.close();
+                            //that.updateSeq(aProducts);
+
+
+                        }
+
+                    },
+                    error: function (oError) {
+                     
+                            sap.m.MessageBox.show(
+                                JSON.parse(oError.responseText).error.message.value, {
+                                icon: sap.m.MessageBox.Icon.Error,
+                                title: "Error",
+                                actions: ["OK", "CANCEL"],
+                                onClose: function (oAction) {
+
+                                }
+                            }
+                            );
+                        
+
+                    }
+                });
+
 
             },
             onCloseWarranty: function () {
@@ -1604,6 +1732,32 @@ sap.ui.define([
 
             onPressCustClose: function () {
                 this._oDialogCust.close();
+            },
+            onShippingSelect: function(oEvent){
+                var sIndex = oEvent.getParameter("selectedIndex");
+                
+                if (sIndex === 0) {
+                    this.shippingMethod = "HD";
+                } else if (sIndex === 1) {
+                    this.shippingMethod = "HP";
+                } else if (sIndex === 2) {
+                    this.shippingMethod = "PC";
+                }
+                else if (sIndex === 3) {
+                    this.shippingMethod = "MD";
+                }
+                else if (sIndex === 4) {
+                    this.shippingMethod = "WM";
+                }
+                else if (sIndex === 5) {
+                    this.shippingMethod = "DW";
+                }
+                else if (sIndex === 6) {
+                    this.shippingMethod = "HC";
+                }
+                else if (sIndex === 7) {
+                    this.shippingMethod = "AI";
+                }
             },
             onPressCustSaveClose: function () {
                 this.shippingAddress = "";
@@ -1939,6 +2093,7 @@ sap.ui.define([
                             "Quantity": selIndexData.SaleQuantity.toString()
 
                         }
+                        
                         this.oModel.create("/ReservationSet", oPayload, {
                             success: function (oData) {
                                 that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
@@ -3092,7 +3247,9 @@ sap.ui.define([
                         "FocItem": "",
                         "SalesmanId": tableData[count].SalesmanId,
                         "SalesmanName": tableData[count].SalesmanName,
-                        "VatPercent": tableData[count].VatPercent
+                        "VatPercent": tableData[count].VatPercent,
+                        "HomeDelivery": tableData[count].HomeDelivery ? "X" : ""
+
                     })
                 }
 
@@ -4011,6 +4168,8 @@ sap.ui.define([
                 this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "Discounts Condition");
             },
             holdWarrantyItem: function (oEvent) {
+                var that = this;
+                var oView = sap.ui.getCore();
                 var itemCode = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Itemcode;
                 var itemDesc = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Description;
                 this.warrantyItemCode = itemCode;
@@ -4018,6 +4177,14 @@ sap.ui.define([
                 sap.ui.getCore().byId("idMaterial").setText(itemCode + " ( " + itemDesc + " )");
                 sap.ui.getCore().byId("warrantPanel").setVisible(true);
                 sap.ui.getCore().byId("addWaranty").setEnabled(true);
+                var filteredSrNumber = this.serialNumbers.filter(function(item){
+                    return item.itemCode === that.warrantyItemCode;
+                })
+                var oSrlNumModel = new JSONModel();
+                oSrlNumModel.setData({});
+                oSrlNumModel.setData({ "serialNumbers": filteredSrNumber });
+                oView.setModel(oSrlNumModel, "WarrantySrlNumber");
+                this._oDialogWarranty.setModel(oSrlNumModel, "WarrantySrlNumber");
             },
             selectSuspendReason: function (oEvent) {
                 this.suspendComments = oEvent.getParameter("listItem").getBindingContext().getObject().Reason;
@@ -4275,6 +4442,15 @@ sap.ui.define([
                 else {
                     return false;
                 }
+            },
+            checkWarrantyItem: function(flag){
+                if(flag.includes("YEAR")){
+                    return false;
+                }
+                else{
+                    return true;
+                }
+
             },
             onAddPromotion: function (oEvent) {
                 var that = this;

@@ -206,7 +206,7 @@
                                 <Label text="Shipping Method :" design="Bold"/>
                                 <FlexBox wrap="Wrap" justifyContent="Start">
                                     <items>
-                                        <RadioButtonGroup  columns="2"   selectedIndex="{custAddModel>/ShippingMethod}">
+                                        <RadioButtonGroup  columns="2" select="onShippingSelect"  selectedIndex="{custAddModel>/ShippingMethod}">
                                             <RadioButton  text="HOME DELIVERY" />
                                             <RadioButton  text="HD Install panels" />
                                             <RadioButton text="PARTY TO COLLECT" />
