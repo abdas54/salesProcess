@@ -30,7 +30,7 @@
              </VBox >
         </content>
         <beginButton>
-            <Button text="Save" press="onSaveSerialNumber" class="cstmBtn"/>
+            <Button id="saveSerialNumberBtn" text="Save" press="onSaveSerialNumber" class="cstmBtn"/>
              
         </beginButton>
        

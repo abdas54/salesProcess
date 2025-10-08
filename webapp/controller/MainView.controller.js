@@ -113,17 +113,18 @@ sap.ui.define([
             },
             onWarrantyTypeSelect: function (oEvent) {
                 var sKey = oEvent.getParameter("item").getKey();
+                this.selectedWarrantyType = sKey;
                 var oView = sap.ui.getCore();
                 var that = this;
                 var aData = this.getView().getModel("warrantyData").getData();
                 var aProducts = this.getView().getModel("ProductModel").getProperty("/Product");
-                var oProduct = aProducts.find(function(oItem) {
-                           return oItem.Itemcode === that.warrantyItemCode;;
-                    });
+                var oProduct = aProducts.find(function (oItem) {
+                    return oItem.Itemcode === that.warrantyItemCode;;
+                });
                 var aFiltered = aData.filter(function (item) {
                     return item.WarrantyType === sKey;
                 });
-                var filteredSrNumber = this.serialNumbers.filter(function(item){
+                var filteredSrNumber = this.serialNumbers.filter(function (item) {
                     return item.itemCode === that.warrantyItemCode;
                 })
                 var oSrlNumModel = new JSONModel();
@@ -140,31 +141,31 @@ sap.ui.define([
                 oView.byId("idSrNumber").setVisible(true);
                 oView.byId("idYearsSelect").setVisible(true);
                 oView.byId("lblYears").setVisible(true);
-                if(aFiltered.length > 0){
+                if (aFiltered.length > 0) {
                     oView.byId("idYearsSelect").setSelectedKey(aFiltered[0].WarrantyYears);
                     var aYearsData = sap.ui.getCore().getModel("yearsModel").getData();
 
-                var oMatch = aYearsData.years.find(function (item) {
-                    return item.WarrantyYears === aFiltered[0].WarrantyYears;
-                });
-                if (oMatch) {
-                    oView.byId("idWarrantyMaterial").setText(oMatch.WarrantyMaterial);
-                    oView.byId("idWarrantyDescription").setText(oMatch.Description);
-                    oView.byId("idWarrantyPercent").setText(oMatch.WarrantyPercent);
+                    var oMatch = aYearsData.years.find(function (item) {
+                        return item.WarrantyYears === aFiltered[0].WarrantyYears;
+                    });
+                    if (oMatch) {
+                        oView.byId("idWarrantyMaterial").setText(oMatch.WarrantyMaterial);
+                        oView.byId("idWarrantyDescription").setText(oMatch.Description);
+                        oView.byId("idWarrantyPercent").setText(oMatch.WarrantyPercent);
 
-                    oView.byId("idWarrantyMaterial").setVisible(true);
-                    oView.byId("idWarrantyDescription").setVisible(true);
-                    oView.byId("idWarrantyPercent").setVisible(true);
+                        oView.byId("idWarrantyMaterial").setVisible(true);
+                        oView.byId("idWarrantyDescription").setVisible(true);
+                        oView.byId("idWarrantyPercent").setVisible(true);
 
-                    oView.byId("lblMat").setVisible(true);
-                    oView.byId("lblDesc").setVisible(true);
-                    oView.byId("lblPercent").setVisible(true);
-                    oView.byId("lblWarrantyPrice").setVisible(true);
-                    oView.byId("idWarrantyPrice").setVisible(true);
-                    var warrantyAmount = parseFloat(parseFloat(oProduct.UnitPrice) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
-                    oView.byId("idWarrantyPrice").setText(warrantyAmount);
-                    
-                }
+                        oView.byId("lblMat").setVisible(true);
+                        oView.byId("lblDesc").setVisible(true);
+                        oView.byId("lblPercent").setVisible(true);
+                        oView.byId("lblWarrantyPrice").setVisible(true);
+                        oView.byId("idWarrantyPrice").setVisible(true);
+                        var warrantyAmount = parseFloat(parseFloat(oProduct.UnitPrice) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
+                        oView.byId("idWarrantyPrice").setText(warrantyAmount);
+
+                    }
                 }
 
             },
@@ -173,9 +174,9 @@ sap.ui.define([
                 var oView = sap.ui.getCore();
                 var aData = sap.ui.getCore().getModel("yearsModel").getData();
                 var aProducts = this.getView().getModel("ProductModel").getProperty("/Product");
-                var oProduct = aProducts.find(function(oItem) {
-                           return oItem.Itemcode === that.warrantyItemCode;;
-                    });
+                var oProduct = aProducts.find(function (oItem) {
+                    return oItem.Itemcode === that.warrantyItemCode;;
+                });
 
                 var oMatch = aData.years.find(function (item) {
                     return item.WarrantyYears === sSelectedYear;
@@ -1439,16 +1440,16 @@ sap.ui.define([
                         var oGridList = sap.ui.getCore().byId("warrantyGridList");
                         var oBinding = oGridList.getBinding("items");
                         if (oBinding) {
-                                var aFilters = [
-                                       new sap.ui.model.Filter({
-                                                 path: "Itemcode",
-                                                 test: function (sValue) {
-                                                       // exclude any item containing "year" (case insensitive)
-                                                       return !sValue.toLowerCase().includes("year");
-                                                    }
-                                                })
-                                               ];
-                                    oBinding.filter(aFilters);
+                            var aFilters = [
+                                new sap.ui.model.Filter({
+                                    path: "Itemcode",
+                                    test: function (sValue) {
+                                        // exclude any item containing "year" (case insensitive)
+                                        return !sValue.toLowerCase().includes("year");
+                                    }
+                                })
+                            ];
+                            oBinding.filter(aFilters);
                         }
                         this._oDialogWarranty.open();
 
@@ -1457,18 +1458,18 @@ sap.ui.define([
                     sap.ui.getCore().byId("warrantPanel").setVisible(false);
                     var oGridList1 = sap.ui.getCore().byId("warrantyGridList");
                     var oBinding1 = oGridList1.getBinding("items");
-                        if (oBinding1) {
-                                var aFilters = [
-                                       new sap.ui.model.Filter({
-                                                 path: "Itemcode",
-                                                 test: function (sValue) {
-                                                       // exclude any item containing "year" (case insensitive)
-                                                       return !sValue.toLowerCase().includes("year");
-                                                    }
-                                                })
-                                               ];
-                                    oBinding1.filter(aFilters);
-                        }
+                    if (oBinding1) {
+                        var aFilters = [
+                            new sap.ui.model.Filter({
+                                path: "Itemcode",
+                                test: function (sValue) {
+                                    // exclude any item containing "year" (case insensitive)
+                                    return !sValue.toLowerCase().includes("year");
+                                }
+                            })
+                        ];
+                        oBinding1.filter(aFilters);
+                    }
                     this._oDialogWarranty.open();
 
                 }
@@ -1480,11 +1481,12 @@ sap.ui.define([
                 var warrantyMatId = oView.byId("idWarrantyMaterial").getText();
                 var warrantyPrice = oView.byId("idWarrantyPrice").getText();
                 var mainMatId = oView.byId("idMaterial").getText().split("(")[0].trim();
+                var serialNumber = oView.byId("idSrNumber").getSelectedKey();
                 var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
                 var aFilters = [];
 
                 aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, warrantyMatId));
-                
+
 
                 this.oModel.read("/MaterialSet", {
                     urlParameters: {
@@ -1502,28 +1504,42 @@ sap.ui.define([
                             oData.results[0].SalesmanName = "";
                             oData.results[0].UnitPrice = warrantyPrice;
                             oData.results[0].Description = "Warranty for " + mainMatId;
+                            oData.results[0].WarrantyType = that.selectedWarrantyType;
+                            oData.results[0].WarrantyTransactionId = that.getView().byId("tranNumber").getCount();
+                            oData.results[0].WarrantyTransactionItem = that.warrantyTransItem;
+                            oData.results[0].SerialFlag = "X";
                             var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
-                           var bFlag = false;
+                            var bFlag = false;
                             for (var count = 0; count < tableData.length; count++) {
 
-                            if ((tableData[count].Itemcode === warrantyMatId) && (tableData[count].Description.indexOf(mainMatId) >= 0)) {
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].Discount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
-                                that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
+                                if ((tableData[count].Itemcode === warrantyMatId) && (tableData[count].Description.indexOf(mainMatId) >= 0)) {
+                                    that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
+                                    that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                    that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].Discount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                    that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
 
-                                var netAmount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetAmount");
-                                var netDiscount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetDiscount");
-                                var vatPercent = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/VatPercent");
-                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, count);
-                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, count);
-                                bFlag = true;
+                                    var netAmount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetAmount");
+                                    var netDiscount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetDiscount");
+                                    var vatPercent = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/VatPercent");
+                                    that.calculateVATAmount(netAmount, netDiscount, vatPercent, count);
+                                    that.calculateSalesAmount(netAmount, netDiscount, vatPercent, count);
+                                    bFlag = true;
+                                }
                             }
-                        }
-                         if(bFlag === false){
-                            aProducts.push(...oData.results);
-                         }
+                            if (bFlag === false) {
+                                aProducts.push(...oData.results);
+                            }
                             that.updateSeq(aProducts);
+
+                            for (var counter = 0; counter < tableData.length; counter++) {
+                                if ((tableData[counter].Itemcode === warrantyMatId)) {
+                                    that.serialNumbers.push({
+                                        itemCode: warrantyMatId,
+                                        seq: tableData[counter].Seq,
+                                        serialNumber: serialNumber
+                                    })
+                                }
+                            }
                             that.getView().getModel("ProductModel").refresh(true);
                             that._oDialogWarranty.close();
                             //that.updateSeq(aProducts);
@@ -1533,18 +1549,18 @@ sap.ui.define([
 
                     },
                     error: function (oError) {
-                     
-                            sap.m.MessageBox.show(
-                                JSON.parse(oError.responseText).error.message.value, {
-                                icon: sap.m.MessageBox.Icon.Error,
-                                title: "Error",
-                                actions: ["OK", "CANCEL"],
-                                onClose: function (oAction) {
 
-                                }
+                        sap.m.MessageBox.show(
+                            JSON.parse(oError.responseText).error.message.value, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: ["OK", "CANCEL"],
+                            onClose: function (oAction) {
+
                             }
-                            );
-                        
+                        }
+                        );
+
 
                     }
                 });
@@ -1733,9 +1749,9 @@ sap.ui.define([
             onPressCustClose: function () {
                 this._oDialogCust.close();
             },
-            onShippingSelect: function(oEvent){
+            onShippingSelect: function (oEvent) {
                 var sIndex = oEvent.getParameter("selectedIndex");
-                
+
                 if (sIndex === 0) {
                     this.shippingMethod = "HD";
                 } else if (sIndex === 1) {
@@ -2093,35 +2109,46 @@ sap.ui.define([
                             "Quantity": selIndexData.SaleQuantity.toString()
 
                         }
-                        
-                        this.oModel.create("/ReservationSet", oPayload, {
-                            success: function (oData) {
-                                that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
-                                that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
-                                var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
-                                var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
-                                var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
-                                // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
-                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
-                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
-                                that.getView().setBusy(false);
-                            },
-                            error: function (oError) {
-                                that.getView().setBusy(false);
-                                sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
-                                    icon: sap.m.MessageBox.Icon.Error,
-                                    title: "Error",
-                                    actions: [MessageBox.Action.OK],
-                                    onClose: function (oAction) {
-                                        if (oAction === MessageBox.Action.OK) {
-                                            event.getEventingParent().getItems()[1].setValue(1);
-                                            event.getEventingParent().getItems()[1].getSource().fireChange();
+                        if (selIndexData.WarrantyType === "E" || selIndexData.WarrantyType === "A") {
+                            that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                            that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                            var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
+                            var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
+                            var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
+                            // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                            that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                            that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                            that.getView().setBusy(false);
+                        }
+                        else {
+                            this.oModel.create("/ReservationSet", oPayload, {
+                                success: function (oData) {
+                                    that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                                    that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                                    var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
+                                    var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
+                                    var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
+                                    // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                                    that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                                    that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                                    that.getView().setBusy(false);
+                                },
+                                error: function (oError) {
+                                    that.getView().setBusy(false);
+                                    sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                                        icon: sap.m.MessageBox.Icon.Error,
+                                        title: "Error",
+                                        actions: [MessageBox.Action.OK],
+                                        onClose: function (oAction) {
+                                            if (oAction === MessageBox.Action.OK) {
+                                                event.getEventingParent().getItems()[1].setValue(1);
+                                                event.getEventingParent().getItems()[1].getSource().fireChange();
+                                            }
                                         }
-                                    }
-                                });
-                            }
-                        });
-
+                                    });
+                                }
+                            });
+                        }
 
 
 
@@ -2174,40 +2201,58 @@ sap.ui.define([
                         "Quantity": selIndexData.SaleQuantity.toString()
 
                     }
-                    this.oModel.create("/ReservationSet", oPayload, {
-                        success: function (oData) {
-                            var qtyValue = qty;
-                            var iValue = parseInt(qtyValue, 10) || 0;
-                            selIndexData.NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
-                            selIndexData.NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
+                    if (selIndexData.WarrantyType === "E" || selIndexData.WarrantyType === "A") {
+                        var qtyValue = qty;
+                        var iValue = parseInt(qtyValue, 10) || 0;
+                        selIndexData.NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
+                        selIndexData.NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
 
-                            var netAmount = selIndexData.NetAmount;
-                            var netDiscount = selIndexData.NetDiscount
-                            var vatPercent = selIndexData.VatPercent
-                            // selIndexData.NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
-                            that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
-                            that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
-                            that.getView().setBusy(false);
-                        },
-                        error: function (oError) {
-                            that.getView().setBusy(false);
-                            sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
-                                icon: sap.m.MessageBox.Icon.Error,
-                                title: "Error",
-                                actions: [MessageBox.Action.OK],
-                                onClose: function (oAction) {
-                                    if (oAction === MessageBox.Action.OK) {
-                                        if (JSON.parse(oError.responseText).error.message.value) {
-                                            var resrveQty = parseInt(JSON.parse(oError.responseText).error.message.value.split(":")[1]);
-                                            event.setValue(resrveQty);
-                                            event.fireChange();
+                        var netAmount = selIndexData.NetAmount;
+                        var netDiscount = selIndexData.NetDiscount
+                        var vatPercent = selIndexData.VatPercent
+                        // selIndexData.NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                        that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                        that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                        that.getView().setBusy(false);
+                    }
+                    else {
+
+
+                        this.oModel.create("/ReservationSet", oPayload, {
+                            success: function (oData) {
+                                var qtyValue = qty;
+                                var iValue = parseInt(qtyValue, 10) || 0;
+                                selIndexData.NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
+                                selIndexData.NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(iValue).toFixed(2)).toFixed(2);
+
+                                var netAmount = selIndexData.NetAmount;
+                                var netDiscount = selIndexData.NetDiscount
+                                var vatPercent = selIndexData.VatPercent
+                                // selIndexData.NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                                that.getView().setBusy(false);
+                            },
+                            error: function (oError) {
+                                that.getView().setBusy(false);
+                                sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                                    icon: sap.m.MessageBox.Icon.Error,
+                                    title: "Error",
+                                    actions: [MessageBox.Action.OK],
+                                    onClose: function (oAction) {
+                                        if (oAction === MessageBox.Action.OK) {
+                                            if (JSON.parse(oError.responseText).error.message.value) {
+                                                var resrveQty = parseInt(JSON.parse(oError.responseText).error.message.value.split(":")[1]);
+                                                event.setValue(resrveQty);
+                                                event.fireChange();
+                                            }
+
                                         }
-
                                     }
-                                }
-                            });
-                        }
-                    });
+                                });
+                            }
+                        });
+                    }
 
 
 
@@ -2262,34 +2307,48 @@ sap.ui.define([
                     "Quantity": selIndexData.SaleQuantity.toString()
 
                 }
-                this.oModel.create("/ReservationSet", oPayload, {
-                    success: function (oData) {
-                        that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
-                        that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                if (selIndexData.WarrantyType === "E" || selIndexData.WarrantyType === "A") {
+                    that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                    that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
 
-                        var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
-                        var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
-                        var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
-                        // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
-                        that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
-                        that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
-                        that.getView().setBusy(false);
-                    },
-                    error: function (oError) {
-                        that.getView().setBusy(false);
-                        sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
-                            icon: sap.m.MessageBox.Icon.Error,
-                            title: "Error",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                if (oAction === MessageBox.Action.OK) {
-                                    that.oControl.setValue(qtyValue);
-                                    that.oControl.getSource().fireChange();
+                    var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
+                    var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
+                    var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
+                    // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                    that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                    that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                    that.getView().setBusy(false);
+                }
+                else {
+                    this.oModel.create("/ReservationSet", oPayload, {
+                        success: function (oData) {
+                            that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount = parseFloat(parseFloat(selIndexData.UnitPrice).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+                            that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = parseFloat(parseFloat(selIndexData.Discount).toFixed(2) * parseFloat(itemQty).toFixed(2)).toFixed(2);
+
+                            var netAmount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount;
+                            var netDiscount = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount
+                            var vatPercent = that.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatPercent
+                            // this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetAmount= parseFloat(parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
+                            that.calculateVATAmount(netAmount, netDiscount, vatPercent, selIndex);
+                            that.calculateSalesAmount(netAmount, netDiscount, vatPercent, selIndex);
+                            that.getView().setBusy(false);
+                        },
+                        error: function (oError) {
+                            that.getView().setBusy(false);
+                            sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                                icon: sap.m.MessageBox.Icon.Error,
+                                title: "Error",
+                                actions: [MessageBox.Action.OK],
+                                onClose: function (oAction) {
+                                    if (oAction === MessageBox.Action.OK) {
+                                        that.oControl.setValue(qtyValue);
+                                        that.oControl.getSource().fireChange();
+                                    }
                                 }
-                            }
-                        });
-                    }
-                });
+                            });
+                        }
+                    });
+                }
 
 
 
@@ -3248,7 +3307,10 @@ sap.ui.define([
                         "SalesmanId": tableData[count].SalesmanId,
                         "SalesmanName": tableData[count].SalesmanName,
                         "VatPercent": tableData[count].VatPercent,
-                        "HomeDelivery": tableData[count].HomeDelivery ? "X" : ""
+                        "HomeDelivery": tableData[count].HomeDelivery ? "X" : "",
+                        "WarrantyType": tableData[count].WarrantyType ? tableData[count].WarrantyType : "",
+                        "WarrantyTransactionId": tableData[count].WarrantyTransactionId ? tableData[count].WarrantyTransactionId : "",
+                        "WarrantyTransactionItem": tableData[count].WarrantyTransactionItem ? tableData[count].WarrantyTransactionItem : "",
 
                     })
                 }
@@ -4172,12 +4234,14 @@ sap.ui.define([
                 var oView = sap.ui.getCore();
                 var itemCode = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Itemcode;
                 var itemDesc = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Description;
+                var itemNumber = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Seq;
                 this.warrantyItemCode = itemCode;
                 this.warrantyItemDesc = itemDesc;
+                this.warrantyTransItem = itemNumber;
                 sap.ui.getCore().byId("idMaterial").setText(itemCode + " ( " + itemDesc + " )");
                 sap.ui.getCore().byId("warrantPanel").setVisible(true);
                 sap.ui.getCore().byId("addWaranty").setEnabled(true);
-                var filteredSrNumber = this.serialNumbers.filter(function(item){
+                var filteredSrNumber = this.serialNumbers.filter(function (item) {
                     return item.itemCode === that.warrantyItemCode;
                 })
                 var oSrlNumModel = new JSONModel();
@@ -4443,11 +4507,11 @@ sap.ui.define([
                     return false;
                 }
             },
-            checkWarrantyItem: function(flag){
-                if(flag.includes("YEAR")){
+            checkWarrantyItem: function (flag) {
+                if (flag.includes("YEAR")) {
                     return false;
                 }
-                else{
+                else {
                     return true;
                 }
 
@@ -4814,6 +4878,26 @@ sap.ui.define([
 
                 //     }
                 // }
+                var serialNumberTable = sap.ui.getCore().byId("idSerNumber");
+                var aserialNumberItems = serialNumberTable.getItems();
+                aserialNumberItems.forEach(function (oItem) {
+
+                    oItem.getCells().forEach(function (oCell) {
+                        // Only set editable for controls that support it (like Input, ComboBox, DatePicker, etc.)
+
+                        if (oCell.setEditable) {
+                            if (selIndexData.WarrantyType === "E" || selIndexData.WarrantyType === "A") {
+                                oCell.setEditable(false);
+                                sap.ui.getCore().byId("saveSerialNumberBtn").setEnabled(false);
+                            }
+                            else {
+                                oCell.setEditable(true);
+                                sap.ui.getCore().byId("saveSerialNumberBtn").setEnabled(true);
+                            }
+
+                        }
+                    });
+                });
                 this._addSerialNumberDialog.open();
             },
             handleAddWorkOrder: function (tableId) {
