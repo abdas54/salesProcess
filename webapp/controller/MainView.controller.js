@@ -3309,8 +3309,8 @@ sap.ui.define([
                         "VatPercent": tableData[count].VatPercent,
                         "HomeDelivery": tableData[count].HomeDelivery ? "X" : "",
                         "WarrantyType": tableData[count].WarrantyType ? tableData[count].WarrantyType : "",
-                        "WarrantyTransactionId": tableData[count].WarrantyTransactionId ? tableData[count].WarrantyTransactionId : "",
-                        "WarrantyTransactionItem": tableData[count].WarrantyTransactionItem ? tableData[count].WarrantyTransactionItem : "",
+                        "WarrantyTransactionId": tableData[count].WarrantyTransactionId ? tableData[count].WarrantyTransactionId.toString() : "",
+                        "WarrantyTransactionItem": tableData[count].WarrantyTransactionItem ? tableData[count].WarrantyTransactionItem.toString() : "",
 
                     })
                 }
