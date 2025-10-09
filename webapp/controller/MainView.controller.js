@@ -169,7 +169,7 @@ sap.ui.define([
                         oView.byId("lblPercent").setVisible(true);
                         oView.byId("lblWarrantyPrice").setVisible(true);
                         oView.byId("idWarrantyPrice").setVisible(true);
-                        var warrantyAmount = parseFloat(parseFloat(oProduct.UnitPrice) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
+                        var warrantyAmount = parseFloat((parseFloat(oProduct.UnitPrice) + parseFloat(oProduct.Discount)) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
                         oView.byId("idWarrantyPrice").setText(warrantyAmount);
 
                     }
@@ -202,7 +202,7 @@ sap.ui.define([
                     oView.byId("lblPercent").setVisible(true);
                     oView.byId("lblWarrantyPrice").setVisible(true);
                     oView.byId("idWarrantyPrice").setVisible(true);
-                    var warrantyAmount = parseFloat(parseFloat(oProduct.UnitPrice) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
+                    var warrantyAmount = parseFloat((parseFloat(oProduct.UnitPrice) + parseFloat(oProduct.Discount)) * parseFloat(oMatch.WarrantyPercent) / 100).toFixed(2);
                     oView.byId("idWarrantyPrice").setText(warrantyAmount);
                 }
             },
