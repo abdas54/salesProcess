@@ -112,11 +112,11 @@ sap.ui.define([
                 });
             },
             onWarrantyTypeSelect: function (oEvent) {
-                var sKey ;
-                if(oEvent.getParameter("item")){
-                   sKey =  oEvent.getParameter("item").getKey();
+                var sKey;
+                if (oEvent.getParameter("item")) {
+                    sKey = oEvent.getParameter("item").getKey();
                 }
-                else{
+                else {
                     sKey = "E";
                 }
                 this.selectedWarrantyType = sKey;
@@ -1492,9 +1492,10 @@ sap.ui.define([
                 var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
                 var aFilters = [];
                 var bflag = this.validateWarranty(aProducts, mainMatId, that.selectedWarrantyType);
+                var bcheckWarrantySerial = this.checkWarrantySerialsExist(serialNumber, that.selectedWarrantyType);
                 aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, warrantyMatId));
 
-                if (bflag) {
+                if (bflag && bcheckWarrantySerial) {
                     this.oModel.read("/MaterialSet", {
                         urlParameters: {
                             "$expand": "ToDiscounts"
@@ -1543,7 +1544,8 @@ sap.ui.define([
                                         that.serialNumbers.push({
                                             itemCode: warrantyMatId,
                                             seq: tableData[counter].Seq,
-                                            serialNumber: serialNumber
+                                            serialNumber: serialNumber,
+                                            warrantyType: that.selectedWarrantyType
                                         })
                                     }
                                 }
@@ -1571,9 +1573,29 @@ sap.ui.define([
 
                         }
                     });
+                } else {
+                    if (!bflag) {
+                        sap.m.MessageToast.show("All required warranty type has been added");
+                    }
+                    else if (!bcheckWarrantySerial) {
+                        sap.m.MessageToast.show("Selected Serial Number has been already added with existing warranty type");
+                    }
                 }
 
 
+            },
+            checkWarrantySerialsExist: function (sSerialNumber, sWarrantyType) {
+                var aSerials = this.serialNumbers || [];
+                var oMatch = aSerials.find(function (obj) {
+                    return obj.serialNumber === sSerialNumber && obj.warrantyType === sWarrantyType;
+                });
+                if (oMatch) {
+
+                    return false;
+                } else {
+
+                    return true;
+                }
             },
             validateWarranty: function (aProducts, sItemCode, selectedWarrantyType) {
                 var oRecord = aProducts.find(obj => obj.Itemcode === sItemCode);
@@ -1606,7 +1628,7 @@ sap.ui.define([
                             return true;
                         }
                         else {
-                            sap.m.MessageToast.show("Already for " + sItemCode + " required warranty type has been added");
+
                             return false;
                         }
 
@@ -1616,7 +1638,7 @@ sap.ui.define([
                             return true;
                         }
                         else {
-                            sap.m.MessageToast.show("Already for " + sItemCode + " required warranty type has been added");
+
                             return false;
                         }
 
@@ -5011,7 +5033,8 @@ sap.ui.define([
                         this.serialNumbers.push({
                             "itemCode": this.serialItemCode,
                             "serialNumber": oTable[i].getAggregation("cells")[0].getProperty("value"),
-                            "seq": this.serialTransItem
+                            "seq": this.serialTransItem,
+                            "warrantyType": ""
                         });
                     }
                     else {
