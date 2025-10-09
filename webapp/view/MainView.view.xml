@@ -138,9 +138,12 @@
                                         </Switch>
                                         <ObjectIdentifier title="{ProductModel>Location}" text="{ProductModel>LocationName}"/>
                                         <HBox>
-                                            <Button type="Transparent" icon="sap-icon://sys-minus" press="onSubtract" />
-                                            <Input type="Number" value="{ProductModel>SaleQuantity}" change="onManualChangeQty"/>
-                                            <Button type="Transparent" icon="sap-icon://add" press="onAddition"/>
+                                            <Button type="Transparent" icon="sap-icon://sys-minus" press="onSubtract" 
+                                            enabled="{parts: [{path: 'ProductModel>WarrantyType'}], formatter: '.checkWarrantyItem'}"/>
+                                            <Input type="Number" value="{ProductModel>SaleQuantity}" change="onManualChangeQty"
+                                            enabled="{parts: [{path: 'ProductModel>WarrantyType'}], formatter: '.checkWarrantyItem'}"/>
+                                            <Button type="Transparent" icon="sap-icon://add" press="onAddition"
+                                            enabled="{parts: [{path: 'ProductModel>WarrantyType'}], formatter: '.checkWarrantyItem'}"/>
                                         </HBox>
                                         <ObjectNumber number="{ProductModel>UnitPrice}" unit="{ProductModel>Currency}" class="sapUiSmallMarginTop"/>
                                         <ObjectNumber number="{ProductModel>Discount}" unit="{ProductModel>Currency}" class="sapUiSmallMarginTop"/>
