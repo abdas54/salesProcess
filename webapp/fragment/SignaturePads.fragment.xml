@@ -15,7 +15,7 @@
         <html:canvas id="signatureCanvas1" width="450" height="200"
                      style="border:1px solid #000; touch-action: none;">
         </html:canvas>
-        <HBox>
+        <HBox justifyContent="SpaceBetween">
             <Button text="Clear" press="onClearSignature" class="sapUiTinySmallMarginTop cstmBtn" />
             <Button text="Submit" press="onSaveSignature" class="sapUiTinySmallMarginTop cstmBtn" />
         </HBox>

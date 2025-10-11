@@ -212,6 +212,7 @@ sap.ui.define([
                     success: function (oData) {
                         that.storeID = oData.results[0] ? oData.results[0].Store : "";
                         that.plantID = oData.results[0] ? oData.results[0].Plant : "";
+                        that.printerIP = oData.results[0] ? oData.results[0].PrinterIp1 : "";
                         that.onPressPayments();
                     },
                     error: function (oError) {
@@ -3865,7 +3866,7 @@ sap.ui.define([
                 //var ip = this.getView().byId("ipaddr").getValue();
                 // var wdth = this.getView().byId("wdth").getValue();
                 // var ht = this.getView().byId("heht").getValue();
-
+                printerIp = this.printerIP;
                 ePosDev.connect(printerIp, 8043, function (resultConnect) {
                     if (resultConnect === "OK" || resultConnect == "SSL_CONNECT_OK") {
                         ePosDev.createDevice("local_printer", ePosDev.DEVICE_TYPE_PRINTER,
