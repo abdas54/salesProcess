@@ -3521,6 +3521,7 @@ sap.ui.define([
                 var shippingMode = this.checkHomeDelivery();
                 var custData = this.getView().getModel("custAddModel").getData();
                 var contactNumber = "";
+               
                 custData.Code ? custData.Code : "" + custData.Mobile ? custData.Mobile : ""
                 if (custData.Code) {
                     contactNumber = contactNumber + custData.Code;
@@ -3547,6 +3548,8 @@ sap.ui.define([
                     mode = "3"; // suspended
                 }
                 var that = this;
+
+
                 var oPayload = {
                     "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
                     "TransactionDate": new Date(),//new Date().toISOString().slice(0, 10).replace(/-/g, ''),
@@ -3584,7 +3587,8 @@ sap.ui.define([
                     "ToSerials": { "results": this.oPayloadSerialNumber() },
                     "ToSignature": { "results": this.oPaySignatureload ? this.oPaySignatureload : [] },
                     "Remarks": this.suspendComments,
-                    "ToBankEMI": { "results": this.emiList }
+                    "ToBankEMI": { "results": this.emiList },
+                    "PlanetDocuments": that.planetFlag
                     // "ToPayments" : {"results" : this.oPayloadTablePayments()}
                 }
                 this.getView().setBusy(true);
@@ -5176,6 +5180,11 @@ sap.ui.define([
                         width: "60%"
                     }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom inputStyle");
 
+                    this._oSelectCardNumber = new sap.m.Input({
+                        placeholder: "Enter Card Number",
+                        width: "60%"
+                    }).addStyleClass("sapUiSmallMarginBegin  sapUiTinyMarginTop sapUiSmallMarginBottom inputStyle");
+
                     this._oSelectCardApproval = new sap.m.Input({
                         placeholder: "Enter Approval Code",
                         width: "60%"
@@ -5190,6 +5199,7 @@ sap.ui.define([
                     this._oDialogCardType.addContent(this._oSelectCardLabel);
                     this._oDialogCardType.addContent(this._oSelectCardApproval);
                     this._oDialogCardType.addContent(this._oSelectCardReciept);
+                    this._oDialogCardType.addContent(this._oSelectCardNumber);
                     this.getView().addDependent(this._oDialogCardType);
                 }
 
@@ -5198,6 +5208,7 @@ sap.ui.define([
                 this._oSelectCardLabel.setValue("");
                 this._oSelectCardApproval.setValue("");
                 this._oSelectCardReciept.setValue("");
+                this._oSelectCardNumber.setValue("");
 
                 this._oDialogCardType.open();
                 // sap.ui.getCore().byId("manCardAmount").setValue("");
@@ -5268,6 +5279,7 @@ sap.ui.define([
                 var sCardLabel = that._oSelectCardLabel.getValue();
                 var sCardApproval = that._oSelectCardApproval.getValue();
                 var sCardReciept = that._oSelectCardReciept.getValue();
+                var sCardNumber = that._oSelectCardNumber.getValue();
                 that.paymentEntSourceCounter = that.paymentEntSourceCounter + 1;
                 that.paymentId = that.paymentId + 1;
 
@@ -5299,10 +5311,10 @@ sap.ui.define([
                     "Tid": "",
                     "Mid": "",
                     "CardType": "",
-                    "CardLabel": "",
-                    "CardNumber": "",
-                    "AuthorizationCode": "",
-                    "CardReceiptNo": "",
+                    "CardLabel": sCardLabel,
+                    "CardNumber": sCardNumber,
+                    "AuthorizationCode": sCardApproval,
+                    "CardReceiptNo": sCardReciept,
                     "PaymentType": "CARD",
                     "VoucherNumber": "",
                     "SourceId": "",
@@ -6390,9 +6402,29 @@ sap.ui.define([
 
 
                 that._pAddRecordDialog.setBusy(true);
-                setTimeout(function () {
+                if (that.getView().getModel("custAddModel").getData().CustomerType === "TOURIST" && parseFloat(that.getView().byId("saleAmount").getCount().toString()) >= 250) {
+                    sap.m.MessageBox.show("Do you have Passport / any ID ", {
+                        icon: sap.m.MessageBox.Icon.INFORMATION,
+                        title: "Planet Integration",
+                        actions: ["Yes", "No"],  // Custom actions!
+                        emphasizedAction: "OK",     // Highlights the OK button
+                        onClose: function (oAction) {
+                            if (oAction === "Yes") {
+                                that.planetFlag = "X";
+                                that.onPressPayment(true);
+
+                            } else {
+                                that.planetFlag = "";
+                                that.onPressPayment(true);
+                            }
+                        }
+                    });
+                }
+                else{
+                    that.planetFlag = "";
                     that.onPressPayment(true);
-                }, 1000)
+                }
+
             },
             getEventPosition: function (e, canvas) {
                 let x, y;
