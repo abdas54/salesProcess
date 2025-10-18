@@ -3521,7 +3521,7 @@ sap.ui.define([
                 var shippingMode = this.checkHomeDelivery();
                 var custData = this.getView().getModel("custAddModel").getData();
                 var contactNumber = "";
-               
+
                 custData.Code ? custData.Code : "" + custData.Mobile ? custData.Mobile : ""
                 if (custData.Code) {
                     contactNumber = contactNumber + custData.Code;
@@ -4027,9 +4027,14 @@ sap.ui.define([
                                 columns: 1,
                                 selectedIndex: 0, // default selection (AANI)
                                 buttons: [
+                                    new sap.m.RadioButton({ text: "Card Payment" }),
                                     new sap.m.RadioButton({ text: "AANI" }),
                                     new sap.m.RadioButton({ text: "NPCI" }),
-                                    new sap.m.RadioButton({ text: "Card Payment" })
+                                    new sap.m.RadioButton({ text: "ADCB Touch Points" }),
+                                    new sap.m.RadioButton({ text: "TAMARA" }),
+                                    new sap.m.RadioButton({ text: "TABBY" })
+
+
                                 ]
                             })
                         ],
@@ -4071,12 +4076,44 @@ sap.ui.define([
             initiateTransaction: function (termID, machID, type) {
                 var that = this;
                 var transType = "";
+                var PaymentType = "";
+                var PaymentMethodName = "";
+                var PaymentMethod = ""; 
+
                 if (type === "AANI") {
                     transType = "pushPaymentIppSale";
+                    PaymentType = "AANI";
+                    PaymentMethodName = "AANI";
+                    PaymentMethod = "997";
+
                 } else if (type === "NPCI") {
                     transType = "pushPaymentNpciQRSale";
+                    PaymentType = "NPCI";
+                    PaymentMethodName = "NPCI";
+                    PaymentMethod = "996";
+                }
+                else if (type === "ADCB Touch Points") {
+                    transType = "pushPaymentTouchPointsRedeem";
+                    PaymentType = "ADCB TOUCH POINTS";
+                    PaymentMethodName ="ADCB Touch Redemption";
+                    PaymentMethod = "001";
+                }
+                else if (type === "TAMARA") {
+                    transType = "pushPaymentTAMARA";
+                    PaymentType = "TAMARA";
+                    PaymentMethodName ="TAMARA";
+                    PaymentMethod = "060";
+                }
+                else if (type === "TABBY") {
+                    transType = "pushPaymentTABBY";
+                    PaymentType = "TABBY";
+                    PaymentMethodName="TABBY";
+                    PaymentMethod = "040";
                 } else {
                     transType = "pushPaymentSale";
+                    PaymentType = "CARD";
+                    PaymentMethodName="";
+                    PaymentMethod = "";
                 }
 
                 sap.ui.core.BusyIndicator.show();
@@ -4106,8 +4143,8 @@ sap.ui.define([
                             "PaymentDate": new Date(),
                             "Amount": oData.Amount,
                             "Currency": "AED",
-                            "PaymentMethod": "",
-                            "PaymentMethodName": "Card",
+                            "PaymentMethod": PaymentMethod,
+                            "PaymentMethodName": PaymentMethodName,
                             "Tid": oData.Tid,
                             "Mid": oData.Mid,
                             "CardType": oData.CardType,
@@ -4115,7 +4152,7 @@ sap.ui.define([
                             "CardNumber": oData.CardNumber,
                             "AuthorizationCode": oData.AuthorizationCode,
                             "CardReceiptNo": oData.CardReceiptNo,
-                            "PaymentType": "CARD",
+                            "PaymentType": PaymentType,
                             "VoucherNumber": "",
                             "ChangeAmount": "0.00",
                             "SourceId": that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
@@ -6420,7 +6457,7 @@ sap.ui.define([
                         }
                     });
                 }
-                else{
+                else {
                     that.planetFlag = "";
                     that.onPressPayment(true);
                 }
