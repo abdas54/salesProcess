@@ -208,11 +208,14 @@ sap.ui.define([
             },
             validateLoggedInUser: function () {
                 var that = this;
+                that.printerIP = [];
                 this.oModel.read("/StoreIDSet", {
                     success: function (oData) {
                         that.storeID = oData.results[0] ? oData.results[0].Store : "";
                         that.plantID = oData.results[0] ? oData.results[0].Plant : "";
-                        that.printerIP = oData.results[0] ? oData.results[0].PrinterIp1 : "";
+                        that.printerIP.push(oData.results[0] ? oData.results[0].PrinterIp1 ? oData.results[0].PrinterIp1 : "" : "");
+                        that.printerIP.push(oData.results[0] ? oData.results[0].PrinterIp2 ? oData.results[0].PrinterIp2 : "" : "");
+                        that.printerIP.push(oData.results[0] ? oData.results[0].PrinterIp3 ? oData.results[0].PrinterIp3 : "" : "");
                         that.onPressPayments();
                     },
                     error: function (oError) {
@@ -233,66 +236,68 @@ sap.ui.define([
                 this.getMaterialDetail(true, oEvent.getParameter("value"));
             },
             getMaterialDetail: function (flag, matCode, data, promo, promoData) {
-                var aFilters = [];
+                var that = this;
 
-                aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, matCode));
-                if (data !== "") {
-                    aFilters.push(new sap.ui.model.Filter("Plant", sap.ui.model.FilterOperator.EQ, data.getProperty("Plant")));
-                    aFilters.push(new sap.ui.model.Filter("Location", sap.ui.model.FilterOperator.EQ, data.getProperty("Location")));
-                }
+                return new Promise(function (resolve, reject) {
+                    var aFilters = [];
+                    aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, matCode));
+                    if (data !== "") {
+                        aFilters.push(new sap.ui.model.Filter("Plant", sap.ui.model.FilterOperator.EQ, data.getProperty("Plant")));
+                        aFilters.push(new sap.ui.model.Filter("Location", sap.ui.model.FilterOperator.EQ, data.getProperty("Location")));
+                    }
+                    that.oModel.read("/MaterialSet", {
+                        urlParameters: {
+                            "$expand": "ToDiscounts"
+                        },
+                        filters: aFilters,
+                        success: async function (oData) {
+                            if (oData.results.length > 0) {
+                                oData.results[0].SaleQuantity = 1;
+                                oData.results[0].HomeDelivery = false;
+                                oData.results[0].NetAmount = oData.results[0].GrossPrice;
+                                oData.results[0].Seq = "";
+                                oData.results[0].SalesmanId = "";
+                                oData.results[0].SalesmanName = "";
+                                await that.reservedItemOwnLocation(oData.results, promo, promoData);
 
 
-                this.oModel.read("/MaterialSet", {
-                    urlParameters: {
-                        "$expand": "ToDiscounts"
-                    },
-                    filters: aFilters,
-                    success: function (oData) {
-                        if (oData.results.length > 0) {
-                            oData.results[0].SaleQuantity = 1;
-                            oData.results[0].HomeDelivery = false;
-                            oData.results[0].NetAmount = oData.results[0].GrossPrice;
-                            oData.results[0].Seq = "";
-                            oData.results[0].SalesmanId = "";
-                            oData.results[0].SalesmanName = "";
-                            that.reservedItemOwnLocation(oData.results, promo, promoData);
+                            }
+                            resolve();
+                        },
+                        error: function (oError) {
+                            reject(oError);
+                            aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "X"));
+                            if (JSON.parse(oError.responseText).error.message.code === "MATERIAL_CHECK") {
+                                sap.m.MessageBox.show(
+                                    "Item is not available at this store location. Do you want to check other locations?", {
+                                    icon: sap.m.MessageBox.Icon.INFORMATION,
+                                    title: "Availability Check",
+                                    actions: ["OK", "CANCEL"],
+                                    onClose: function (oAction) {
+                                        if (oAction === "OK") {
+                                            that.getMaterialAllLocation(aFilters);
+                                        } else {
 
-
-                        }
-
-                    },
-                    error: function (oError) {
-                        aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "X"));
-                        if (JSON.parse(oError.responseText).error.message.code === "MATERIAL_CHECK") {
-                            sap.m.MessageBox.show(
-                                "Item is not available at this store location. Do you want to check other locations?", {
-                                icon: sap.m.MessageBox.Icon.INFORMATION,
-                                title: "Availability Check",
-                                actions: ["OK", "CANCEL"],
-                                onClose: function (oAction) {
-                                    if (oAction === "OK") {
-                                        that.getMaterialAllLocation(aFilters);
-                                    } else {
+                                        }
+                                    }
+                                }
+                                );
+                            }
+                            else {
+                                sap.m.MessageBox.show(
+                                    JSON.parse(oError.responseText).error.message.value, {
+                                    icon: sap.m.MessageBox.Icon.Error,
+                                    title: "Error",
+                                    actions: ["OK", "CANCEL"],
+                                    onClose: function (oAction) {
 
                                     }
                                 }
+                                );
                             }
-                            );
-                        }
-                        else {
-                            sap.m.MessageBox.show(
-                                JSON.parse(oError.responseText).error.message.value, {
-                                icon: sap.m.MessageBox.Icon.Error,
-                                title: "Error",
-                                actions: ["OK", "CANCEL"],
-                                onClose: function (oAction) {
 
-                                }
-                            }
-                            );
                         }
-
-                    }
+                    });
                 });
             },
             getMaterialAllLocation: function (aFilters) {
@@ -1493,7 +1498,11 @@ sap.ui.define([
                 var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
                 var aFilters = [];
                 var bflag = this.validateWarranty(aProducts, mainMatId, that.selectedWarrantyType);
+                var oRecord = aProducts.find(obj => obj.Itemcode === mainMatId);
                 var bcheckWarrantySerial = this.checkWarrantySerialsExist(serialNumber, that.selectedWarrantyType);
+                if (oRecord.SerialFlag === "") {
+                    bcheckWarrantySerial = true;
+                }
                 aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, warrantyMatId));
 
                 if (bflag && bcheckWarrantySerial) {
@@ -1516,7 +1525,13 @@ sap.ui.define([
                                 oData.results[0].WarrantyType = that.selectedWarrantyType;
                                 oData.results[0].WarrantyTransactionId = that.getView().byId("tranNumber").getCount();
                                 oData.results[0].WarrantyTransactionItem = that.warrantyTransItem;
-                                oData.results[0].SerialFlag = "X";
+                                if (oRecord.SerialFlag === "") {
+                                    oData.results[0].SerialFlag = "";
+                                }
+                                else {
+                                    oData.results[0].SerialFlag = "Y";
+                                }
+
                                 var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
                                 var bFlag = false;
                                 for (var count = 0; count < tableData.length; count++) {
@@ -1539,15 +1554,16 @@ sap.ui.define([
                                     aProducts.push(...oData.results);
                                 }
                                 that.updateSeq(aProducts);
-
-                                for (var counter = 0; counter < tableData.length; counter++) {
-                                    if ((tableData[counter].Itemcode === warrantyMatId)) {
-                                        that.serialNumbers.push({
-                                            itemCode: warrantyMatId,
-                                            seq: tableData[counter].Seq,
-                                            serialNumber: serialNumber,
-                                            warrantyType: that.selectedWarrantyType
-                                        })
+                                if (oRecord.SerialFlag === "Y") {
+                                    for (var counter = 0; counter < tableData.length; counter++) {
+                                        if ((tableData[counter].Itemcode === warrantyMatId) && (tableData[counter].Description) === "Warranty for " + mainMatId) {
+                                            that.serialNumbers.push({
+                                                itemCode: warrantyMatId,
+                                                seq: tableData[counter].Seq,
+                                                serialNumber: serialNumber,
+                                                warrantyType: that.selectedWarrantyType
+                                            })
+                                        }
                                     }
                                 }
                                 that.getView().getModel("ProductModel").refresh(true);
@@ -2996,95 +3012,98 @@ sap.ui.define([
             },
             reservedItemOwnLocation: function (data, promo, promoData) {
                 var that = this;
-                var oPayload = {
-                    "TransactionId": this.getView().byId("tranNumber").getCount(),
-                    "ReservedFlag": "I",
-                    "Material": data[0].Itemcode,
-                    "Plant": data[0].Plant,
-                    "Location": data[0].Location,
-                    "Quantity": data[0].SaleQuantity.toString(),
-                    "ReservationNo": "",
-                    "Type": "",
-                    "Status": ""
+                return new Promise(function (resolve, reject) {
+                    var oPayload = {
+                        "TransactionId": that.getView().byId("tranNumber").getCount(),
+                        "ReservedFlag": "I",
+                        "Material": data[0].Itemcode,
+                        "Plant": data[0].Plant,
+                        "Location": data[0].Location,
+                        "Quantity": data[0].SaleQuantity.toString(),
+                        "ReservationNo": "",
+                        "Type": "",
+                        "Status": ""
 
-                }
-                var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
-                for (var counter = 0; counter < tableData.length; counter++) {
-                    if ((tableData[counter].Itemcode === data[0].Itemcode) && (tableData[counter].Location === data[0].Location)) {
-                        oPayload.Quantity = (parseInt(tableData[counter].SaleQuantity) + 1).toString();
                     }
-                }
+                    var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
+                    for (var counter = 0; counter < tableData.length; counter++) {
+                        if ((tableData[counter].Itemcode === data[0].Itemcode) && (tableData[counter].Location === data[0].Location)) {
+                            oPayload.Quantity = (parseInt(tableData[counter].SaleQuantity) + 1).toString();
+                        }
+                    }
 
-                this.oModel.create("/ReservationSet", oPayload, {
-                    success: function (oData) {
+                    that.oModel.create("/ReservationSet", oPayload, {
+                        success: function (oData) {
 
-                        var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
-                        var bFlag = false;
-                        for (var count = 0; count < tableData.length; count++) {
+                            var tableData = that.getView().getModel("ProductModel").getProperty("/Product");
+                            var bFlag = false;
+                            for (var count = 0; count < tableData.length; count++) {
 
-                            if ((tableData[count].Itemcode === data[0].Itemcode) && (tableData[count].Location === data[0].Location)) {
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
-                                that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].Discount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                if ((tableData[count].Itemcode === data[0].Itemcode) && (tableData[count].Location === data[0].Location)) {
+                                    that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
+                                    that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                    that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].Discount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
+                                    that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
+
+                                    var netAmount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetAmount");
+                                    var netDiscount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetDiscount");
+                                    var vatPercent = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/VatPercent");
+                                    that.calculateVATAmount(netAmount, netDiscount, vatPercent, count);
+                                    that.calculateSalesAmount(netAmount, netDiscount, vatPercent, count);
+                                    bFlag = true;
+                                }
+                            }
+                            if (!bFlag) {
+                                var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
+                                if (promo) {
+                                    data[0].ToDiscounts.results.push({
+                                        "ConditionAmount": that.promoAmount,
+                                        "ConditionId": that.retrieveConditionId(data[0]),
+                                        "ConditionName": that.promoCondName,
+                                        "ConditionType": that.convertPromotionCode(that.promoCondType),
+                                        "Currency": "AED",
+                                        "DiscountType": "M",
+                                        "ItemCode": data[0].Itemcode,
+                                        "ModifierType": "D",
+                                        "Remarks": "Promotional Discount",
+                                        "Authority": ""
+
+                                    })
+                                }
+                                aProducts.push(...data);
+                                if (promo) {
+
+                                    that.updateProductTable(aProducts.length - 1, data[0], promoData, promo);
+                                }
+                                that.updateSeq(aProducts);
+                                that.checkEnableDisableTile(true);
+                                //that.getView().getModel("ProductModel").setProperty("/Product", aProducts);
                                 that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
 
-                                var netAmount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetAmount");
-                                var netDiscount = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/NetDiscount");
-                                var vatPercent = that.getView().getModel("ProductModel").getProperty("/Product/" + count + "/VatPercent");
-                                that.calculateVATAmount(netAmount, netDiscount, vatPercent, count);
-                                that.calculateSalesAmount(netAmount, netDiscount, vatPercent, count);
-                                bFlag = true;
-                            }
-                        }
-                        if (!bFlag) {
-                            var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
-                            if (promo) {
-                                data[0].ToDiscounts.results.push({
-                                    "ConditionAmount": that.promoAmount,
-                                    "ConditionId": that.retrieveConditionId(data[0]),
-                                    "ConditionName": that.promoCondName,
-                                    "ConditionType": that.convertPromotionCode(that.promoCondType),
-                                    "Currency": "AED",
-                                    "DiscountType": "M",
-                                    "ItemCode": data[0].Itemcode,
-                                    "ModifierType": "D",
-                                    "Remarks": "Promotional Discount",
-                                    "Authority": ""
+                                that.backupProdArr.push({
+                                    "MatCode": data[0].Itemcode,
+                                    "LocId": data[0].Location,
+                                    "LocName": data[0].LocationName
 
                                 })
                             }
-                            aProducts.push(...data);
-                            if (promo) {
+                            resolve();
+                        },
+                        error: function (oError) {
+                            reject(oError);
+                            sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                                icon: sap.m.MessageBox.Icon.Error,
+                                title: "Error",
+                                actions: [MessageBox.Action.OK],
+                                onClose: function (oAction) {
+                                    if (oAction === MessageBox.Action.OK) {
 
-                                that.updateProductTable(aProducts.length - 1, data[0], promoData, promo);
-                            }
-                            that.updateSeq(aProducts);
-                            that.checkEnableDisableTile(true);
-                            //that.getView().getModel("ProductModel").setProperty("/Product", aProducts);
-                            that.getView().getModel("ProductModel").setProperty("/MaterialCode", "");
-
-                            that.backupProdArr.push({
-                                "MatCode": data[0].Itemcode,
-                                "LocId": data[0].Location,
-                                "LocName": data[0].LocationName
-
-                            })
-                        }
-                    },
-                    error: function (oError) {
-
-                        sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
-                            icon: sap.m.MessageBox.Icon.Error,
-                            title: "Error",
-                            actions: [MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                if (oAction === MessageBox.Action.OK) {
-
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                    }
+                        }
+                    });
                 });
             },
             convertPromotionCode: function (sCode) {
@@ -3619,9 +3638,10 @@ sap.ui.define([
 
                                     MessageBox.success("Transaction Posted Successfully.", {
                                         onClose: function (sAction) {
-                                            for (var count = 1; count <= 2; count++) {
-                                                that.getPDFBase64(count);
-                                            }
+                                            that.onOpenPrinterDialog();
+                                            // for (var count = 1; count <= 2; count++) {
+                                            //     that.getPDFBase64(count);
+                                            // }
                                             // window.location.reload(true);
 
                                         }
@@ -3643,6 +3663,115 @@ sap.ui.define([
                 });
 
             },
+            onOpenPrinterDialog: function () {
+                var that = this;
+
+                // 1️⃣ Filter out blank IP addresses
+                var aValidIPs = (that.printerIP || []).filter(function (ip) {
+                    return ip && ip.trim() !== "";
+                });
+
+                if (aValidIPs.length === 0) {
+                    sap.m.MessageToast.show("No valid printer IPs found.");
+                    return;
+                }
+
+                // 2️⃣ Create JSON Model for GridList
+                var oIPModel = new sap.ui.model.json.JSONModel({
+                    IPs: aValidIPs.map(function (ip) {
+                        return { IP: ip };
+                    })
+                });
+                var oSignBox = sap.ui.core.Fragment.byId("SignaturePad", "signBox");
+                oSignBox.setVisible(false);
+                var ipBox = sap.ui.core.Fragment.byId("SignaturePad", "ipBox");
+                ipBox.setVisible(true);
+                this._pAddRecordDialog.setModel(oIPModel, "IPModel");
+
+            },
+            onPressIP: function (oEvent) {
+                var that = this;
+                var oItem = oEvent.getParameter("listItem") || oEvent.getSource();
+                var oVBox = oItem.getContent ? oItem.getContent()[0] : oItem.getAggregation("content")[0];
+                var aItems = oVBox.getItems ? oVBox.getItems() : oVBox.getAggregation("items");
+                this.printIP = aItems[0]?.getText();
+                var tranNumber = this.getView().byId("tranNumber").getCount().toString();
+                var sPath = "/PrintPDFSet(TransactionId='" + tranNumber + "',PDFType='A')";
+                this.oModel.read(sPath, {
+                    urlParameters: { "$expand": "ToPDFList" },
+                    success: async function (oData) {
+                        that.aPrintBase64 = oData.ToPDFList.results;
+                        var aResults = oData.ToPDFList.results;
+
+                        var oPrintBox = sap.ui.core.Fragment.byId("SignaturePad", "printBox");
+                        oPrintBox.setVisible(true);
+                        var oHtmlControl = sap.ui.core.Fragment.byId("SignaturePad", "pdfCanvas");
+                        var iframeContent = '<div id="pdf-viewport"></div>';
+                        oHtmlControl.setContent(iframeContent);
+                        oHtmlControl.invalidate(); // force re-render
+                        sap.ui.getCore().applyChanges(); // immediately render changes
+                        oHtmlControl.setVisible(true);
+                        const pdfContainer = document.getElementById("pdf-viewport");
+                        console.log("PDF container:", pdfContainer);
+
+
+
+                        if (aResults && aResults.length > 0) {
+                            // Sort by sequence if needed
+                            aResults.sort((a, b) => parseInt(a.SequenceId) - parseInt(b.SequenceId));
+
+                            for (const oRow of aResults) {
+                                that.showPDF(oRow.Value);
+                            }
+
+
+                        } else {
+                            sap.m.MessageToast.show("No PDF data available.");
+                        }
+
+
+
+                    },
+                    error: function () {
+                        sap.m.MessageToast.show("Error fetching PDF.");
+                    }
+                });
+
+
+            },
+            showPDF: async function (base64Content) {
+
+
+                var byteCharacters = atob(base64Content);
+                var byteNumbers = new Array(byteCharacters.length);
+                for (var i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                var byteArray = new Uint8Array(byteNumbers);
+                var blob = new Blob([byteArray], {
+                    type: 'application/pdf'
+                });
+                var pdfUrl = URL.createObjectURL(blob);
+                try {
+                    const canvas = await this.loadPdfToCanvas(pdfUrl);
+                    this.canvasp = canvas;
+
+                } catch (err) {
+                    MessageBox.error("Error rendering or printing PDF: " + err.message);
+                }
+
+                var oPrintBox = sap.ui.core.Fragment.byId("SignaturePad", "printBox");
+                oPrintBox.setVisible(true);
+
+                var oSignBox = sap.ui.core.Fragment.byId("SignaturePad", "signBox");
+                oSignBox.setVisible(false);
+
+                var ipBox = sap.ui.core.Fragment.byId("SignaturePad", "ipBox");
+                ipBox.setVisible(false);
+
+            },
+
+
             getPDFBase64: function (count) {
                 var that = this;
                 var tranNumber = this.getView().byId("tranNumber").getCount().toString();
@@ -3653,7 +3782,7 @@ sap.ui.define([
                 xhr.open("GET", sUrl, true);
                 xhr.responseType = "arraybuffer"; // Important to get binary content
 
-                xhr.onload = function () {
+                xhr.onload = async function () {
                     if (xhr.status === 200) {
                         var oHtmlControl = sap.ui.core.Fragment.byId("SignaturePad", "pdfCanvas");
                         var iframeContent = '<div id="pdf-viewport"></div>';
@@ -3676,7 +3805,7 @@ sap.ui.define([
                         var base64 = btoa(binary);
                         console.log("Base64 PDF Content:", base64);
 
-                        that.onShowPDFSEPP(base64, count);
+                        await that.onShowPDFSEPP(base64, count);
 
                     } else {
                         console.error("Failed to fetch PDF. Status: ", xhr.status);
@@ -3713,14 +3842,14 @@ sap.ui.define([
                     this.canvasp = canvas;
                     this.printerIP = printerIp;
 
-                    this.sendToEpsonPrinter(canvas, printerIp, count);
+                    await this.sendToEpsonPrinter(canvas, printerIp, count);
                 } catch (err) {
                     MessageBox.error("Error rendering or printing PDF: " + err.message);
                 }
 
             },
             onPressPrint: function () {
-                this.sendToEpsonPrinter(this.canvasp, this.printerIP);
+                this.sendToEpsonPrinter(this.canvasp, this.printIP);
             },
             isSingleColor: function (imageData) {
                 const stride = 4;
@@ -3865,17 +3994,20 @@ sap.ui.define([
                 }
             },
 
-            sendToEpsonPrinter: function (canvases, printerIp, count) {
+            sendToEpsonPrinter: async function (canvases, printerIp, count) {
                 var ePosDev = new epson.ePOSDevice();
                 //var ip = this.getView().byId("ipaddr").getValue();
                 // var wdth = this.getView().byId("wdth").getValue();
                 // var ht = this.getView().byId("heht").getValue();
-                printerIp = this.printerIP;
+                //printerIp = this.printerIP;
+
+
+                await new Promise((resolve, reject) => {
                 ePosDev.connect(printerIp, 8043, function (resultConnect) {
                     if (resultConnect === "OK" || resultConnect == "SSL_CONNECT_OK") {
                         ePosDev.createDevice("local_printer", ePosDev.DEVICE_TYPE_PRINTER,
                             { crypto: false, buffer: false },
-                            function (deviceObj, resultCreate) {
+                            async function (deviceObj, resultCreate) {
                                 if (resultCreate === "OK") {
                                     var printer = deviceObj;
 
@@ -3889,10 +4021,11 @@ sap.ui.define([
 
 
                                     printer.addCut(printer.CUT_FEED);
-                                    printer.send();
-                                    if (count == 2) {
-                                        window.location.reload(true);
-                                    }
+                                    await printer.send();
+                                    resolve();
+                                    // if (count == 2) {
+                                    //window.location.reload(true);
+                                    // }
                                     // printer.send(function (resultSend) {
                                     //     if (resultSend === "OK") {
                                     //         sap.m.MessageToast.show("Printed successfully!");
@@ -3902,6 +4035,7 @@ sap.ui.define([
                                     // });
                                 } else {
                                     sap.m.MessageBox.error("Failed to create device: " + resultCreate);
+                                    reject(resultCreate);
                                 }
                             }
                         );
@@ -3918,6 +4052,7 @@ sap.ui.define([
                         });
                     }
                 });
+                });
             },
 
             openPlanet: function (url, bflag, transID) {
@@ -3933,9 +4068,9 @@ sap.ui.define([
                         that._pAddRecordDialog.setBusy(false);
 
                         MessageBox.success("Transaction Posted Successfully.", {
-                            onClose: function (sAction) {
+                            onClose: async function (sAction) {
                                 for (var count = 1; count <= 2; count++) {
-                                    that.getPDFBase64(count);
+                                    await that.getPDFBase64(count);
                                 }
 
                                 // window.location.reload(true);
@@ -4078,7 +4213,7 @@ sap.ui.define([
                 var transType = "";
                 var PaymentType = "";
                 var PaymentMethodName = "";
-                var PaymentMethod = ""; 
+                var PaymentMethod = "";
 
                 if (type === "AANI") {
                     transType = "pushPaymentIppSale";
@@ -4095,24 +4230,24 @@ sap.ui.define([
                 else if (type === "ADCB Touch Points") {
                     transType = "pushPaymentTouchPointsRedeem";
                     PaymentType = "ADCB TOUCH POINTS";
-                    PaymentMethodName ="ADCB Touch Redemption";
+                    PaymentMethodName = "ADCB Touch Redemption";
                     PaymentMethod = "001";
                 }
                 else if (type === "TAMARA") {
                     transType = "pushPaymentTAMARA";
                     PaymentType = "TAMARA";
-                    PaymentMethodName ="TAMARA";
+                    PaymentMethodName = "TAMARA";
                     PaymentMethod = "060";
                 }
                 else if (type === "TABBY") {
                     transType = "pushPaymentTABBY";
                     PaymentType = "TABBY";
-                    PaymentMethodName="TABBY";
+                    PaymentMethodName = "TABBY";
                     PaymentMethod = "040";
                 } else {
                     transType = "pushPaymentSale";
                     PaymentType = "CARD";
-                    PaymentMethodName="";
+                    PaymentMethodName = "";
                     PaymentMethod = "";
                 }
 
@@ -4340,6 +4475,7 @@ sap.ui.define([
                 this.getView().byId("paymentsgt").setPressEnabled(bflag);
                 this.getView().byId("suspendgt").setPressEnabled(bflag);
                 this.getView().byId("warrantygt").setPressEnabled(bflag);
+                this.getView().byId("remarksgt").setPressEnabled(bflag);
 
             },
             holdDiscountItem: function (oEvent) {
@@ -4762,7 +4898,7 @@ sap.ui.define([
                 this._oPromotionFragment.close();
 
             },
-            fnApplyPromotion: function () {
+            fnApplyPromotion: async function () {
                 var oTableZPM1 = this.byId("zpm1PromotionTbl");
                 var oTableZPM2 = this.byId("zpm2PromotionTbl");
                 var oModel = this.getView().getModel("PromotionModel");
@@ -4807,16 +4943,25 @@ sap.ui.define([
                         };
                     });
 
-                    aData.forEach(function (oRow) {
+                    // aData.forEach(async function (oRow) {
+                    //     this.bPromoItem = true;
+                    //     this.promoCondName = oRow.ConditionName;
+                    //     this.promoCondType = oRow.ConditionType;
+                    //     this.promoAmount = oRow.Promotion;
+                    //     this.promoEntries = {};
+                    //     this.promoEntries = { "Type": this.promoCondType, "Amount": this.promoAmount };
+                    //     await this.getMaterialDetail(true, oRow.Material, "", this.bPromoItem, this.promoEntries);
+
+                    // }.bind(this));
+                    for (const oRow of aData) {
                         this.bPromoItem = true;
                         this.promoCondName = oRow.ConditionName;
                         this.promoCondType = oRow.ConditionType;
                         this.promoAmount = oRow.Promotion;
-                        this.promoEntries = {};
                         this.promoEntries = { "Type": this.promoCondType, "Amount": this.promoAmount };
-                        this.getMaterialDetail(true, oRow.Material, "", this.bPromoItem, this.promoEntries);
 
-                    }.bind(this));
+                        await this.getMaterialDetail(true, oRow.Material, "", this.bPromoItem, this.promoEntries);
+                    }
                     this._oPromotionFragment.close();
                     return;
                 }
@@ -4965,7 +5110,7 @@ sap.ui.define([
                 );
 
                 var aExistingSerials = this.serialNumbers.filter(function (item) {
-                    return item.itemCode === that.serialItemCode;
+                    return item.itemCode === that.serialItemCode && item.seq === selIndexData.Seq;
                 });
                 var aRows = [];
                 if (aExistingSerials.length > 0) {
@@ -6629,7 +6774,20 @@ sap.ui.define([
                 }
                 var oPrintBox = sap.ui.core.Fragment.byId("SignaturePad", "printBox");
                 oPrintBox.setVisible(false);
+
+
                 this._pAddRecordDialog.open();
+                this._pAddRecordDialog.attachAfterOpen(() => {
+                    var oHtmlControl = sap.ui.core.Fragment.byId("SignaturePad", "pdfCanvas");
+                    oHtmlControl.setContent('<div id="pdf-viewport"></div>');
+                    oHtmlControl.setVisible(true);
+
+                    setTimeout(() => {
+                        const pdfContainer = document.getElementById("pdf-viewport");
+                        console.log("PDF container after open:", pdfContainer);
+                        // you can render PDF now
+                    }, 100);
+                });
             },
             resolveTimeDifference: function (dateTime) {
 
@@ -6650,7 +6808,55 @@ sap.ui.define([
 
                 return null;
 
+            },
+            onPressRemarks: function () {
+                if (!this._oDialog) {
+                    this._oDialog = new sap.m.Dialog({
+                        title: "Enter Remarks",
+                        type: "Message",
+                        content: [
+                            new sap.m.VBox({
+                                items: [
+                                    new sap.m.Label({ text: "Remarks", labelFor: "remarksTextArea" }),
+                                    new sap.m.TextArea("remarksTextArea", {
+                                        width: "100%",
+                                        rows : 6,
+                                        placeholder: "Enter your remarks here...",
+                                        liveChange: function (oEvent) {
+                                            var sValue = oEvent.getParameter("value").trim();
+                                            var oSubmitButton = sap.ui.getCore().byId("submitBtn");
+                                            oSubmitButton.setEnabled(sValue.length > 0);
+                                        }
+                                    })
+                                ]
+                            }).addStyleClass("sapUiSmallMargin")
+                        ],
+                        beginButton: new sap.m.Button("submitBtn", {
+                            text: "Submit",
+                            enabled: false, // Initially disabled
+                            press: function () {
+                                var sRemarks = sap.ui.getCore().byId("remarksTextArea").getValue();
+                                this.suspendComments = sRemarks;
+                                //sap.m.MessageToast.show("Remarks submitted: " + sRemarks);
+                                this._oDialog.close();
+                            }.bind(this)
+                        }),
+                        endButton: new sap.m.Button({
+                            text: "Close",
+                            press: function () {
+                                this._oDialog.close();
+                            }.bind(this)
+                        }),
+                        afterClose: function () {
+                            // Optional: Clear remarks after closing
+                            sap.ui.getCore().byId("remarksTextArea").setValue("");
+                            sap.ui.getCore().byId("submitBtn").setEnabled(false);
+                        }
+                    });
+                }
+                this._oDialog.open();
             }
+
 
 
         });

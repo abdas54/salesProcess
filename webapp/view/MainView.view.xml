@@ -206,7 +206,7 @@
                                 <!-- <Button type="Transparent" icon="sap-icon://reset"/> -->
                             </TileContent>
                         </GenericTile>
-                        <GenericTile  header="" frameType="OneByHalf" press="" class="customTile" pressEnabled="false" headerImage="">
+                        <GenericTile id="remarksgt" header="REMARKS" frameType="OneByHalf" press="onPressRemarks" class="customTile" pressEnabled="false" headerImage="sap-icon://accelerated">
                             <TileContent>
                                 <!-- <Button type="Transparent" text="OpenEMI" press="openEMIDialog"/> -->
                             </TileContent>
