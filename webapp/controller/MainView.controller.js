@@ -872,12 +872,14 @@ sap.ui.define([
                 var aEntries = oModel.getProperty("/allEntries"); // Get the array from the model
                 var oItem = oEvent.getParameter("listItem");
                 var oContext = oItem.getBindingContext("ShowPaymentSection");
-                var dataObj = oModel.getObject(oContext.sPath);
+               // var dataObj = oModel.getObject(oContext.sPath);
+                var dataObj = oEvent.getParameter("listItem").getBindingContext("ShowPaymentSection").getObject();
                 var iIndex = oContext.getPath().split("/").pop();
-                aEntries.splice(iIndex, 1);
+               
                 //this.aPaymentEntries.splice(iIndex,1);
                 var balanceAmount = "";
                 if (dataObj.PaymentType === "CASH") {
+                    aEntries.splice(iIndex, 1);
                     var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
                     balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal)
                     sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(balanceAmount).toFixed(2));
@@ -885,10 +887,10 @@ sap.ui.define([
                     this.getView().getModel("ShowPaymentSection").refresh();
                 }
                 else if (dataObj.PaymentType === "BOUNZ") {
-                    sap.m.MessageBox.INFORMATION("Bounz Payment cannot be deleted");
+                    sap.m.MessageBox.information("Bounz Payment cannot be deleted");
                 }
                 else if (dataObj.PaymentType === "NEGV") {
-                    sap.m.MessageBox.INFORMATION("NEGV Payment cannot be deleted");
+                    sap.m.MessageBox.information("NEGV Payment cannot be deleted");
                 }
                 else {
                     this.deRedeemVoucher(dataObj);
@@ -3713,7 +3715,7 @@ sap.ui.define([
                         oHtmlControl.setVisible(true);
                         const pdfContainer = document.getElementById("pdf-viewport");
                         console.log("PDF container:", pdfContainer);
-
+                        that.aCanvas = [];
 
 
                         if (aResults && aResults.length > 0) {
@@ -3755,6 +3757,7 @@ sap.ui.define([
                 try {
                     const canvas = await this.loadPdfToCanvas(pdfUrl);
                     this.canvasp = canvas;
+                    that.aCanvas.push(canvas);
 
                 } catch (err) {
                     MessageBox.error("Error rendering or printing PDF: " + err.message);
@@ -3849,7 +3852,7 @@ sap.ui.define([
 
             },
             onPressPrint: function () {
-                this.sendToEpsonPrinter(this.canvasp, this.printIP);
+                this.sendToEpsonPrinter(that.aCanvas, this.printIP);
             },
             isSingleColor: function (imageData) {
                 const stride = 4;
@@ -3994,65 +3997,68 @@ sap.ui.define([
                 }
             },
 
-            sendToEpsonPrinter: async function (canvases, printerIp, count) {
+            sendToEpsonPrinter: async function (canvasesArray, printerIp, count) {
                 var ePosDev = new epson.ePOSDevice();
                 //var ip = this.getView().byId("ipaddr").getValue();
                 // var wdth = this.getView().byId("wdth").getValue();
                 // var ht = this.getView().byId("heht").getValue();
                 //printerIp = this.printerIP;
 
+                for (let a = 0; a < canvasesArray.length; a++) {
+                    const canvases = canvasesArray[a];
+                    await new Promise((resolve, reject) => {
+                        ePosDev.connect(printerIp, 8043, function (resultConnect) {
+                            if (resultConnect === "OK" || resultConnect == "SSL_CONNECT_OK") {
+                                ePosDev.createDevice("local_printer", ePosDev.DEVICE_TYPE_PRINTER,
+                                    { crypto: false, buffer: false },
+                                    async function (deviceObj, resultCreate) {
+                                        if (resultCreate === "OK") {
+                                            var printer = deviceObj;
 
-                await new Promise((resolve, reject) => {
-                ePosDev.connect(printerIp, 8043, function (resultConnect) {
-                    if (resultConnect === "OK" || resultConnect == "SSL_CONNECT_OK") {
-                        ePosDev.createDevice("local_printer", ePosDev.DEVICE_TYPE_PRINTER,
-                            { crypto: false, buffer: false },
-                            async function (deviceObj, resultCreate) {
-                                if (resultCreate === "OK") {
-                                    var printer = deviceObj;
 
 
+                                            printer.brightness = 1.0;
+                                            printer.halftone = printer.HALFTONE_ERROR_DIFFUSION;
+                                            for (const canvas of canvases) {
+                                                printer.addImage(canvas.getContext("2d", { willReadFrequently: true }), 0, 0, canvas.width, canvas.height, printer.COLOR_1, printer.MODE_MONO);
+                                            }
 
-                                    printer.brightness = 1.0;
-                                    printer.halftone = printer.HALFTONE_ERROR_DIFFUSION;
-                                    for (const canvas of canvases) {
-                                        printer.addImage(canvas.getContext("2d", { willReadFrequently: true }), 0, 0, canvas.width, canvas.height, printer.COLOR_1, printer.MODE_MONO);
+
+                                            printer.addCut(printer.CUT_FEED);
+                                            await printer.send();
+                                            resolve();
+                                            if (canvasesArray.length === a - 1) {
+                                                window.location.reload(true);
+                                            }
+                                            // printer.send(function (resultSend) {
+                                            //     if (resultSend === "OK") {
+                                            //         sap.m.MessageToast.show("Printed successfully!");
+                                            //     } else {
+                                            //         sap.m.MessageBox.error("Print failed: " + resultSend);
+                                            //     }
+                                            // });
+                                        } else {
+                                            sap.m.MessageBox.error("Failed to create device: " + resultCreate);
+                                            reject(resultCreate);
+                                        }
                                     }
-
-
-                                    printer.addCut(printer.CUT_FEED);
-                                    await printer.send();
-                                    resolve();
-                                    // if (count == 2) {
-                                    //window.location.reload(true);
-                                    // }
-                                    // printer.send(function (resultSend) {
-                                    //     if (resultSend === "OK") {
-                                    //         sap.m.MessageToast.show("Printed successfully!");
-                                    //     } else {
-                                    //         sap.m.MessageBox.error("Print failed: " + resultSend);
-                                    //     }
-                                    // });
-                                } else {
-                                    sap.m.MessageBox.error("Failed to create device: " + resultCreate);
-                                    reject(resultCreate);
-                                }
+                                );
+                            } else {
+                                //sap.m.MessageBox.error("Connection failed: " + resultConnect);
+                                sap.m.MessageBox.error("Connection failed: " + resultConnect, {
+                                    title: "Error",
+                                    actions: [sap.m.MessageBox.Action.OK],
+                                    onClose: function (oAction) {
+                                        if (oAction === sap.m.MessageBox.Action.OK) {
+                                            window.location.reload(true);
+                                        }
+                                    }.bind(this)
+                                });
                             }
-                        );
-                    } else {
-                        //sap.m.MessageBox.error("Connection failed: " + resultConnect);
-                        sap.m.MessageBox.error("Connection failed: " + resultConnect, {
-                            title: "Error",
-                            actions: [sap.m.MessageBox.Action.OK],
-                            onClose: function (oAction) {
-                                if (oAction === sap.m.MessageBox.Action.OK) {
-                                    window.location.reload(true);
-                                }
-                            }.bind(this)
                         });
-                    }
-                });
-                });
+                    });
+                }
+
             },
 
             openPlanet: function (url, bflag, transID) {
@@ -6555,6 +6561,7 @@ sap.ui.define([
 
             onSaveSignature: function () {
                 var that = this;
+                that._pAddRecordDialog.setBusy(true);
                 this.oPaySignatureload = [];
                 const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas");
                 const canvas = oCanvasControl.getDomRef();
@@ -6767,6 +6774,19 @@ sap.ui.define([
                         content: [oContent],
                         stretch: true,
                         afterOpen: this._initializeCanvas.bind(this),
+                        customHeader: new sap.m.Toolbar({
+                            content: [
+                                new sap.m.Title({ text: "Signature Pad" }),
+                                new sap.m.ToolbarSpacer(),
+                                new sap.m.Button({
+                                    icon: "sap-icon://decline",
+                                    tooltip: "Close",
+                                    press: function () {
+                                        this._pAddRecordDialog.close();
+                                    }.bind(this)
+                                })
+                            ]
+                        })
 
                     });
 
@@ -6820,7 +6840,7 @@ sap.ui.define([
                                     new sap.m.Label({ text: "Remarks", labelFor: "remarksTextArea" }),
                                     new sap.m.TextArea("remarksTextArea", {
                                         width: "100%",
-                                        rows : 6,
+                                        rows: 6,
                                         placeholder: "Enter your remarks here...",
                                         liveChange: function (oEvent) {
                                             var sValue = oEvent.getParameter("value").trim();
