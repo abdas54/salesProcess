@@ -6811,6 +6811,9 @@ sap.ui.define([
                                         if(this.aCanvas && this.aCanvas.length > 0){
                                         window.location.reload(true);
                                         }
+                                        else if(sap.ui.core.Fragment.byId("SignaturePad", "ipBox").getVisible()) {
+                                        window.location.reload(true);
+                                        }
                                         else{
                                           this._pAddRecordDialog.close();
                                         }
