@@ -872,10 +872,10 @@ sap.ui.define([
                 var aEntries = oModel.getProperty("/allEntries"); // Get the array from the model
                 var oItem = oEvent.getParameter("listItem");
                 var oContext = oItem.getBindingContext("ShowPaymentSection");
-               // var dataObj = oModel.getObject(oContext.sPath);
+                // var dataObj = oModel.getObject(oContext.sPath);
                 var dataObj = oEvent.getParameter("listItem").getBindingContext("ShowPaymentSection").getObject();
                 var iIndex = oContext.getPath().split("/").pop();
-               
+
                 //this.aPaymentEntries.splice(iIndex,1);
                 var balanceAmount = "";
                 if (dataObj.PaymentType === "CASH") {
@@ -887,12 +887,14 @@ sap.ui.define([
                     this.getView().getModel("ShowPaymentSection").refresh();
                 }
                 else if (dataObj.PaymentType === "BOUNZ") {
+                    aEntries.splice(iIndex, 1);
                     sap.m.MessageBox.information("Bounz Payment cannot be deleted");
                 }
-                else if (dataObj.PaymentType === "NEGV") {
-                    sap.m.MessageBox.information("NEGV Payment cannot be deleted");
-                }
+                // else if (dataObj.PaymentType === "NEGV") {
+                //     sap.m.MessageBox.information("NEGV Payment cannot be deleted");
+                // }
                 else {
+                    aEntries.splice(iIndex, 1);
                     this.deRedeemVoucher(dataObj);
                 }
 
@@ -3723,7 +3725,7 @@ sap.ui.define([
                             aResults.sort((a, b) => parseInt(a.SequenceId) - parseInt(b.SequenceId));
 
                             for (const oRow of aResults) {
-                                that.showPDF(oRow.Value);
+                                await that.showPDF(oRow.Value);
                             }
 
 
@@ -3879,7 +3881,8 @@ sap.ui.define([
                         const scale = printerWidth / page.getViewport({ scale: 1 }).width;
                         const viewport = page.getViewport({ scale });
                         const pdfContainer = document.getElementById("pdf-viewport");
-                        const canvas = document.createElement("canvas");
+                        //const canvas = document.createElement("canvas");
+                       const { canvas, context } = this.createHiDPICanvas(viewport.width,viewport.height);
                         // pdfContainer.appendChild(canvas);
                         const width = viewport.width;
                         const height = viewport.height;
@@ -3890,7 +3893,7 @@ sap.ui.define([
                         canvas.setAttribute("willReadFrequently", "true");
                         // canvas.width = viewport.width;
                         // canvas.height = viewport.height;
-                        const context = canvas.getContext("2d", { willReadFrequently: true });
+                       // const context = canvas.getContext("2d", { willReadFrequently: true });
                         context.clearRect(0, 0, width, height);
 
                         await page.render({
@@ -3980,6 +3983,38 @@ sap.ui.define([
                     MessageToast.show("Failed to load PDF: " + error.message);
                 }
             },
+            getPixelRatio: function () {
+                var ctx = document.createElement("canvas").getContext("2d"),
+                    dpr = window.devicePixelRatio || 1,
+                    bsr =
+                        ctx.webkitBackingStorePixelRatio ||
+                        ctx.mozBackingStorePixelRatio ||
+                        ctx.msBackingStorePixelRatio ||
+                        ctx.oBackingStorePixelRatio ||
+                        ctx.backingStorePixelRatio ||
+                        1;
+
+                return dpr / bsr;
+            },
+
+            createHiDPICanvas: function (w, h, ratio) {
+                if (!ratio) {
+                    ratio = this.getPixelRatio();
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = w * ratio;
+                canvas.height = h * ratio;
+                canvas.style.width = w + "px";
+                canvas.style.height = h + "px";
+                const context = canvas.getContext("2d", {
+                    willReadFrequently: true,
+                });
+                context.setTransform(ratio, 0, 0, ratio, 0, 0);
+                context.imageSmoothingEnabled = true;
+                context.imageSmoothingQuality = "high";
+                context.font = "64px NotoSansArabic";
+                return { canvas, context };
+            },
             ensurePdfJsLib: async function () {
                 if (!window.pdfjsLib) {
                     await new Promise((resolve, reject) => {
@@ -3999,12 +4034,14 @@ sap.ui.define([
 
             sendToEpsonPrinter: async function (canvasesArray, printerIp, count) {
                 var ePosDev = new epson.ePOSDevice();
+                var that = this;
                 //var ip = this.getView().byId("ipaddr").getValue();
                 // var wdth = this.getView().byId("wdth").getValue();
                 // var ht = this.getView().byId("heht").getValue();
                 //printerIp = this.printerIP;
 
                 for (let a = 0; a < canvasesArray.length; a++) {
+                    that.counter = a;
                     const canvases = canvasesArray[a];
                     await new Promise((resolve, reject) => {
                         ePosDev.connect(printerIp, 8043, function (resultConnect) {
@@ -4027,7 +4064,7 @@ sap.ui.define([
                                             printer.addCut(printer.CUT_FEED);
                                             await printer.send();
                                             resolve();
-                                            if (canvasesArray.length === a - 1) {
+                                            if (canvasesArray.length === that.counter + 1) {
                                                 window.location.reload(true);
                                             }
                                             // printer.send(function (resultSend) {
@@ -4312,7 +4349,7 @@ sap.ui.define([
                         if (balanceAmount <= 0) {
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                            sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                            //sap.ui.getCore().byId("sbmtTrans").setVisible(true);
 
                             that.onOpenSignaturePad();
                             //that.OnSignaturePress();
@@ -4321,7 +4358,7 @@ sap.ui.define([
                         else {
                             sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
                             sap.ui.getCore().byId("cash").setValue("");
-                            sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                            //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
                         }
 
 
@@ -5007,23 +5044,10 @@ sap.ui.define([
                 this.paymentId = this.paymentId + 1;
                 var bFlag = false;
                 var maxcount = "";
-                // if (this.aPaymentEntries.length > 0) {
-                //     for (var count = 0; count < this.aPaymentEntries.length; count++) {
-
-                //         if (this.aPaymentEntries[count].PaymentMethodName === "Cash") {
-                //             bFlag = true;
-                //             maxcount = count;
-                //             break;
-
-                //         }
-                //     }
-                // }
+                
                 if (cashAmount !== 0 && cashAmount !== "0.00" && cashAmount !== "") {
 
-                    // if (bFlag) {
-                    //     this.aPaymentEntries[maxcount].Amount = parseFloat(this.aPaymentEntries[maxcount].Amount) + parseFloat(cashAmount)
-                    // }
-                    // else {
+                    
                     this.aPaymentEntries.push({
                         "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
                         "PaymentId": this.paymentId.toString(),
@@ -5046,7 +5070,7 @@ sap.ui.define([
 
 
                     });
-                    //}
+                    
 
                     var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
                     var paidAmount = 0;
@@ -5059,12 +5083,7 @@ sap.ui.define([
                     if (balanceAmount <= 0) {
                         sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                        sap.ui.getCore().byId("sbmtTrans").setVisible(true);
-                        // this.aPaymentEntries.forEach(function (entry) {
-                        //     if (entry.PaymentType === "CASH") {
-                        //         entry.ChangeAmount = balanceAmount.toString();
-                        //     }
-                        // });
+                       
                         for (var i = this.aPaymentEntries.length - 1; i >= 0; i--) {
                             if (this.aPaymentEntries[i].PaymentType === "CASH") {
                                 this.aPaymentEntries[i].ChangeAmount = balanceAmount.toString();
@@ -5079,20 +5098,21 @@ sap.ui.define([
                                 title: "Tender Balance",
                                 actions: [MessageBox.Action.OK],
                                 onClose: function (oAction) {
+                                    sap.ui.getCore().byId("cash").setValue("");
                                     that.onOpenSignaturePad();
                                 }
                             });
                         }
                         else {
-
+                            sap.ui.getCore().byId("cash").setValue("");
                             that.onOpenSignaturePad();
                         }
-                        //that.onPressPaymentTest();
+                        
                     }
                     else {
                         sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
                         sap.ui.getCore().byId("cash").setValue("");
-                        sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                        //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
                         sap.m.MessageToast.show("Cash Payment Successful");
                     }
 
@@ -5522,7 +5542,7 @@ sap.ui.define([
                 if (balanceAmount <= 0) {
                     sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                    sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                    //sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show("Manual Card Payment Successful");
 
                     that.onOpenSignaturePad();
@@ -5532,7 +5552,7 @@ sap.ui.define([
                 else {
                     sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
                     sap.ui.getCore().byId("cash").setValue("");
-                    sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                    //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
                     sap.m.MessageToast.show("Manual Card Payment Successful");
                 }
                 this._oDialogCardType.close();
@@ -5753,7 +5773,7 @@ sap.ui.define([
                         if (balanceAmount <= 0) {
                             sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                             sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                            sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                            //sap.ui.getCore().byId("sbmtTrans").setVisible(true);
 
                             that.onOpenSignaturePad();
                             //that.OnSignaturePress();
@@ -5762,7 +5782,7 @@ sap.ui.define([
                         else {
                             sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
 
-                            sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                            //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
                         }
                         if (that._oRedeemDialog) {
                             that._oRedeemDialog.close();
@@ -5907,7 +5927,7 @@ sap.ui.define([
                     if (balanceAmount <= 0) {
                         sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                        sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                       // sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                         sap.m.MessageToast.show("Non EGV Payment Successful");
 
                         that.onOpenSignaturePad();
@@ -5917,7 +5937,7 @@ sap.ui.define([
                     else {
                         sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
                         sap.ui.getCore().byId("cash").setValue("");
-                        sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                        //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
                         sap.m.MessageToast.show("Non EGV Payment Successful");
                     }
                     this._oDialogNonGV.close();
@@ -6358,6 +6378,11 @@ sap.ui.define([
                 var sRawValue = oInput.getFocusDomRef().value;
                 var sSanitized = sRawValue.replace(/[^0-9.]/g, ""); // Allow only digits
                 oInput.setValue(sSanitized);
+                var saleBalance = parseFloat(sap.ui.getCore().byId("totalSaleBalText").getText()).toFixed(2);
+                var saleAmount = parseFloat(sap.ui.getCore().byId("totalAmountText").getText()).toFixed(2);
+                 if( saleAmount === saleBalance || saleAmount > saleBalance){
+                    sap.ui.getCore().byId("cashSbmtBtn").setEnabled(true);
+                 }
             },
             updateBalanceAmount: function (msg, modelName) {
                 var that = this;
@@ -6372,7 +6397,7 @@ sap.ui.define([
                 if (balanceAmount <= 0) {
                     sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                    sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                   // sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
 
                     that.onOpenSignaturePad();
@@ -6382,7 +6407,7 @@ sap.ui.define([
                 else {
                     sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
                     sap.ui.getCore().byId("cash").setValue("");
-                    sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                    //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
                 }
                 if (that.getView().getModel(modelName)) {
@@ -6559,8 +6584,9 @@ sap.ui.define([
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
             },
 
-            onSaveSignature: function () {
+            onSaveSignature: function (oEvent) {
                 var that = this;
+                oEvent.getSource().setEnabled(false);
                 that._pAddRecordDialog.setBusy(true);
                 this.oPaySignatureload = [];
                 const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", "signatureCanvas");
@@ -6782,7 +6808,13 @@ sap.ui.define([
                                     icon: "sap-icon://decline",
                                     tooltip: "Close",
                                     press: function () {
-                                        this._pAddRecordDialog.close();
+                                        if(this.aCanvas && this.aCanvas.length > 0){
+                                        window.location.reload(true);
+                                        }
+                                        else{
+                                          this._pAddRecordDialog.close();
+                                        }
+                                        
                                     }.bind(this)
                                 })
                             ]
