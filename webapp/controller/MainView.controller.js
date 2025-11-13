@@ -3853,7 +3853,8 @@ sap.ui.define([
                 }
 
             },
-            onPressPrint: function () {
+            onPressPrint: function (oEvent) {
+                oEvent.getSource().setEnabled(false);
                 this.sendToEpsonPrinter(that.aCanvas, this.printIP);
             },
             isSingleColor: function (imageData) {
