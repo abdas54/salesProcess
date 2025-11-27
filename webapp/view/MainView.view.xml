@@ -33,7 +33,7 @@
             <HBox width="100%">
                 <VBox alignItems="Stretch" width="100%" class="customScrollContainer" height="650px">
                     <HBox >
-                        <Input  class="customInputHeight inputStyle customInputWithScroll" value="{ProductModel>/MaterialCode}" 
+                        <Input id="inpSearch"  class="customInputHeight inputStyle customInputWithScroll" value="{ProductModel>/MaterialCode}" 
 							placeholder="Enter Model Number / Barcode /Old Material Code:" showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}"
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onSuggest" suggestionItemSelected="onSuggestionSelected"
 							showTableSuggestionValueHelp="false" >

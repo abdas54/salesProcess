@@ -205,7 +205,9 @@
                         <Panel visible="{= ${ShowPaymentSection>/selectedMode} === 'Non-GV' }">
                             <content>
                                 <VBox >
-                                    <g:GridList items="{/NEGVPaymentMenthodsSet}" itemPress="onSelectNonGV" >
+                                    <g:GridList 
+                                    items="{ path: '/NEGVPaymentMenthodsSet', filters: [{ path: 'Sale', operator: 'EQ', value1: 'X' }] }"
+                                    itemPress="onSelectNonGV" >
                                         <g:items>
                                             <g:GridListItem type="Active" >
                                                 <VBox class="sapUiSmallMargin">

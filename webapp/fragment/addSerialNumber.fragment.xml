@@ -8,14 +8,14 @@
             <content> 
             <Title level="H2" text="Serial Number" />
             <ToolbarSpacer/>
-            <Button icon="sap-icon://decline" press="onPressCancelButton"/>
+            <!-- <Button icon="sap-icon://decline" press="onPressCancelButton"/> -->
             </content>
             </Toolbar>
             
             </headerToolbar>
                 <ColumnListItem id="serNumberColmnList" class="lstBackground">
 			<cells>
-				<Input value="{serialModel>serialNumber}" maxLength="25" class="inputStyle sapUiSmallMarginBottom" ></Input>
+				<Input value="{serialModel>serialNumber}" liveChange="onSerialInputChange" maxLength="25" class="inputStyle sapUiSmallMarginBottom" ></Input>
 				
 			</cells>
 		</ColumnListItem>
@@ -33,6 +33,9 @@
             <Button id="saveSerialNumberBtn" text="Save" press="onSaveSerialNumber" class="cstmBtn"/>
              
         </beginButton>
+        <endButton>
+                  <Button text="Close" class="cstmBtn" press="onPressCancelButton"/>
+        </endButton>
        
     </Dialog>
 </core:FragmentDefinition>

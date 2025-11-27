@@ -125,13 +125,13 @@ sap.ui.define([
                 var aData = this.getView().getModel("warrantyData").getData();
                 var aProducts = this.getView().getModel("ProductModel").getProperty("/Product");
                 var oProduct = aProducts.find(function (oItem) {
-                    return oItem.Itemcode === that.warrantyItemCode;;
+                    return oItem.Itemcode === that.warrantyItemCode && oItem.Seq === that.warrantyTransItem;
                 });
                 var aFiltered = aData.filter(function (item) {
                     return item.WarrantyType === sKey;
                 });
                 var filteredSrNumber = this.serialNumbers.filter(function (item) {
-                    return item.itemCode === that.warrantyItemCode;
+                    return item.itemCode === that.warrantyItemCode && item.seq === oProduct.Seq;
                 })
                 var oSrlNumModel = new JSONModel();
                 oSrlNumModel.setData({});
@@ -881,7 +881,13 @@ sap.ui.define([
                 if (dataObj.PaymentType === "CASH") {
                     aEntries.splice(iIndex, 1);
                     var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
-                    balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal)
+                    var totTenderBal = sap.ui.getCore().byId("totaltenderBal").getText();
+                    if (totTenderBal === "" || totTenderBal === "0" || totTenderBal === "0.00") {
+                        totTenderBal = "0.00";
+                    } else {
+                        sap.ui.getCore().byId("totaltenderBal").setText(parseFloat(dataObj.Amount) + parseFloat(totTenderBal));
+                    }
+                    balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal) + parseFloat(totTenderBal);
                     sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(balanceAmount).toFixed(2));
                     this.getView().getModel("ShowPaymentSection").setProperty("/allEntries", this.aPaymentEntries)
                     this.getView().getModel("ShowPaymentSection").refresh();
@@ -890,6 +896,10 @@ sap.ui.define([
                     aEntries.splice(iIndex, 1);
                     sap.m.MessageBox.information("Bounz Payment cannot be deleted");
                 }
+                else if (dataObj.PaymentType === "CARD") {
+
+                    this.voidCardPament(dataObj, aEntries, iIndex);
+                }
                 // else if (dataObj.PaymentType === "NEGV") {
                 //     sap.m.MessageBox.information("NEGV Payment cannot be deleted");
                 // }
@@ -897,6 +907,60 @@ sap.ui.define([
                     aEntries.splice(iIndex, 1);
                     this.deRedeemVoucher(dataObj);
                 }
+
+            },
+            voidCardPament: function (dataObj, aEntries, iIndex) {
+                var that = this;
+                var balanceAmount = "";
+                sap.ui.core.BusyIndicator.show();
+                var oPayload = {
+                    "TransactionType": "pushPaymentVoid",
+                    "SourceId": this.getView().byId("tranNumber").getCount().toString() + this.getLetter(this.sourceIdCounter),
+                    "OriginalId": dataObj.SourceId,
+                    "Tid": dataObj.Tid,
+                    "Mid": dataObj.Mid,
+
+                }
+
+
+                this.oModel.create("/PaymentStartTransactionSet", oPayload, {
+                    success: function (oData) {
+                        aEntries.splice(iIndex, 1);
+                        that.sourceIdCounter = that.sourceIdCounter + 1;
+                        sap.ui.core.BusyIndicator.hide();
+                        that.getView().setBusy(false);
+                        var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
+                        balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal)
+                        sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(balanceAmount).toFixed(2));
+                        that.aPaymentEntries = that.aPaymentEntries.filter(function (oEntry) {
+                            return oEntry.SourceId !== dataObj.SourceId;
+                        });
+                        that.getView().getModel("ShowPaymentSection").setProperty("/allEntries", that.aPaymentEntries)
+                        that.getView().getModel("ShowPaymentSection").refresh();
+
+                    },
+                    error: function (oError) {
+                        var errMessage = "";
+                        sap.ui.core.BusyIndicator.hide();
+                        if (JSON.parse(oError.responseText).error.message.value) {
+                            errMessage = JSON.parse(oError.responseText).error.message.value;
+                        }
+                        else {
+                            errMessage = "Error During Cancel Transaction "
+                        }
+
+                        sap.m.MessageBox.show(errMessage, {
+                            icon: sap.m.MessageBox.Icon.Error,
+                            title: "Error",
+                            actions: [MessageBox.Action.OK],
+                            onClose: function (oAction) {
+
+                            }
+                        });
+
+
+                    }
+                });
 
             },
             deRedeemVoucher: function (dataObj) {
@@ -910,6 +974,13 @@ sap.ui.define([
                 this.oModel.create("/PaymentMethodsSet", data, {
                     success: function (oData, response) {
                         var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
+                        var totTenderBal = sap.ui.getCore().byId("totaltenderBal").getText();
+                        if (totTenderBal === "" || totTenderBal === "0" || totTenderBal === "0.00") {
+                            totTenderBal = "0.00";
+                        } else {
+                            sap.ui.getCore().byId("totaltenderBal").setText(parseFloat(dataObj.Amount) + parseFloat(totTenderBal));
+                        }
+                        balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal) + parseFloat(totTenderBal);
                         balanceAmount = parseFloat(dataObj.Amount) + parseFloat(totSalBal)
                         sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(balanceAmount).toFixed(2));
                         that.getView().getModel("ShowPaymentSection").setProperty("/allEntries", that.aPaymentEntries)
@@ -1166,6 +1237,18 @@ sap.ui.define([
                         that.getView().byId("cashier").setCount(oData.results[0].EmployeeName);
                         that.getView().byId("tranNumber").setCount(oData.results[0].TransactionId);
                         that.getView().byId("page").setVisible(true);
+                        that.byId("inpSearch").focus();
+                        var oInput = that.getView().byId("inpSearch");
+
+                        if (!that._bFocusDelegateAdded) {
+                            that._bFocusDelegateAdded = true;
+
+                            oInput.addEventDelegate({
+                                onAfterRendering: function () {
+                                    oInput.focus();
+                                }
+                            });
+                        }
 
                     },
                     error: function (oError) {
@@ -1293,10 +1376,10 @@ sap.ui.define([
                             option: "Non-GV",
                             icon: "sap-icon://money-bills"
                         },
-                        {
-                            option: "BOUNZ",
-                            icon: "sap-icon://chain-link"
-                        },
+                        // {
+                        //     option: "BOUNZ",
+                        //     icon: "sap-icon://chain-link"
+                        // },
                         {
                             option: "View All Records",
                             icon: "sap-icon://sum"
@@ -1501,15 +1584,25 @@ sap.ui.define([
                 var serialNumber = oView.byId("idSrNumber").getSelectedKey();
                 var aProducts = that.getView().getModel("ProductModel").getProperty("/Product");
                 var aFilters = [];
-                var bflag = this.validateWarranty(aProducts, mainMatId, that.selectedWarrantyType);
-                var oRecord = aProducts.find(obj => obj.Itemcode === mainMatId);
+                var bflag = this.validateWarranty(aProducts, mainMatId, that.selectedWarrantyType, that.warrantyItemLoc);
+                var oRecord = aProducts.find(obj => obj.Itemcode === mainMatId && obj.Location === that.warrantyItemLoc);
                 var bcheckWarrantySerial = this.checkWarrantySerialsExist(serialNumber, that.selectedWarrantyType);
+                var bEmptySerial = false;
                 if (oRecord.SerialFlag === "") {
                     bcheckWarrantySerial = true;
+                    bEmptySerial = true;
+                }
+                if (oRecord.SerialFlag === "Y") {
+                    if (serialNumber) {
+                        bEmptySerial = true;
+                    }
+                    else {
+                        bEmptySerial = false;
+                    }
                 }
                 aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, warrantyMatId));
 
-                if (bflag && bcheckWarrantySerial) {
+                if (bflag && bcheckWarrantySerial && bEmptySerial) {
                     this.oModel.read("/MaterialSet", {
                         urlParameters: {
                             "$expand": "ToDiscounts"
@@ -1525,7 +1618,7 @@ sap.ui.define([
                                 oData.results[0].SalesmanId = "";
                                 oData.results[0].SalesmanName = "";
                                 oData.results[0].UnitPrice = warrantyPrice;
-                                oData.results[0].Description = "Warranty for " + mainMatId;
+                                oData.results[0].Description = "Warranty for " + mainMatId + " (" + that.warrantyItemLoc + ")";
                                 oData.results[0].WarrantyType = that.selectedWarrantyType;
                                 oData.results[0].WarrantyTransactionId = that.getView().byId("tranNumber").getCount();
                                 oData.results[0].WarrantyTransactionItem = that.warrantyTransItem;
@@ -1540,7 +1633,7 @@ sap.ui.define([
                                 var bFlag = false;
                                 for (var count = 0; count < tableData.length; count++) {
 
-                                    if ((tableData[count].Itemcode === warrantyMatId) && (tableData[count].Description.indexOf(mainMatId) >= 0)) {
+                                    if ((tableData[count].Itemcode === warrantyMatId) && (tableData[count].Description.indexOf(mainMatId) >= 0) && (tableData[count].WarrantyTransactionItem === that.warrantyTransItem)) {
                                         that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/SaleQuantity", parseInt(tableData[count].SaleQuantity) + 1);
                                         that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetAmount", parseFloat(parseFloat(tableData[count].UnitPrice).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
                                         that.getView().getModel("ProductModel").setProperty("/Product/" + count + "/NetDiscount", parseFloat(parseFloat(tableData[count].Discount).toFixed(2) * parseFloat(tableData[count].SaleQuantity).toFixed(2)).toFixed(2));
@@ -1560,7 +1653,7 @@ sap.ui.define([
                                 that.updateSeq(aProducts);
                                 if (oRecord.SerialFlag === "Y") {
                                     for (var counter = 0; counter < tableData.length; counter++) {
-                                        if ((tableData[counter].Itemcode === warrantyMatId) && (tableData[counter].Description) === "Warranty for " + mainMatId) {
+                                        if ((tableData[counter].Itemcode === warrantyMatId) && (tableData[counter].Description) === "Warranty for " + mainMatId + " (" + that.warrantyItemLoc + ")") {
                                             that.serialNumbers.push({
                                                 itemCode: warrantyMatId,
                                                 seq: tableData[counter].Seq,
@@ -1601,6 +1694,10 @@ sap.ui.define([
                     else if (!bcheckWarrantySerial) {
                         sap.m.MessageToast.show("Selected Serial Number has been already added with existing warranty type");
                     }
+                    else if (!bEmptySerial) {
+                        sap.m.MessageToast.show("Serial Number is empty");
+                    }
+
                 }
 
 
@@ -1618,8 +1715,8 @@ sap.ui.define([
                     return true;
                 }
             },
-            validateWarranty: function (aProducts, sItemCode, selectedWarrantyType) {
-                var oRecord = aProducts.find(obj => obj.Itemcode === sItemCode);
+            validateWarranty: function (aProducts, sItemCode, selectedWarrantyType, warrantyItemLoc) {
+                var oRecord = aProducts.find(obj => obj.Itemcode === sItemCode && obj.Location === warrantyItemLoc);
 
                 if (!oRecord) {
                     sap.m.MessageToast.show("Item Code not found!");
@@ -3701,6 +3798,9 @@ sap.ui.define([
                 this.printIP = aItems[0]?.getText();
                 var tranNumber = this.getView().byId("tranNumber").getCount().toString();
                 var sPath = "/PrintPDFSet(TransactionId='" + tranNumber + "',PDFType='A')";
+                if (that._pAddRecordDialog) {
+                                    that._pAddRecordDialog.setBusy(true);
+                                }
                 this.oModel.read(sPath, {
                     urlParameters: { "$expand": "ToPDFList" },
                     success: async function (oData) {
@@ -3726,6 +3826,9 @@ sap.ui.define([
 
                             for (const oRow of aResults) {
                                 await that.showPDF(oRow.Value);
+                                 if (that._pAddRecordDialog) {
+                                    that._pAddRecordDialog.setBusy(false);
+                                }
                             }
 
 
@@ -3883,7 +3986,7 @@ sap.ui.define([
                         const viewport = page.getViewport({ scale });
                         const pdfContainer = document.getElementById("pdf-viewport");
                         //const canvas = document.createElement("canvas");
-                       const { canvas, context } = this.createHiDPICanvas(viewport.width,viewport.height);
+                        const { canvas, context } = this.createHiDPICanvas(viewport.width, viewport.height);
                         // pdfContainer.appendChild(canvas);
                         const width = viewport.width;
                         const height = viewport.height;
@@ -3894,7 +3997,7 @@ sap.ui.define([
                         canvas.setAttribute("willReadFrequently", "true");
                         // canvas.width = viewport.width;
                         // canvas.height = viewport.height;
-                       // const context = canvas.getContext("2d", { willReadFrequently: true });
+                        // const context = canvas.getContext("2d", { willReadFrequently: true });
                         context.clearRect(0, 0, width, height);
 
                         await page.render({
@@ -4098,45 +4201,185 @@ sap.ui.define([
                 }
 
             },
+            // sendToEpsonPrinter: async function (canvasesArray, printerIp, count) {
+
+            //     var ePosDev = new epson.ePOSDevice();
+            //     var that = this;
+
+            //     // ---------- CONNECT ONLY ONCE ----------
+            //     let printer = await new Promise((resolve, reject) => {
+            //         ePosDev.connect(printerIp, 8043, function (resultConnect) {
+
+            //             if (resultConnect === "OK" || resultConnect === "SSL_CONNECT_OK") {
+
+            //                 ePosDev.createDevice(
+            //                     "local_printer",
+            //                     ePosDev.DEVICE_TYPE_PRINTER,
+            //                     { crypto: false, buffer: false },
+            //                     function (deviceObj, resultCreate) {
+
+            //                         if (resultCreate === "OK") {
+            //                             resolve(deviceObj);   // return printer object
+            //                         } else {
+            //                             sap.m.MessageBox.error("Failed to create device: " + resultCreate);
+            //                             reject(resultCreate);
+            //                         }
+            //                     }
+            //                 );
+
+            //             } else {
+            //                 sap.m.MessageBox.error("Connection failed: " + resultConnect, {
+            //                     title: "Error",
+            //                     actions: [sap.m.MessageBox.Action.OK],
+            //                     onClose: function () {
+            //                         window.location.reload(true);
+            //                     }
+            //                 });
+            //                 reject(resultConnect);
+            //             }
+
+            //         });
+            //     });
+
+            //     // ---------- PRINTER READY HERE ----------
+            //     printer.brightness = 1.0;
+            //     printer.halftone = printer.HALFTONE_ERROR_DIFFUSION;
+
+            //     // ---------- LOOP THROUGH ALL CANVAS GROUPS ----------
+            //     for (let i = 0; i < canvasesArray.length; i++) {
+
+            //         const canvases = canvasesArray[i];
+
+            //         // Add image(s) for this set
+            //         for (const canvas of canvases) {
+            //             printer.addImage(
+            //                 canvas.getContext("2d", { willReadFrequently: true }),
+            //                 0,
+            //                 0,
+            //                 canvas.width,
+            //                 canvas.height,
+            //                 printer.COLOR_1,
+            //                 printer.MODE_MONO
+            //             );
+            //         }
+
+            //         printer.addCut(printer.CUT_FEED);
+
+            //         // Send print and wait
+            //         await new Promise(async (resolve) => {
+            //             await printer.send();
+            //             resolve();
+            //         });
+
+            //         // If last print — reload
+            //         if (i === canvasesArray.length - 1) {
+            //             window.location.reload(true);
+            //         }
+            //     }
+            // },
+
 
             openPlanet: function (url, bflag, transID) {
                 var that = this;
                 var wind = window.open(url, "_blank");
-                that.oModel.read("/PlanetTagSet('" + transID + "')", {
-                    success: function (oData) {
+                that.transId = transID;
+                that.checkInternetUntilConnected();
+                that.bPlanetFlag = bflag;
+                // that.oModel.read("/PlanetTagSet('" + transID + "')", {
+                //     success: function (oData) {
 
-                        that.getView().setBusy(false);
-                        if (that._oDialogPayment) {
-                            that._oDialogPayment.setBusy(false);
-                        }
-                        that._pAddRecordDialog.setBusy(false);
+                //         that.getView().setBusy(false);
+                //         if (that._oDialogPayment) {
+                //             that._oDialogPayment.setBusy(false);
+                //         }
+                //         that._pAddRecordDialog.setBusy(false);
 
-                        MessageBox.success("Transaction Posted Successfully.", {
-                            onClose: async function (sAction) {
-                                for (var count = 1; count <= 2; count++) {
-                                    await that.getPDFBase64(count);
+                //         MessageBox.success("Transaction Posted Successfully.", {
+                //             onClose: async function (sAction) {
+                //                 for (var count = 1; count <= 2; count++) {
+                //                     await that.getPDFBase64(count);
+                //                 }
+
+                //                 // window.location.reload(true);
+                //             }
+                //         });
+                //         if (!bflag) {
+                //             window.location.reload(true);
+                //         }
+
+
+
+
+
+
+
+                //     },
+                //     error: function (oError) {
+
+                //         sap.m.MessageToast.show("Error");
+                //     }
+                // });
+            },
+            isInternetWorking: async function () {
+                try {
+                    const response = await fetch("https://1.1.1.1/cdn-cgi/trace", {
+                        method: "GET",
+                        cache: "no-store",
+                        mode: "no-cors"
+                    });
+
+                    return true;  // If fetch succeeds, internet is ON
+                } catch (e) {
+                    return false;
+                }
+            },
+
+            checkInternetUntilConnected: function (onConnected) {
+
+                let alreadyTriggered = false;
+                let internetCheckInterval = null;
+                const that = this; // <-- define ONCE here
+
+                internetCheckInterval = setInterval(async () => {
+
+                    const online = await that.isInternetWorking(); // <-- now works
+
+                    if (online && !alreadyTriggered) {
+                        alreadyTriggered = true;
+
+                        that.oModel.read("/PlanetTagSet('" + that.transId + "')", {
+                            success: function (oData) {
+
+                                clearInterval(internetCheckInterval);
+                                internetCheckInterval = null;
+
+                                that.getView().setBusy(false);
+
+                                if (that._oDialogPayment) {
+                                    that._oDialogPayment.setBusy(false);
                                 }
 
-                                // window.location.reload(true);
+                                that._pAddRecordDialog.setBusy(false);
+
+                                MessageBox.success("Transaction Posted Successfully.", {
+                                    onClose: async function () {
+                                        that.onOpenPrinterDialog();
+                                    }
+                                });
+
+                                if (!that.bPlanetFlag) {
+                                    window.location.reload(true);
+                                }
+                            },
+                            error: function () {
+                                sap.m.MessageToast.show("Error");
                             }
                         });
-                        if (!bflag) {
-                            window.location.reload(true);
-                        }
-
-
-
-
-
-
-
-                    },
-                    error: function (oError) {
-
-                        sap.m.MessageToast.show("Error");
                     }
-                });
+
+                }, 30000);
             },
+
             oPayloadPayments: function (arrPayment) {
                 if (arrPayment.length > 0) {
                     return arrPayment.map(item => {
@@ -4301,15 +4544,14 @@ sap.ui.define([
                     "Tid": termID,
                     "Mid": machID,
                     "TransactionType": transType,
-                    "SourceId": this.getView().byId("tranNumber").getCount().toString() + this.sourceIdCounter.toString(),
+                    "SourceId": this.getView().byId("tranNumber").getCount().toString() + this.getLetter(this.sourceIdCounter),
                     "Amount": this.cashAmount.toString()
 
                 }
-
+                var sourceId = oPayload.SourceId;
                 this.oModel.create("/PaymentStartTransactionSet", oPayload, {
                     success: function (oData) {
-                        that.sourceIdCounter = that.sourceIdCounter + 1;
-                        that.paymentEntSourceCounter = that.paymentEntSourceCounter + 1;
+
                         sap.ui.getCore().byId("creditAmount").setValue("");
                         that.getView().getModel("ShowPaymentSection").setProperty("/Terminal", []);
                         that.getView().getModel("ShowPaymentSection").refresh();
@@ -4334,10 +4576,12 @@ sap.ui.define([
                             "PaymentType": PaymentType,
                             "VoucherNumber": "",
                             "ChangeAmount": "0.00",
-                            "SourceId": that.getView().byId("tranNumber").getCount().toString() + that.paymentEntSourceCounter.toString()
+                            "SourceId": sourceId
 
 
                         });
+                        that.sourceIdCounter = that.sourceIdCounter + 1;
+                        that.paymentEntSourceCounter = that.paymentEntSourceCounter + 1;
 
                         var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
                         var paidAmount = 0;
@@ -4537,14 +4781,16 @@ sap.ui.define([
                 var itemCode = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Itemcode;
                 var itemDesc = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Description;
                 var itemNumber = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Seq;
+                var itemLocation = oEvent.getParameter("listItem").getBindingContext("ProductModel").getObject().Location;
                 this.warrantyItemCode = itemCode;
                 this.warrantyItemDesc = itemDesc;
                 this.warrantyTransItem = itemNumber;
+                this.warrantyItemLoc = itemLocation;
                 sap.ui.getCore().byId("idMaterial").setText(itemCode + " ( " + itemDesc + " )");
                 sap.ui.getCore().byId("warrantPanel").setVisible(true);
                 sap.ui.getCore().byId("addWaranty").setEnabled(true);
                 var filteredSrNumber = this.serialNumbers.filter(function (item) {
-                    return item.itemCode === that.warrantyItemCode;
+                    return item.itemCode === that.warrantyItemCode && item.seq === that.warrantyTransItem;
                 })
                 var oSrlNumModel = new JSONModel();
                 oSrlNumModel.setData({});
@@ -5045,10 +5291,10 @@ sap.ui.define([
                 this.paymentId = this.paymentId + 1;
                 var bFlag = false;
                 var maxcount = "";
-                
+
                 if (cashAmount !== 0 && cashAmount !== "0.00" && cashAmount !== "") {
 
-                    
+
                     this.aPaymentEntries.push({
                         "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
                         "PaymentId": this.paymentId.toString(),
@@ -5071,7 +5317,7 @@ sap.ui.define([
 
 
                     });
-                    
+
 
                     var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
                     var paidAmount = 0;
@@ -5084,7 +5330,7 @@ sap.ui.define([
                     if (balanceAmount <= 0) {
                         sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                       
+
                         for (var i = this.aPaymentEntries.length - 1; i >= 0; i--) {
                             if (this.aPaymentEntries[i].PaymentType === "CASH") {
                                 this.aPaymentEntries[i].ChangeAmount = balanceAmount.toString();
@@ -5108,7 +5354,7 @@ sap.ui.define([
                             sap.ui.getCore().byId("cash").setValue("");
                             that.onOpenSignaturePad();
                         }
-                        
+
                     }
                     else {
                         sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
@@ -5208,7 +5454,24 @@ sap.ui.define([
                         }
                     });
                 });
+
+
+
+
                 this._addSerialNumberDialog.open();
+                // Wait until table has rendered rows
+                var oTable = sap.ui.getCore().byId("idSerialTable");
+
+                oTable.attachEventOnce("updateFinished", function () {
+                    setTimeout(function () {
+                        var aItems = oTable.getItems();
+                        if (aItems.length > 0) {
+                            var oInput = aItems[0].getCells()[0];
+                            oInput.focus();
+                        }
+                    }, 80);   // 50–120ms works best
+                });
+
             },
             handleAddWorkOrder: function (tableId) {
 
@@ -5238,7 +5501,7 @@ sap.ui.define([
                 var oTable = sap.ui.getCore().byId("idSerNumber").getItems();
 
                 this.serialNumbers = this.serialNumbers.filter(function (item) {
-                    return item.itemCode !== that.serialItemCode;
+                    return item.itemCode !== that.serialItemCode || item.seq !== that.serialTransItem;
                 });
 
                 for (var i = 0; i < oTable.length; i++) {
@@ -5446,13 +5709,13 @@ sap.ui.define([
                 }
 
                 // Card Label
-                if (!this._oSelectCardLabel.getValue()) {
-                    this._oSelectCardLabel.setValueState("Error");
-                    this._oSelectCardLabel.setValueStateText("Card Label is required");
-                    isValid = false;
-                } else {
-                    this._oSelectCardLabel.setValueState("None");
-                }
+                // if (!this._oSelectCardLabel.getValue()) {
+                //     this._oSelectCardLabel.setValueState("Error");
+                //     this._oSelectCardLabel.setValueStateText("Card Label is required");
+                //     isValid = false;
+                // } else {
+                //     this._oSelectCardLabel.setValueState("None");
+                // }
 
                 // Approval Code
                 if (!this._oSelectCardApproval.getValue()) {
@@ -5463,13 +5726,22 @@ sap.ui.define([
                     this._oSelectCardApproval.setValueState("None");
                 }
 
-                // Receipt Number
-                if (!this._oSelectCardReciept.getValue()) {
-                    this._oSelectCardReciept.setValueState("Error");
-                    this._oSelectCardReciept.setValueStateText("Receipt Number is required");
+                // // Receipt Number
+                // if (!this._oSelectCardReciept.getValue()) {
+                //     this._oSelectCardReciept.setValueState("Error");
+                //     this._oSelectCardReciept.setValueStateText("Receipt Number is required");
+                //     isValid = false;
+                // } else {
+                //     this._oSelectCardReciept.setValueState("None");
+                // }
+
+                // Card Number
+                if (!this._oSelectCardNumber.getValue()) {
+                    this._oSelectCardNumber.setValueState("Error");
+                    this._oSelectCardNumber.setValueStateText("Receipt Number is required");
                     isValid = false;
                 } else {
-                    this._oSelectCardReciept.setValueState("None");
+                    this._oSelectCardNumber.setValueState("None");
                 }
 
                 return isValid;
@@ -5496,16 +5768,20 @@ sap.ui.define([
                     sap.m.MessageToast.show("Please enter an amount");
                     return;
                 }
-                if (!sCardLabel) {
-                    sap.m.MessageToast.show("Please enter Card Label");
-                    return;
-                }
+                // if (!sCardLabel) {
+                //     sap.m.MessageToast.show("Please enter Card Label");
+                //     return;
+                // }
                 if (!sCardApproval) {
                     sap.m.MessageToast.show("Please enter Card Approval Code");
                     return;
                 }
-                if (!sCardReciept) {
-                    sap.m.MessageToast.show("Please enter Card Reciept Number");
+                // if (!sCardReciept) {
+                //     sap.m.MessageToast.show("Please enter Card Reciept Number");
+                //     return;
+                // }
+                if (!sCardNumber) {
+                    sap.m.MessageToast.show("Please enter Card  Number");
                     return;
                 }
 
@@ -5928,7 +6204,7 @@ sap.ui.define([
                     if (balanceAmount <= 0) {
                         sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                         sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                       // sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                        // sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                         sap.m.MessageToast.show("Non EGV Payment Successful");
 
                         that.onOpenSignaturePad();
@@ -6381,9 +6657,9 @@ sap.ui.define([
                 oInput.setValue(sSanitized);
                 var saleBalance = parseFloat(sap.ui.getCore().byId("totalSaleBalText").getText()).toFixed(2);
                 var saleAmount = parseFloat(sap.ui.getCore().byId("totalAmountText").getText()).toFixed(2);
-                 if( saleAmount === saleBalance || saleAmount > saleBalance){
+                if (saleAmount === saleBalance || saleAmount > saleBalance) {
                     sap.ui.getCore().byId("cashSbmtBtn").setEnabled(true);
-                 }
+                }
             },
             updateBalanceAmount: function (msg, modelName) {
                 var that = this;
@@ -6398,7 +6674,7 @@ sap.ui.define([
                 if (balanceAmount <= 0) {
                     sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
                     sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-                   // sap.ui.getCore().byId("sbmtTrans").setVisible(true);
+                    // sap.ui.getCore().byId("sbmtTrans").setVisible(true);
                     sap.m.MessageToast.show(msg + " Redeemed Successfully");
 
                     that.onOpenSignaturePad();
@@ -6809,16 +7085,16 @@ sap.ui.define([
                                     icon: "sap-icon://decline",
                                     tooltip: "Close",
                                     press: function () {
-                                        if(this.aCanvas && this.aCanvas.length > 0){
-                                        window.location.reload(true);
+                                        if (this.aCanvas && this.aCanvas.length > 0) {
+                                            window.location.reload(true);
                                         }
-                                        else if(sap.ui.core.Fragment.byId("SignaturePad", "ipBox").getVisible()) {
-                                        window.location.reload(true);
+                                        else if (sap.ui.core.Fragment.byId("SignaturePad", "ipBox").getVisible()) {
+                                            window.location.reload(true);
                                         }
-                                        else{
-                                          this._pAddRecordDialog.close();
+                                        else {
+                                            this._pAddRecordDialog.close();
                                         }
-                                        
+
                                     }.bind(this)
                                 })
                             ]
@@ -6911,7 +7187,35 @@ sap.ui.define([
                     });
                 }
                 this._oDialog.open();
+            },
+            getLetter: function (counter) {
+                return String.fromCharCode(65 + counter);
+            },
+            onSerialInputChange: function (oEvent) {
+
+                var oInput = oEvent.getSource();
+                var sValue = oInput.getValue();
+
+
+
+                var oTable = sap.ui.getCore().byId("idSerNumber");
+                var aItems = oTable.getItems();
+
+                // Current row
+                var oCurrentRow = oInput.getParent(); // ColumnListItem
+                var iIndex = aItems.indexOf(oCurrentRow);
+
+                // If it's not the last row, move to next row
+                if (iIndex < aItems.length - 1) {
+                    var oNextRow = aItems[iIndex + 1];
+                    var oNextInput = oNextRow.getCells()[0];
+
+                    setTimeout(function () {
+                        oNextInput.focus();
+                    }, 100);
+                }
             }
+
 
 
 
