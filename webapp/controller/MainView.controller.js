@@ -7100,7 +7100,7 @@ sap.ui.define([
                             ]
                         })
 
-                    });
+                    }).addStyleClass("stockDialog");
 
                     this.getView().addDependent(this._pAddRecordDialog);
                 }
