@@ -70,7 +70,7 @@
                             <content>
                                 <VBox class="sapUiSmallMargin">
                                     <HBox>
-                                        <Input id="creditNote" placeholder="Enter Credit Voucher/Reciept Number "  class="inputStyle sapUiSmallMarginBottom">
+                                        <Input id="creditNote" placeholder="Enter Credit Voucher/Reciept Number " maxLength="30" class="inputStyle sapUiSmallMarginBottom">
                                             <layoutData>
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
@@ -115,7 +115,7 @@
                             <content>
                                 <VBox class="sapUiSmallMargin">
                                     <HBox>
-                                        <Input id="advPayment" placeholder="Enter Advance Reciept Number" liveChange="onCardNumberChange" maxLength="16" class="inputStyle sapUiSmallMarginBottom">
+                                        <Input id="advPayment" placeholder="Enter Advance Reciept Number" liveChange="onCardNumberChange" maxLength="30" class="inputStyle sapUiSmallMarginBottom">
                                             <layoutData>
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>
@@ -160,7 +160,7 @@
                             <content>
                                 <VBox class="sapUiSmallMargin">
                                     <HBox>
-                                        <Input id="giftVoucher" placeholder="Enter Gift Voucher Number "  class="inputStyle sapUiSmallMarginBottom">
+                                        <Input id="giftVoucher" placeholder="Enter Gift Voucher Number " maxLength="30"  class="inputStyle sapUiSmallMarginBottom">
                                             <layoutData>
                                                 <FlexItemData growFactor="1"/>
                                             </layoutData>

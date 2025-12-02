@@ -3786,18 +3786,21 @@ sap.ui.define([
                 var oSignBox = sap.ui.core.Fragment.byId("SignaturePad", "signBox");
                 oSignBox.setVisible(false);
                 var ipBox = sap.ui.core.Fragment.byId("SignaturePad", "ipBox");
-                ipBox.setVisible(true);
+                ipBox.setVisible(false);
                 this._pAddRecordDialog.setModel(oIPModel, "IPModel");
+                
+                this.printIP = aValidIPs[0];
+                this.onPressIP();
 
             },
             onPressIP: function (oEvent) {
-                var that = this;
-                var oItem = oEvent.getParameter("listItem") || oEvent.getSource();
-                var oVBox = oItem.getContent ? oItem.getContent()[0] : oItem.getAggregation("content")[0];
-                var aItems = oVBox.getItems ? oVBox.getItems() : oVBox.getAggregation("items");
-                this.printIP = aItems[0]?.getText();
+                // var that = this;
+                // var oItem = oEvent.getParameter("listItem") || oEvent.getSource();
+                // var oVBox = oItem.getContent ? oItem.getContent()[0] : oItem.getAggregation("content")[0];
+                // var aItems = oVBox.getItems ? oVBox.getItems() : oVBox.getAggregation("items");
+                // this.printIP = aItems[0]?.getText();
                 var tranNumber = this.getView().byId("tranNumber").getCount().toString();
-                var sPath = "/PrintPDFSet(TransactionId='" + tranNumber + "',PDFType='A')";
+                var sPath = "/PrintPDFSet(TransactionId='" + tranNumber + "',PDFType='A',Reprint='')";
                 if (that._pAddRecordDialog) {
                                     that._pAddRecordDialog.setBusy(true);
                                 }
