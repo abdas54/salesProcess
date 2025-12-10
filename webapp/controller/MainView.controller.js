@@ -4614,7 +4614,7 @@ sap.ui.define([
                         sap.m.MessageBox.show(
                             "Do you want to convert the transaction into EMI ?", {
                             icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "Custom Message Box",
+                            title: "EMI OPTION ?",
                             actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
                             onClose: function (sAction) {
                                 if (sAction === sap.m.MessageBox.Action.OK) {
@@ -5292,9 +5292,10 @@ sap.ui.define([
                 var cashAmount = sap.ui.getCore().byId("cash").getValue();
                 this.paymentEntSourceCounter = this.paymentEntSourceCounter + 1;
                 this.paymentId = this.paymentId + 1;
+                var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
                 var bFlag = false;
                 var maxcount = "";
-
+                if(totSalBal !== "0.00" ){
                 if (cashAmount !== 0 && cashAmount !== "0.00" && cashAmount !== "") {
 
 
@@ -5371,6 +5372,11 @@ sap.ui.define([
                     //var tenderChangeAmount = this.getView().byId("totaltenderBal").getValue();
 
                 }
+            }
+            else{
+                sap.ui.getCore().byId("cash").setValue("");
+                sap.m.MessageToast.show("Sale Balance is 0.00");
+            }
             },
             onAddSerialNumber: function (oEvent) {
 
