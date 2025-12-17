@@ -896,7 +896,7 @@ sap.ui.define([
                     aEntries.splice(iIndex, 1);
                     sap.m.MessageBox.information("Bounz Payment cannot be deleted");
                 }
-                else if (dataObj.PaymentType === "CARD") {
+                else if (dataObj.PaymentType === "CARD" || dataObj.PaymentType === "AANI"  || dataObj.PaymentType === "ADCB TOUCH POINTS") {
 
                     this.voidCardPament(dataObj, aEntries, iIndex);
                 }
@@ -919,7 +919,14 @@ sap.ui.define([
                     "OriginalId": dataObj.SourceId,
                     "Tid": dataObj.Tid,
                     "Mid": dataObj.Mid,
+                    "Amount": dataObj.Amount
 
+                }
+                if(dataObj.PaymentType === "AANI"){
+                    oPayload.TransactionType = "pushPaymentIppRefund";
+                }
+                 if(dataObj.PaymentType === "ADCB TOUCH POINTS"){
+                    oPayload.TransactionType = "pushPaymentTouchPointsVoid";
                 }
 
 
@@ -4579,7 +4586,13 @@ sap.ui.define([
                             "PaymentType": PaymentType,
                             "VoucherNumber": "",
                             "ChangeAmount": "0.00",
-                            "SourceId": sourceId
+                            "SourceId": sourceId,
+                            "EppEmi" : oData.EppEmi,
+                            "EppFee" : oData.EppFee,
+                            "EppInterestRate" : oData.EppInterestRate ,
+                            "EppTenor" : oData.EppTenor,
+                            "RedeemedPoints" : oData.RedeemedPoints,
+                            "RedeemedAmount": oData.RedeemedAmount 
 
 
                         });
@@ -4614,7 +4627,7 @@ sap.ui.define([
                         sap.m.MessageBox.show(
                             "Do you want to convert the transaction into EMI ?", {
                             icon: sap.m.MessageBox.Icon.INFORMATION,
-                            title: "EMI OPTION ?",
+                            title: "EMI OPTIONS ?",
                             actions: [sap.m.MessageBox.Action.OK, sap.m.MessageBox.Action.CANCEL],
                             onClose: function (sAction) {
                                 if (sAction === sap.m.MessageBox.Action.OK) {
@@ -5317,7 +5330,13 @@ sap.ui.define([
                         "PaymentType": "CASH",
                         "VoucherNumber": "",
                         "SourceId": "",
-                        "ChangeAmount": "0.00"
+                        "ChangeAmount": "0.00",
+                        "EppEmi" : null,
+                        "EppFee" : null,
+                        "EppInterestRate" : null ,
+                        "EppTenor" : null,
+                        "RedeemedPoints" : null,
+                        "RedeemedAmount": null 
 
 
                     });
@@ -5812,7 +5831,14 @@ sap.ui.define([
                     "PaymentType": "CARD",
                     "VoucherNumber": "",
                     "SourceId": "",
-                    "ChangeAmount": "0.00"
+                    "ChangeAmount": "0.00",
+                    "EppEmi" : null,
+                    "EppFee" : null,
+                    "EppInterestRate" : null ,
+                    "EppTenor" : null,
+                    "RedeemedPoints" : null,
+                    "RedeemedAmount": null 
+
 
 
                 });
@@ -6043,7 +6069,14 @@ sap.ui.define([
                             "PaymentType": "BOUNZ",
                             "VoucherNumber": "",
                             "SourceId": "",
-                            "ChangeAmount": "0.00"
+                            "ChangeAmount": "0.00",
+                            "EppEmi" : null,
+                            "EppFee" : null,
+                            "EppInterestRate" : null ,
+                            "EppTenor" : null,
+                            "RedeemedPoints" : null,
+                            "RedeemedAmount": null 
+
 
 
                         });
@@ -6197,7 +6230,14 @@ sap.ui.define([
                         "PaymentType": "NEGV",
                         "VoucherNumber": sVoucherNumber,
                         "SourceId": "",
-                        "ChangeAmount": "0.00"
+                        "ChangeAmount": "0.00",
+                        "EppEmi" : null,
+                        "EppFee" : null,
+                        "EppInterestRate" : null ,
+                        "EppTenor" : null,
+                        "RedeemedPoints" : null,
+                        "RedeemedAmount": null 
+
 
 
                     });
@@ -6613,7 +6653,14 @@ sap.ui.define([
                                 "PaymentType": paymentType1,
                                 "VoucherNumber": oData.Transaction,
                                 "SourceId": "",
-                                "ChangeAmount": "0.00"
+                                "ChangeAmount": "0.00",
+                                "EppEmi" : null,
+                                "EppFee" : null,
+                                "EppInterestRate" : null ,
+                                "EppTenor" : null,
+                                "RedeemedPoints" : null,
+                                "RedeemedAmount": null 
+
 
 
                             });
