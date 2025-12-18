@@ -5398,17 +5398,21 @@ sap.ui.define([
             }
             },
             onAddSerialNumber: function (oEvent) {
+                var that = this;
 
                 var selIndex = oEvent.getSource().getId().split("--")[2].split("-")[1];
                 var selIndexData = this.getView().getModel("ProductModel").getObject("/Product/" + selIndex);
                 this.getActualQty = parseInt(selIndexData.SaleQuantity);
                 this.serialItemCode = selIndexData.Itemcode;
                 this.serialTransItem = selIndexData.Seq;
-                this._addSerialNumberDialog = null;
-                this._addSerialNumberDialog = sap.ui.xmlfragment(
-                    "com.eros.salesprocess.fragment.addSerialNumber",
-                    this
-                );
+                // this._addSerialNumberDialog = null;
+                if (!this._addSerialNumberDialog) {
+               this._addSerialNumberDialog = sap.ui.xmlfragment(
+            "com.eros.salesprocess.fragment.addSerialNumber",
+            this
+              );
+               this.getView().addDependent(this._addSerialNumberDialog);
+            }
 
                 var aExistingSerials = this.serialNumbers.filter(function (item) {
                     return item.itemCode === that.serialItemCode && item.seq === selIndexData.Seq;
@@ -5519,8 +5523,9 @@ sap.ui.define([
             },
             onPressCancelButton: function () {
                 if (this._addSerialNumberDialog) {
-                    this._addSerialNumberDialog.destroy(true);
-                    this._addSerialNumberDialog = null;
+                    this._addSerialNumberDialog.close();
+                    // this._addSerialNumberDialog.destroy(true);
+                    // this._addSerialNumberDialog = null;
                 }
             },
             onSaveSerialNumber: function () {
@@ -7270,7 +7275,27 @@ sap.ui.define([
                         oNextInput.focus();
                     }, 100);
                 }
-            }
+            },
+            onSerialDialogAfterOpen: function () {
+    var oTable = sap.ui.getCore().byId("idSerNumber");
+ 
+    var fnFocus = function () {
+        var aItems = oTable.getItems();
+        if (aItems.length > 0) {
+            var oInput = aItems[0].getCells()[0];
+            // small delay so we beat UI5 autoFocus on buttons
+            setTimeout(function () {
+                oInput.focus();
+            }, 0);
+        }
+    };
+ 
+    if (oTable.getItems().length > 0) {
+        fnFocus();
+    } else {
+        oTable.attachEventOnce("updateFinished", fnFocus);
+    }
+},
 
 
 

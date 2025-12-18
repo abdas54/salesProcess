@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
-    <Dialog   contentHeight="500px" contentWidth="400px" showHeader="false" class="customerDialog">
+    <Dialog   contentHeight="500px" contentWidth="400px" showHeader="false" class="customerDialog" afterOpen=".onSerialDialogAfterOpen">
         <content>
         <VBox class="customScrollContainer" height="500px">
             <Table id="idSerNumber" items="{serialModel>/serials}" >
