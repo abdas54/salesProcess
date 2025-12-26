@@ -134,7 +134,7 @@
 		
 			<buttons>
 			
-			<Button id="applyDiscBtn" text="Apply Discount" type="Emphasized" press="onApplyManualDiscount1" class="cstmBtn"/>
+			<Button id="applyDiscBtn" enabled="false" text="Apply Discount" type="Emphasized" press="onApplyManualDiscount1" class="cstmBtn"/>
 			<Button text="Close" type="Emphasized" press="onCloseManualDiscount1" class="cstmBtn"/>
 		</buttons>
 	</Dialog>

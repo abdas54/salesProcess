@@ -15,7 +15,7 @@
             </headerToolbar>
                 <ColumnListItem id="serNumberColmnList" class="lstBackground">
 			<cells>
-				<Input value="{serialModel>serialNumber}" liveChange="onSerialInputChange" maxLength="25" class="inputStyle sapUiSmallMarginBottom" ></Input>
+				<Input value="{serialModel>serialNumber}" liveChange="onSerialInputChange" maxLength="25" submit="onSerialInputSubmit" class="inputStyle sapUiSmallMarginBottom" ></Input>
 				
 			</cells>
 		</ColumnListItem>

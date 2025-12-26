@@ -96,6 +96,14 @@ sap.ui.define([
                 this.cashierID = "";
                 this.CashierPwd = "";
 
+                var oTomorrow = new Date();
+                oTomorrow.setDate(oTomorrow.getDate());
+
+                var oViewModel = new sap.ui.model.json.JSONModel({
+                            minDate: oTomorrow
+               });
+               this.getView().setModel(oViewModel, "DateModel");
+
             },
             fetchWarrantyData: function () {
                 var that = this;
@@ -896,7 +904,7 @@ sap.ui.define([
                     aEntries.splice(iIndex, 1);
                     sap.m.MessageBox.information("Bounz Payment cannot be deleted");
                 }
-                else if (dataObj.PaymentType === "CARD" || dataObj.PaymentType === "AANI"  || dataObj.PaymentType === "ADCB TOUCH POINTS") {
+                else if (dataObj.PaymentType === "CARD" || dataObj.PaymentType === "AANI" || dataObj.PaymentType === "ADCB TOUCH POINTS") {
 
                     this.voidCardPament(dataObj, aEntries, iIndex);
                 }
@@ -922,10 +930,10 @@ sap.ui.define([
                     "Amount": dataObj.Amount
 
                 }
-                if(dataObj.PaymentType === "AANI"){
+                if (dataObj.PaymentType === "AANI") {
                     oPayload.TransactionType = "pushPaymentIppRefund";
                 }
-                 if(dataObj.PaymentType === "ADCB TOUCH POINTS"){
+                if (dataObj.PaymentType === "ADCB TOUCH POINTS") {
                     oPayload.TransactionType = "pushPaymentTouchPointsVoid";
                 }
 
@@ -1526,10 +1534,12 @@ sap.ui.define([
                         this._oDialogDiscoun1 = oFragment;
                         this.getView().addDependent(this._oDialogDiscoun1);
                         this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "Item List");
+                        sap.ui.getCore().byId("applyDiscBtn").setEnabled(false);
                         this._oDialogDiscoun1.open();
 
                     }.bind(this));
                 } else {
+                    sap.ui.getCore().byId("applyDiscBtn").setEnabled(false);
                     this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "Item List");
                     this._oDialogDiscoun1.open();
 
@@ -2564,12 +2574,14 @@ sap.ui.define([
                 var netPrice = (parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                 var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                 this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).SaleAmount = parseFloat(vatAmount) + parseFloat(netPrice);
+                this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = netDiscount;
                 this.getView().getModel("ProductModel").refresh();
             },
             calculateVATAmount: function (netAmount, netDiscount, vatPercent, selIndex) {
                 var netPrice = (parseFloat(netAmount) + parseFloat(netDiscount)).toFixed(2);
                 var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                 this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).VatAmount = vatAmount;
+                this.getView().getModel("ProductModel").getObject("/Product/" + selIndex).NetDiscount = netDiscount;
                 this.getView().getModel("ProductModel").refresh();
 
             },
@@ -2579,7 +2591,7 @@ sap.ui.define([
                     var netPrice = (parseFloat(unitPrice) + parseFloat(unitDiscount)).toFixed(2);
                     var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).VatAmount = vatAmount;
-                    this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).NetDiscount = unitDiscount;
+                    //this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).NetDiscount = unitDiscount;
                     this.getView().getModel("ProductModel").refresh();
 
                     return vatAmount;
@@ -2595,7 +2607,7 @@ sap.ui.define([
                 if (parseFloat(salesAmount).toFixed(2) === "0.00") {
                     var netPrice = (parseFloat(unitPrice) + parseFloat(unitDiscount)).toFixed(2);
                     var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
-                    this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).NetDiscount = unitDiscount;
+                    //this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).NetDiscount = unitDiscount;
                     this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).SaleAmount = parseFloat(parseFloat(vatAmount) + parseFloat(netPrice)).toFixed(2);
                     this.getView().getModel("ProductModel").refresh();
                     this.setHeaderData();
@@ -3795,7 +3807,7 @@ sap.ui.define([
                 var ipBox = sap.ui.core.Fragment.byId("SignaturePad", "ipBox");
                 ipBox.setVisible(false);
                 this._pAddRecordDialog.setModel(oIPModel, "IPModel");
-                
+
                 this.printIP = aValidIPs[0];
                 this.onPressIP();
 
@@ -3809,8 +3821,8 @@ sap.ui.define([
                 var tranNumber = this.getView().byId("tranNumber").getCount().toString();
                 var sPath = "/PrintPDFSet(TransactionId='" + tranNumber + "',PDFType='A',Reprint='')";
                 if (that._pAddRecordDialog) {
-                                    that._pAddRecordDialog.setBusy(true);
-                                }
+                    that._pAddRecordDialog.setBusy(true);
+                }
                 this.oModel.read(sPath, {
                     urlParameters: { "$expand": "ToPDFList" },
                     success: async function (oData) {
@@ -3836,7 +3848,7 @@ sap.ui.define([
 
                             for (const oRow of aResults) {
                                 await that.showPDF(oRow.Value);
-                                 if (that._pAddRecordDialog) {
+                                if (that._pAddRecordDialog) {
                                     that._pAddRecordDialog.setBusy(false);
                                 }
                             }
@@ -4097,6 +4109,101 @@ sap.ui.define([
                     MessageToast.show("Failed to load PDF: " + error.message);
                 }
             },
+            _initCanvasWithFixes: function () {
+                // Call old inits first (keeps everything as-is)
+                if (this._initializeCanvas1) {
+                    this._initializeCanvas1();
+                }
+                if (this._initializeCanvas2) {
+                    this._initializeCanvas2();
+                }
+
+                // Now add DPI/offset fixes to both canvases
+                const canvasIds = ["signatureCanvas", "signatureCanvas1"];
+                canvasIds.forEach(canvasId => {
+                    const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", canvasId);
+                    if (!oCanvasControl) return;
+
+                    const canvas = oCanvasControl.getDomRef();
+                    if (!canvas || !canvas.getContext) return;
+
+                    // Get displayed size
+                    const rect = canvas.getBoundingClientRect();
+                    const cssWidth = rect.width || 450;
+                    const cssHeight = rect.height || 200;
+
+                    // DPI scaling (reuse your existing getPixelRatio)
+                    const dpr = this.getPixelRatio() || 1;
+                    if (dpr > 1) {  // Only if needed
+                        canvas.width = cssWidth * dpr;
+                        canvas.height = cssHeight * dpr;
+                        canvas.style.width = cssWidth + 'px';
+                        canvas.style.height = cssHeight + 'px';
+
+                        const ctx = canvas.getContext("2d");
+                        ctx.scale(dpr, dpr);  // Fix drawing scale
+                        ctx.strokeStyle = '#000000';
+                        ctx.lineWidth = 2;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                    }
+
+                    // Override the position function additively (monkey-patch the old getEventPosition)
+                    if (!canvas._fixedGetEventPosition) {  // Avoid re-patching
+                        canvas._fixedGetEventPosition = (e) => {
+                            const canvasRect = canvas.getBoundingClientRect();
+                            let clientX, clientY;
+                            if (e.touches && e.touches.length > 0) {
+                                clientX = e.touches[0].clientX;
+                                clientY = e.touches[0].clientY;
+                            } else {
+                                clientX = e.clientX;
+                                clientY = e.clientY;
+                            }
+                            // Key: Scale to match canvas resolution (fixes offset)
+                            const x = (clientX - canvasRect.left) * (canvas.width / canvasRect.width);
+                            const y = (clientY - canvasRect.top) * (canvas.height / canvasRect.height);
+                            console.log(`Fixed position for ${canvasId}: x=${x.toFixed(0)}, y=${y.toFixed(0)} (DPR=${dpr})`);
+                            return { x, y };
+                        };
+                        canvas._fixedGetEventPosition.fixed = true;  // Flag it
+                    }
+                });
+
+                // Optional: Patch clears for scaled canvases (uncomment if needed)
+                // this._patchedClearSignature = function() { ... } // See below if you want
+            },
+            _fixSignatureOffset: function () {
+                const dpr = this.getPixelRatio() || 1;
+                if (dpr === 1) return;
+
+                console.log(`Safe final fix: correct scaling + thin smooth line (dpr = ${dpr})`);
+
+                ["signatureCanvas", "signatureCanvas1"].forEach(canvasId => {
+                    const oCanvasControl = sap.ui.core.Fragment.byId("SignaturePad", canvasId);
+                    if (!oCanvasControl || !oCanvasControl.getDomRef()) return;
+
+                    const canvas = oCanvasControl.getDomRef();
+                    const ctx = canvas.getContext("2d");
+
+                    // Re-apply scaling
+                    const rect = canvas.getBoundingClientRect();
+                    canvas.width = rect.width * dpr;
+                    canvas.height = rect.height * dpr;
+                    ctx.scale(dpr, dpr);
+                    // Clear old drawing
+                    ctx.clearRect(0, 0, rect.width, rect.height);
+
+                    // Force thin, smooth, single line style (overrides old)
+                    ctx.lineWidth = 1.0;  // Thin natural line (try 1.2 for thinner)
+                    ctx.lineCap = "round";
+                    ctx.lineJoin = "round";
+                    ctx.strokeStyle = "#000000";
+                    ctx.miterLimit = 1;  // Prevents sharp corners
+
+                    console.log(`Safe style fix applied to ${canvasId}`);
+                });
+            },
             getPixelRatio: function () {
                 var ctx = document.createElement("canvas").getContext("2d"),
                     dpr = window.devicePixelRatio || 1,
@@ -4179,7 +4286,14 @@ sap.ui.define([
                                             await printer.send();
                                             resolve();
                                             if (canvasesArray.length === that.counter + 1) {
-                                                window.location.reload(true);
+                                                // window.location.reload(true);
+                                                var oCrossAppNav = sap.ushell.Container.getService("CrossApplicationNavigation");
+                                                oCrossAppNav.toExternal({
+                                                    target: {
+                                                        semanticObject: "Shell",
+                                                        action: "home"
+                                                    }
+                                                });
                                             }
                                             // printer.send(function (resultSend) {
                                             //     if (resultSend === "OK") {
@@ -4201,7 +4315,14 @@ sap.ui.define([
                                     actions: [sap.m.MessageBox.Action.OK],
                                     onClose: function (oAction) {
                                         if (oAction === sap.m.MessageBox.Action.OK) {
-                                            window.location.reload(true);
+                                            // window.location.reload(true);
+                                            var oCrossAppNav = sap.ushell.Container.getService("CrossApplicationNavigation");
+                                            oCrossAppNav.toExternal({
+                                                target: {
+                                                    semanticObject: "Shell",
+                                                    action: "home"
+                                                }
+                                            });
                                         }
                                     }.bind(this)
                                 });
@@ -4332,7 +4453,7 @@ sap.ui.define([
             },
             isInternetWorking: async function () {
                 try {
-                    const response = await fetch("https://1.1.1.1/cdn-cgi/trace", {
+                    const response = await fetch("https://8.8.8.8/", {
                         method: "GET",
                         cache: "no-store",
                         mode: "no-cors"
@@ -4587,12 +4708,12 @@ sap.ui.define([
                             "VoucherNumber": "",
                             "ChangeAmount": "0.00",
                             "SourceId": sourceId,
-                            "EppEmi" : oData.EppEmi,
-                            "EppFee" : oData.EppFee,
-                            "EppInterestRate" : oData.EppInterestRate ,
-                            "EppTenor" : oData.EppTenor,
-                            "RedeemedPoints" : oData.RedeemedPoints,
-                            "RedeemedAmount": oData.RedeemedAmount 
+                            "EppEmi": oData.EppEmi,
+                            "EppFee": oData.EppFee,
+                            "EppInterestRate": oData.EppInterestRate,
+                            "EppTenor": oData.EppTenor,
+                            "RedeemedPoints": oData.RedeemedPoints,
+                            "RedeemedAmount": oData.RedeemedAmount
 
 
                         });
@@ -4790,6 +4911,7 @@ sap.ui.define([
                 this.getView().getModel("DiscountValue").setProperty("/ItemDesc", itemDesc);
                 this.getView().getModel("DiscountValue").setProperty("/ItemUnitPrice", itemUnitPrice);
                 this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "Discounts Condition");
+
             },
             holdWarrantyItem: function (oEvent) {
                 var that = this;
@@ -4928,6 +5050,9 @@ sap.ui.define([
                     sap.ui.getCore().byId("discountAmount").setValue("");
                 }
 
+                if (discAmount) {
+                    sap.ui.getCore().byId("applyDiscBtn").setEnabled(true);
+                }
 
 
 
@@ -5063,6 +5188,7 @@ sap.ui.define([
                     this.removeManualDiscount(matchProdTableIndex, productTblData[matchProdTableIndex], dataObj);
                     this.getView().getModel("ProductModel").getProperty("/Product")[matchProdTableIndex].ToDiscounts.results.splice(matchDiscTableIndex, 1);
                 }
+                sap.ui.getCore().byId("applyDiscBtn").setEnabled(true);
 
             },
             checkCashPayment: function () {
@@ -5308,94 +5434,94 @@ sap.ui.define([
                 var totSalBal = sap.ui.getCore().byId("totalSaleBalText").getText();
                 var bFlag = false;
                 var maxcount = "";
-                if(totSalBal !== "0.00" ){
-                if (cashAmount !== 0 && cashAmount !== "0.00" && cashAmount !== "") {
+                if (totSalBal !== "0.00") {
+                    if (cashAmount !== 0 && cashAmount !== "0.00" && cashAmount !== "") {
 
 
-                    this.aPaymentEntries.push({
-                        "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
-                        "PaymentId": this.paymentId.toString(),
-                        "PaymentDate": new Date(),
-                        "Amount": cashAmount.toString(),
-                        "Currency": "AED",
-                        "PaymentMethod": "011", //Cash( 011), card ("")
-                        "PaymentMethodName": "Cash",
-                        "Tid": "",
-                        "Mid": "",
-                        "CardType": "",
-                        "CardLabel": "",
-                        "CardNumber": "",
-                        "AuthorizationCode": "",
-                        "CardReceiptNo": "",
-                        "PaymentType": "CASH",
-                        "VoucherNumber": "",
-                        "SourceId": "",
-                        "ChangeAmount": "0.00",
-                        "EppEmi" : null,
-                        "EppFee" : null,
-                        "EppInterestRate" : null ,
-                        "EppTenor" : null,
-                        "RedeemedPoints" : null,
-                        "RedeemedAmount": null 
+                        this.aPaymentEntries.push({
+                            "TransactionId": this.getView().byId("tranNumber").getCount().toString(),
+                            "PaymentId": this.paymentId.toString(),
+                            "PaymentDate": new Date(),
+                            "Amount": cashAmount.toString(),
+                            "Currency": "AED",
+                            "PaymentMethod": "011", //Cash( 011), card ("")
+                            "PaymentMethodName": "Cash",
+                            "Tid": "",
+                            "Mid": "",
+                            "CardType": "",
+                            "CardLabel": "",
+                            "CardNumber": "",
+                            "AuthorizationCode": "",
+                            "CardReceiptNo": "",
+                            "PaymentType": "CASH",
+                            "VoucherNumber": "",
+                            "SourceId": "",
+                            "ChangeAmount": "0.00",
+                            "EppEmi": null,
+                            "EppFee": null,
+                            "EppInterestRate": null,
+                            "EppTenor": null,
+                            "RedeemedPoints": null,
+                            "RedeemedAmount": null
 
 
-                    });
+                        });
 
 
-                    var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
-                    var paidAmount = 0;
-                    for (var count1 = 0; count1 < this.aPaymentEntries.length; count1++) {
+                        var saleAmount = sap.ui.getCore().byId("totalAmountText").getText();
+                        var paidAmount = 0;
+                        for (var count1 = 0; count1 < this.aPaymentEntries.length; count1++) {
 
-                        paidAmount = parseFloat(parseFloat(this.aPaymentEntries[count1].Amount) + parseFloat(paidAmount)).toFixed(2);
+                            paidAmount = parseFloat(parseFloat(this.aPaymentEntries[count1].Amount) + parseFloat(paidAmount)).toFixed(2);
 
-                    }
-                    var balanceAmount = parseFloat(parseFloat(saleAmount).toFixed(2) - parseFloat(paidAmount).toFixed(2)).toFixed(2);
-                    if (balanceAmount <= 0) {
-                        sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
-                        sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
-
-                        for (var i = this.aPaymentEntries.length - 1; i >= 0; i--) {
-                            if (this.aPaymentEntries[i].PaymentType === "CASH") {
-                                this.aPaymentEntries[i].ChangeAmount = balanceAmount.toString();
-                                break; // Stop after updating the last CASH entry
-                            }
                         }
-                        oEvent.getSource().setEnabled(false);
-                        sap.m.MessageToast.show("Cash Payment Successful");
-                        if (balanceAmount !== "0.00") {
-                            sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
-                                icon: sap.m.MessageBox.Icon.INFORMATION,
-                                title: "Tender Balance",
-                                actions: [MessageBox.Action.OK],
-                                onClose: function (oAction) {
-                                    sap.ui.getCore().byId("cash").setValue("");
-                                    that.onOpenSignaturePad();
+                        var balanceAmount = parseFloat(parseFloat(saleAmount).toFixed(2) - parseFloat(paidAmount).toFixed(2)).toFixed(2);
+                        if (balanceAmount <= 0) {
+                            sap.ui.getCore().byId("totaltenderBal").setText(balanceAmount);
+                            sap.ui.getCore().byId("totalSaleBalText").setText("0.00");
+
+                            for (var i = this.aPaymentEntries.length - 1; i >= 0; i--) {
+                                if (this.aPaymentEntries[i].PaymentType === "CASH") {
+                                    this.aPaymentEntries[i].ChangeAmount = balanceAmount.toString();
+                                    break; // Stop after updating the last CASH entry
                                 }
-                            });
+                            }
+                            oEvent.getSource().setEnabled(false);
+                            sap.m.MessageToast.show("Cash Payment Successful");
+                            if (balanceAmount !== "0.00") {
+                                sap.m.MessageBox.show("Tender Balance Amount is " + balanceAmount, {
+                                    icon: sap.m.MessageBox.Icon.INFORMATION,
+                                    title: "Tender Balance",
+                                    actions: [MessageBox.Action.OK],
+                                    onClose: function (oAction) {
+                                        sap.ui.getCore().byId("cash").setValue("");
+                                        that.onOpenSignaturePad();
+                                    }
+                                });
+                            }
+                            else {
+                                sap.ui.getCore().byId("cash").setValue("");
+                                that.onOpenSignaturePad();
+                            }
+
                         }
                         else {
+                            sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
                             sap.ui.getCore().byId("cash").setValue("");
-                            that.onOpenSignaturePad();
+                            //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
+                            sap.m.MessageToast.show("Cash Payment Successful");
                         }
 
+
+
+                        //var tenderChangeAmount = this.getView().byId("totaltenderBal").getValue();
+
                     }
-                    else {
-                        sap.ui.getCore().byId("totalSaleBalText").setText(parseFloat(Math.abs(balanceAmount)).toFixed(2));
-                        sap.ui.getCore().byId("cash").setValue("");
-                        //sap.ui.getCore().byId("sbmtTrans").setVisible(false);
-                        sap.m.MessageToast.show("Cash Payment Successful");
-                    }
-
-
-
-                    //var tenderChangeAmount = this.getView().byId("totaltenderBal").getValue();
-
                 }
-            }
-            else{
-                sap.ui.getCore().byId("cash").setValue("");
-                sap.m.MessageToast.show("Sale Balance is 0.00");
-            }
+                else {
+                    sap.ui.getCore().byId("cash").setValue("");
+                    sap.m.MessageToast.show("Sale Balance is 0.00");
+                }
             },
             onAddSerialNumber: function (oEvent) {
                 var that = this;
@@ -5407,12 +5533,12 @@ sap.ui.define([
                 this.serialTransItem = selIndexData.Seq;
                 // this._addSerialNumberDialog = null;
                 if (!this._addSerialNumberDialog) {
-               this._addSerialNumberDialog = sap.ui.xmlfragment(
-            "com.eros.salesprocess.fragment.addSerialNumber",
-            this
-              );
-               this.getView().addDependent(this._addSerialNumberDialog);
-            }
+                    this._addSerialNumberDialog = sap.ui.xmlfragment(
+                        "com.eros.salesprocess.fragment.addSerialNumber",
+                        this
+                    );
+                    this.getView().addDependent(this._addSerialNumberDialog);
+                }
 
                 var aExistingSerials = this.serialNumbers.filter(function (item) {
                     return item.itemCode === that.serialItemCode && item.seq === selIndexData.Seq;
@@ -5837,12 +5963,12 @@ sap.ui.define([
                     "VoucherNumber": "",
                     "SourceId": "",
                     "ChangeAmount": "0.00",
-                    "EppEmi" : null,
-                    "EppFee" : null,
-                    "EppInterestRate" : null ,
-                    "EppTenor" : null,
-                    "RedeemedPoints" : null,
-                    "RedeemedAmount": null 
+                    "EppEmi": null,
+                    "EppFee": null,
+                    "EppInterestRate": null,
+                    "EppTenor": null,
+                    "RedeemedPoints": null,
+                    "RedeemedAmount": null
 
 
 
@@ -6075,12 +6201,12 @@ sap.ui.define([
                             "VoucherNumber": "",
                             "SourceId": "",
                             "ChangeAmount": "0.00",
-                            "EppEmi" : null,
-                            "EppFee" : null,
-                            "EppInterestRate" : null ,
-                            "EppTenor" : null,
-                            "RedeemedPoints" : null,
-                            "RedeemedAmount": null 
+                            "EppEmi": null,
+                            "EppFee": null,
+                            "EppInterestRate": null,
+                            "EppTenor": null,
+                            "RedeemedPoints": null,
+                            "RedeemedAmount": null
 
 
 
@@ -6236,12 +6362,12 @@ sap.ui.define([
                         "VoucherNumber": sVoucherNumber,
                         "SourceId": "",
                         "ChangeAmount": "0.00",
-                        "EppEmi" : null,
-                        "EppFee" : null,
-                        "EppInterestRate" : null ,
-                        "EppTenor" : null,
-                        "RedeemedPoints" : null,
-                        "RedeemedAmount": null 
+                        "EppEmi": null,
+                        "EppFee": null,
+                        "EppInterestRate": null,
+                        "EppTenor": null,
+                        "RedeemedPoints": null,
+                        "RedeemedAmount": null
 
 
 
@@ -6659,12 +6785,12 @@ sap.ui.define([
                                 "VoucherNumber": oData.Transaction,
                                 "SourceId": "",
                                 "ChangeAmount": "0.00",
-                                "EppEmi" : null,
-                                "EppFee" : null,
-                                "EppInterestRate" : null ,
-                                "EppTenor" : null,
-                                "RedeemedPoints" : null,
-                                "RedeemedAmount": null 
+                                "EppEmi": null,
+                                "EppFee": null,
+                                "EppInterestRate": null,
+                                "EppTenor": null,
+                                "RedeemedPoints": null,
+                                "RedeemedAmount": null
 
 
 
@@ -7137,7 +7263,8 @@ sap.ui.define([
                         title: "Signature Pad",
                         content: [oContent],
                         stretch: true,
-                        afterOpen: this._initializeCanvas.bind(this),
+                        // afterOpen: this._initializeCanvas.bind(this),
+                        afterOpen: this._initCanvasWithFixes.bind(this),  // NEW: Calls wrapper with fixes
                         customHeader: new sap.m.Toolbar({
                             content: [
                                 new sap.m.Title({ text: "Signature Pad" }),
@@ -7180,6 +7307,9 @@ sap.ui.define([
                         console.log("PDF container after open:", pdfContainer);
                         // you can render PDF now
                     }, 100);
+                    setTimeout(() => {
+                        this._fixSignatureOffset();
+                    }, 400);
                 });
             },
             resolveTimeDifference: function (dateTime) {
@@ -7254,48 +7384,115 @@ sap.ui.define([
             },
             onSerialInputChange: function (oEvent) {
 
+                //  var oInput = oEvent.getSource();
+                //  var sValue = oInput.getValue();
+
                 var oInput = oEvent.getSource();
-                var sValue = oInput.getValue();
+                var sValue = (oInput.getValue() || "").trim();
 
-
+                if (!sValue) {
+                    oInput.setValueState("None");
+                    return;
+                }
 
                 var oTable = sap.ui.getCore().byId("idSerNumber");
                 var aItems = oTable.getItems();
 
-                // Current row
+                var bDuplicate = false;
+                aItems.forEach(function (oItem) {
+                    var oCellInput = oItem.getCells()[0];
+                    var sOther = (oCellInput.getValue() || "").trim();
+                    if (oCellInput !== oInput && sOther && sOther === sValue) {
+                        bDuplicate = true;
+                    }
+                });
+
+                if (bDuplicate) {
+                    oInput.setValueState("Error");
+                    oInput.setValueStateText("Serial number already entered!");
+                    oInput.setValue("");
+                    return; // do not move focus
+                } else {
+                    oInput.setValueState("None");
+                    this._moveFocusToNextRow(oInput);
+                }
+
+
+
+
+
+            },
+            onSerialInputSubmit: function (oEvent) {
+                var oInput = oEvent.getSource();
+                var sValue = (oInput.getValue() || "").trim();
+
+                if (!sValue) {
+                    oInput.setValueState("None");
+                    return;
+                }
+
+
+                var oTable = sap.ui.getCore().byId("idSerNumber");
+                var aItems = oTable.getItems();
+                var bDuplicate = false;
+                aItems.forEach(function (oItem) {
+                    var oCellInput = oItem.getCells()[0];
+                    var sOther = (oCellInput.getValue() || "").trim();
+                    if (oCellInput !== oInput && sOther && sOther === sValue) {
+                        bDuplicate = true;
+                    }
+                });
+
+                if (bDuplicate) {
+                    oInput.setValueState("Error");
+                    oInput.setValueStateText("Serial number already entered!");
+                    return;
+                } else {
+                    oInput.setValueState("None");
+                }
+
+                // If valid, move to next row
+                this._moveFocusToNextRow(oInput);
+            },
+            // helper to move focus to next input row
+            _moveFocusToNextRow: function (oInput) {
+                var oTable = sap.ui.getCore().byId("idSerNumber");
+                var aItems = oTable.getItems();
                 var oCurrentRow = oInput.getParent(); // ColumnListItem
                 var iIndex = aItems.indexOf(oCurrentRow);
 
-                // If it's not the last row, move to next row
                 if (iIndex < aItems.length - 1) {
                     var oNextRow = aItems[iIndex + 1];
                     var oNextInput = oNextRow.getCells()[0];
 
+                    // small delay so DOM focus moves reliably
                     setTimeout(function () {
                         oNextInput.focus();
-                    }, 100);
+                    }, 40);
                 }
             },
             onSerialDialogAfterOpen: function () {
-    var oTable = sap.ui.getCore().byId("idSerNumber");
- 
-    var fnFocus = function () {
-        var aItems = oTable.getItems();
-        if (aItems.length > 0) {
-            var oInput = aItems[0].getCells()[0];
-            // small delay so we beat UI5 autoFocus on buttons
-            setTimeout(function () {
-                oInput.focus();
-            }, 0);
-        }
-    };
- 
-    if (oTable.getItems().length > 0) {
-        fnFocus();
-    } else {
-        oTable.attachEventOnce("updateFinished", fnFocus);
-    }
-},
+                var oTable = sap.ui.getCore().byId("idSerNumber");
+
+                var fnFocus = function () {
+                    var aItems = oTable.getItems();
+                    if (aItems.length > 0) {
+                        var oInput = aItems[0].getCells()[0];
+                        // small delay so we beat UI5 autoFocus on buttons
+                        setTimeout(function () {
+                            oInput.focus();
+                        }, 0);
+                    }
+                };
+
+                if (oTable.getItems().length > 0) {
+                    fnFocus();
+                } else {
+                    oTable.attachEventOnce("updateFinished", fnFocus);
+                }
+            }
+           
+
 
 
 

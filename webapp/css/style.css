@@ -462,5 +462,8 @@ margin-top: 15px !important;
     background-color: #c8d9e6 !important; 
 
 }
+.noTyping .sapMInputBaseInner {
+    pointer-events: none !important;
+}
 
 

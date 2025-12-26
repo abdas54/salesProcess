@@ -200,7 +200,7 @@
                     <Panel visible="{= ${ShowSection>/selectedMode} === 'Shipping Instruction' }">
                         <content>
                             <VBox >
-                                <DatePicker value="{custAddModel>/shippingDate}" displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
+                                <DatePicker minDate="{DateModel>/minDate}" value="{custAddModel>/shippingDate}"   displayFormat="yyyy-MM-dd" valueFormat="yyyy-MM-dd" class="noTyping inputStyle customInputHeight sapUiSmallMarginBottom"/>
                                 <!-- <DatePicker value="{'path':'custAddModel>/shippingDate','type':'sap.ui.model.type.Date','formatOptions': {'pattern': 'yyyy-MM-dd'}}" placeholder="Enter Delivery Date"/> -->
                                 <TextArea value="{custAddModel>/ShippingInst}" width="550px" placeholder="Enter Delivery Instruction" class="inputStyle customInputHeight sapUiSmallMarginBottom"/>
                                 <Label text="Shipping Method :" design="Bold"/>
