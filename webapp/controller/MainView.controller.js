@@ -100,9 +100,9 @@ sap.ui.define([
                 oTomorrow.setDate(oTomorrow.getDate());
 
                 var oViewModel = new sap.ui.model.json.JSONModel({
-                            minDate: oTomorrow
-               });
-               this.getView().setModel(oViewModel, "DateModel");
+                    minDate: oTomorrow
+                });
+                this.getView().setModel(oViewModel, "DateModel");
 
             },
             fetchWarrantyData: function () {
@@ -648,7 +648,7 @@ sap.ui.define([
 
                 aFilters.push(new sap.ui.model.Filter("Itemcode", sap.ui.model.FilterOperator.EQ, matCode));
 
-                aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "X"));
+                aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "A"));
                 this.oModel.read("/MaterialSet", {
                     urlParameters: {
                         "$expand": "ToDiscounts"
@@ -1252,18 +1252,20 @@ sap.ui.define([
                         that.getView().byId("cashier").setCount(oData.results[0].EmployeeName);
                         that.getView().byId("tranNumber").setCount(oData.results[0].TransactionId);
                         that.getView().byId("page").setVisible(true);
-                        that.byId("inpSearch").focus();
-                        var oInput = that.getView().byId("inpSearch");
+                         // Close dialog ONLY
+                        that._oDialogCashier.close();
+                        // that.byId("inpSearch").focus();
+                        // var oInput = that.getView().byId("inpSearch");
 
-                        if (!that._bFocusDelegateAdded) {
-                            that._bFocusDelegateAdded = true;
+                        // if (!that._bFocusDelegateAdded) {
+                        //     that._bFocusDelegateAdded = true;
 
-                            oInput.addEventDelegate({
-                                onAfterRendering: function () {
-                                    oInput.focus();
-                                }
-                            });
-                        }
+                        //     oInput.addEventDelegate({
+                        //         onAfterRendering: function () {
+                        //             oInput.focus();
+                        //         }
+                        //     });
+                        // }
 
                     },
                     error: function (oError) {
@@ -1827,6 +1829,13 @@ sap.ui.define([
 
                 });
                 this.getView().setModel(showSection, "ShowDiscountSection");
+                if (sSelectedOption === "Reason Type") {
+        this._focusReasonTextArea();
+    }
+     if(sSelectedOption==="Amount"){
+           this._focuseInputAmount();
+
+     }
 
                 if (sSelectedOption === "View All Records") {
                     this.addDiscount();
@@ -2196,6 +2205,16 @@ sap.ui.define([
 
                 return sResult; // you can store this in your model or backend
             },
+            onCashierDialogAfterClose: function () {
+                   var oInput = this.getView().byId("inpSearch");
+ 
+       
+                   if (oInput) {
+                     setTimeout(function () {
+                        oInput.focus();
+                           }, 0);
+                     }
+             },
 
             validateCustomer: function () {
                 var bFlag;
@@ -2587,7 +2606,7 @@ sap.ui.define([
             },
             formatVatAmount: function (unitPrice, unitDiscount, vatPercent, vatAmount, seq) {
 
-                if (parseFloat(vatAmount).toFixed(2) === "0.00") {
+                if (this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).VatAmount === "0.00") {
                     var netPrice = (parseFloat(unitPrice) + parseFloat(unitDiscount)).toFixed(2);
                     var vatAmount = parseFloat(netPrice * vatPercent / 100).toFixed(2);
                     this.getView().getModel("ProductModel").getObject("/Product/" + (seq / 10 - 1)).VatAmount = vatAmount;
@@ -3041,7 +3060,7 @@ sap.ui.define([
 
                         },
                         error: function (oError) {
-                            aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "X"));
+                            aFilters.push(new sap.ui.model.Filter("AllLocations", sap.ui.model.FilterOperator.EQ, "A"));
                             if (JSON.parse(oError.responseText).error.code === "MATERIAL_CHECK") {
                                 // if (!that.openMessageBox) {
                                 //     sap.m.MessageBox.show(
@@ -4502,8 +4521,19 @@ sap.ui.define([
                                     window.location.reload(true);
                                 }
                             },
-                            error: function () {
-                                sap.m.MessageToast.show("Error");
+                            error: function (oError) {
+                                // sap.m.MessageToast.show("Error");
+                                sap.m.MessageBox.show(JSON.parse(oError.responseText).error.message.value, {
+                                    icon: sap.m.MessageBox.Icon.Error,
+                                    title: "Error",
+                                    actions: [MessageBox.Action.OK],
+                                    onClose: function (oAction) {
+                                        if (oAction === MessageBox.Action.OK) {
+                                            window.history.go(-1);
+                                        }
+                                    }
+                                });
+
                             }
                         });
                     }
@@ -4956,6 +4986,26 @@ sap.ui.define([
                 this.suspendComments = oEvent.getParameter("listItem").getBindingContext().getObject().Reason;
                 this.onPressSuspend();
             },
+                        _focusReasonTextArea: function () {
+    var that = this;
+
+    // small delay so panel + TextArea are rendered
+    setTimeout(function () {
+        var oTextArea = sap.ui.getCore().byId("reasonTextArea");
+        if (oTextArea) {
+            oTextArea.focus();
+        }
+    }, 0);
+},
+_focuseInputAmount: function () {
+   var that=this;
+    setTimeout(function () {
+        var oInputAmount=sap.ui.getCore().byId("discountAmount");
+        if(oInputAmount){
+            oInputAmount.focus();
+        }
+    }, 0);
+},
 
             holdDiscountCondition: function (oEvent) {
                 var conditionType = oEvent.getParameter("listItem").getBindingContext().getObject().ConditionType;
@@ -4970,6 +5020,8 @@ sap.ui.define([
                 this.getView().getModel("DiscountValue").setProperty("/ConditionType", conditionType);
                 this.getView().getModel("DiscountValue").setProperty("/ConditionName", conditionName);
                 this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "Reason Type");
+                 //fOCUS HERE
+                this._focusReasonTextArea();
             },
             holdReasonType: function (oEvent) {
                 // var reason = oEvent.getParameter("listItem").getBindingContext().getObject().Reason;
@@ -4982,6 +5034,7 @@ sap.ui.define([
                 var authority = oEvent.getParameter("listItem").getBindingContext().getObject().Authority;
                 this.getView().getModel("DiscountValue").setProperty("/Authority", authority);
                 this.getView().getModel("ShowDiscountSection").setProperty("/selectedMode", "Amount");
+                this._focuseInputAmount();
             },
             holdDiscountAmount: function (oEvent) {
                 var discAmount = oEvent.getParameter("value");
@@ -7491,7 +7544,7 @@ sap.ui.define([
                     oTable.attachEventOnce("updateFinished", fnFocus);
                 }
             }
-           
+
 
 
 

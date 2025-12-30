@@ -3,7 +3,7 @@
 		<content>
 		<!--change="getStockDetailManually"-->
         <Input  class=" customInputHeight inputStyle sapUiSmallMarginBegin sapUiSmallMarginTop whiteSuggestionHeader" placeholder="Enter or Scan Material" value="{StockModel>/inpMatCode}"  width="75%"
-		showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}" change="getStockDetailManually"
+		showSuggestion="true" suggestionRows="{suggestionModel>/suggestions}" 
 							filterSuggests="false" enableTableAutoPopinMode="true" suggest="onStockSuggest" suggestionItemSelected="onSuggestionStockSelected"
 							showTableSuggestionValueHelp="false">
 			<suggestionColumns>

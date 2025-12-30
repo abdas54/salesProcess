@@ -57,7 +57,7 @@
                      <Panel visible="{= ${ShowDiscountSection>/selectedMode} === 'Reason Type' }">
 						<content>
 							<VBox >
-							<TextArea rows="5" change="holdReasonType" width="50%" class="sapUiSmallMargin"></TextArea>
+							<TextArea id="reasonTextArea" rows="5" change="holdReasonType" width="50%" class="sapUiSmallMargin"></TextArea>
 							<!-- <g:GridList items="{/DiscountReasonsSet}"  itemPress="holdReasonType">
     							<g:items>
         							<g:GridListItem type="Active" >

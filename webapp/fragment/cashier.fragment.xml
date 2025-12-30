@@ -1,5 +1,5 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form">
-	<Dialog title="Cashier Detail" contentWidth="25%" class="cashierLogin">
+	<Dialog title="Cashier Detail" contentWidth="25%" class="cashierLogin" afterClose="onCashierDialogAfterClose">
 		<content>
 			<VBox fitContainer="true" alignContent="Center" class="sapUiSizeCompact sapUiTinyMarginBottom">
 				
